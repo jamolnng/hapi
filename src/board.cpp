@@ -25,7 +25,17 @@ void Board::arm() { digitalWrite(_arm_pin, HIGH); }
 
 void Board::disarm() { digitalWrite(_arm_pin, LOW); }
 
-void Board::set_arm_pin(int pin) { pinMode(pin, OUTPUT); }
+bool Board::is_done() { return digitalRead(_done_pin); }
+
+void Board::set_arm_pin(int pin) {
+  pinMode(pin, OUTPUT);
+  _arm_pin = pin;
+}
+
+void Board::set_done_pin(int pin) {
+  pinMode(pin, OUTPUT);
+  _done_pin = pin;
+}
 
 void Board::set_delay_pins(int pin0, int pin1, int pin2, int pin3) {
   _delay_pins[0] = pin0;

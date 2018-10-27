@@ -22,6 +22,15 @@ using namespace hapi;
 volatile std::atomic<bool> running = true;
 volatile std::sig_atomic_t signal_status = 0;
 
+std::map<std::string, std::string> config_defaults = {
+    {"output", "/home/pi/hapi"}, {"trigger_type", "1"}, {"arm_pin", "26"},
+    {"delay_pin0", "7"},         {"delay_pin1", "0"},   {"delay_pin2", "1"},
+    {"delay_pin3", "2"},         {"exp_pin0", "13"},    {"exp_pin1", "6"},
+    {"exp_pin2", "14"},          {"exp_pin3", "10"},    {"pulse_pin0", "24"},
+    {"pulse_pin1", "27"},        {"pulse_pin2", "25"},  {"pulse_pin3", "28"},
+    {"done_pin", "23"},          {"pulse_pin4", "29"},  {"delay", "0b1000"},
+    {"exp", "0b0010"},           {"pulse", "0b11111"},  {"image_type", "png"}};
+
 void print_ex(const std::exception &ex) {
   std::cout << "*** EXCEPTION ***" << std::endl
             << ex.what() << std::endl
@@ -50,14 +59,7 @@ int main(int argc, char *argv[]) {
 
   for (int i = 0; i < 35) std::signal(i, signal_handler);
 
-  Config config = Config(
-      {{"output", "/home/pi/hapi"}, {"trigger_type", "1"}, {"arm_pin", "26"},
-       {"delay_pin0", "7"},         {"delay_pin1", "0"},   {"delay_pin2", "1"},
-       {"delay_pin3", "2"},         {"exp_pin0", "13"},    {"exp_pin1", "6"},
-       {"exp_pin2", "14"},          {"exp_pin3", "10"},    {"pulse_pin0", "24"},
-       {"pulse_pin1", "27"},        {"pulse_pin2", "25"},  {"pulse_pin3", "28"},
-       {"pulse_pin4", "29"},        {"delay", "0b0001"},   {"exp", "0b0100"},
-       {"pulse", "0b11111"},        {"image_type", "png"}});
+  Config config = Config(config_defaults);
 
   if (std::filesystem::exists("/opt/hapi/hapi.conf"))
     config.load("/opt/hapi/hapi.conf");
@@ -84,6 +86,7 @@ int main(int argc, char *argv[]) {
   try {
     board = Board::instance();
     board.set_arm_pin(config.get_int("arm_pin"));
+    board.set_done_pin(config.get_int("done_pin"));
     board.set_delay_pins(
         config.get_int("delay_pin0"), config.get_int("delay_pin1"),
         config.get_int("delay_pin2"), config.get_int("delay_pin3"));
@@ -128,6 +131,7 @@ int main(int argc, char *argv[]) {
 
     board->arm();
     while (running) {
+      while (!board->is_done()) std::this_thread::yield();
       ImagePtr result = camera->acquire_image();
       board->disarm();
       std::string image_time = str_time();
