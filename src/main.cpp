@@ -81,7 +81,9 @@ int main(int argc, char *argv[])
                             {"exp", "0b0100"},
                             {"pulse", "0b11111"},
                             {"image_type", "png"}});
-    config.load("/opt/hapi/hapi.conf");
+    
+    if(std::filesystem::exists("/opt/hapi/hapi.conf"))
+        config.load("/opt/hapi/hapi.conf");
 
     std::shared_ptr<USBCamera> camera;
     try
