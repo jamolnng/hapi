@@ -80,6 +80,7 @@ int main(int argc, char* argv[]) {
     prompt("trigger_type",
            "trigger type: 0 = Software, 1 = Hardware (default 1)", sout, "1");
     prompt("arm_pin", "arm pin (default: 26)", sout, "26");
+    prompt("done_pin", "done pin (default: 23)", sout, "23");
     prompt("delay_pin0", "delay pin 0 (default: 7)", sout, "7");
     prompt("delay_pin1", "delay pin 1 (default: 0)", sout, "0");
     prompt("delay_pin2", "delay pin 2 (default: 1)", sout, "1");
