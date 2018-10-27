@@ -15,6 +15,7 @@ std::shared_ptr<Board> Board::instance() {
 }
 
 void Board::init() {
+  // initialize wiringPi and create the board instance
   wiringPiSetup();
   _board = std::make_shared<Board>();
 }
@@ -38,27 +39,33 @@ void Board::set_done_pin(int pin) {
 }
 
 void Board::set_delay_pins(int pin0, int pin1, int pin2, int pin3) {
+  // assign pins
   _delay_pins[0] = pin0;
   _delay_pins[1] = pin1;
   _delay_pins[2] = pin2;
   _delay_pins[3] = pin3;
+  // set pin modes to output
   for (unsigned int i = 0; i < 4; i++) pinMode(_delay_pins[i], OUTPUT);
 }
 
 void Board::set_exp_pins(int pin0, int pin1, int pin2, int pin3) {
+  // assign pins
   _exp_pins[0] = pin0;
   _exp_pins[1] = pin1;
   _exp_pins[2] = pin2;
   _exp_pins[3] = pin3;
+  // set pin modes to output
   for (unsigned int i = 0; i < 4; i++) pinMode(_exp_pins[i], OUTPUT);
 }
 
 void Board::set_pulse_pins(int pin0, int pin1, int pin2, int pin3, int pin4) {
+  // assign pins
   _pulse_pins[0] = pin0;
   _pulse_pins[1] = pin1;
   _pulse_pins[2] = pin2;
   _pulse_pins[3] = pin3;
   _pulse_pins[4] = pin4;
+  // set pin mode to output
   for (unsigned int i = 0; i < 5; i++) pinMode(_pulse_pins[i], OUTPUT);
 }
 

@@ -14,25 +14,23 @@ USBCamera::~USBCamera() {}
 void USBCamera::cleanup() {
   if (_system == nullptr) return;
   _cameras.clear();
-  _clist.Clear();
-  _system->ReleaseInstance();
+  _clist->Clear();
+  (*_system)->ReleaseInstance();
   _system = nullptr;
   _clist = nullptr;
 }
 
-unsigned int USBCamera::num_cams() {
-  if (_system == nullptr) init_sys();
-  return _cameras.size();
-}
+unsigned int USBCamera::num_cams() { return _cameras.size(); }
 
-std::shared_ptr<Camera> USBCamera::get(unsigned int id) {
-  if (_system == nullptr) init_sys();
-  return _cameras[i];
-}
+std::shared_ptr<Camera> USBCamera::get(unsigned int id) { return _cameras[i]; }
 
 bool USBCamera::update_cameras() {
-  if (_system == nullptr) init_sys();
-  _system->UpdateCameras();
+  (*_system)->UpdateCameras();
+  _clist = std::make_shared<CameraList>((*_system)->GetCameras());
+
+  _cameras.clear();
+  for (unsigned int i = 0; i < _clist->GetSize(); i++)
+    _cameras.push_back(std::make_shared<Camera>(_clist->GetByIndex(i)));
 }
 
 bool Camera::is_initialized() { return _ptr->IsInitialized(); }
@@ -136,7 +134,7 @@ void USBCamera::print_device_info() {
   }
 }
 
-void USBCamera::set_aquisition_mode(gcstring mode) {
+void USBCamera::set_acquisition_mode(gcstring mode) {
   INodeMap nmap = _ptr->GetNodeMap();
   CEnumerationPtr acquisition_mode = nmap.GetNode("AcquisitionMode");
   if (!IsAvailable(acquisition_mode) || !IsWritable(acquisition_mode))
@@ -169,9 +167,6 @@ void USBCamera::init_sys() {
 
   std::cout << "Initializing Spinnaker SDK" << std::endl;
   _system = std::make_shared<SystemPtr>(System::GetInstance());
-  _clist = std::make_shared<CameraList>(_system->GetCameras());
-  std::cout << "Number of cameras detected: " << clist.GetSize() << std::endl;
 
-  for (unsigned int i = 0; i < clist.GetSize(); i++)
-    _cameras.push_back(std::make_shared<Camera>(clist.GetByIndex(i)));
+  update_cameras();
 }
