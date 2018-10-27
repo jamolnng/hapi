@@ -38,4 +38,8 @@ add_executable(hapi-config ${HAPI_CONFIG_SOURCES})
 target_include_directories(hapi-config PUBLIC ${HAPI_CONFIG_INCLUDE_DIRS})
 target_link_libraries(hapi-config stdc++fs)
 
+install(TARGETS hapi hapi-config
+        LIBRARY DESTINATION lib/
+        RUNTIME DESTINATION bin/)
+
 ##### end hapi-config #####
