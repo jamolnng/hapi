@@ -1,10 +1,39 @@
-cmake_minimum_required (VERSION 3.0)
-project(HAPI)
+cmake_minimum_required (VERSION 3.1)
+set (CMAKE_CXX_STANDARD 11)
+project(hapi CXX)
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY "build/")
 
-file(GLOB HAPI_SOURCES "*.cpp")
+function(get_include_dirs headers dirs)
+    set (tlist "")
+    foreach (_headerFile ${headers})
+        get_filename_component(_dir ${_headerFile} PATH)
+        list (APPEND tlist ${_dir})
+    endforeach()
+    set(${dirs} "${tlist}" PARENT_SCOPE)
+endfunction()
 
-include_directories("${PROJECT_BINARY_DIR}")
+##### main program #####
+
+file(GLOB_RECURSE HAPI_SOURCES "src/*.cpp")
+file(GLOB_RECURSE HAPI_HEADERS "include/*.h")
+
+get_include_dirs("${HAPI_HEADERS}" HAPI_INCLUDE_DIRS)
 
 add_executable(hapi ${HAPI_SOURCES})
+target_include_directories(hapi PUBLIC ${HAPI_INCLUDE_DIRS})
+target_link_libraries(hapi wiringPi spinnaker stdc++fs)
 
-target_link_libraries(hapi wiringPi spinnaker)
+##### end main program #####
+
+##### hapi-config #####
+
+file(GLOB_RECURSE HAPI_CONFIG_SOURCES "tools/config/src/*.cpp")
+file(GLOB_RECURSE HAPI_CONFIG_HEADERS "tools/config/include/*.h")
+
+get_include_dirs("${HAPI_CONFIG_HEADERS}" HAPI_CONFIG_INCLUDE_DIRS)
+
+add_executable(hapi-config ${HAPI_CONFIG_SOURCES})
+target_include_directories(hapi-config PUBLIC ${HAPI_CONFIG_INCLUDE_DIRS})
+target_link_libraries(hapi-config stdc++fs)
+
+##### end hapi-config #####
