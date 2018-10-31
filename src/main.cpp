@@ -13,11 +13,15 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include "Spinnaker.h"
+
 #include "board.h"
 #include "config.h"
 #include "usb_camera.h"
 
 using namespace hapi;
+
+using namespace Spinnaker;
 
 // bool that states whether the program should remain running
 volatile std::atomic<bool> running = true;
@@ -29,7 +33,7 @@ std::map<std::string, std::string> config_defaults = {
     {"delay_pin3", "2"},         {"exp_pin0", "13"},    {"exp_pin1", "6"},
     {"exp_pin2", "14"},          {"exp_pin3", "10"},    {"pulse_pin0", "24"},
     {"pulse_pin1", "27"},        {"pulse_pin2", "25"},  {"pulse_pin3", "28"},
-    {"done_pin", "23"},          {"pulse_pin4", "29"},  {"delay", "0b1000"},
+    {"pulse_pin4", "29"},        {"done_pin", "23"},    {"delay", "0b1000"},
     {"exp", "0b0010"},           {"pulse", "0b11111"},  {"image_type", "png"}};
 
 // print an exception to the console
@@ -69,44 +73,29 @@ int main(int argc, char *argv[]) {
 
   // load config
   Config config = Config(config_defaults);
-  if (std::filesystem::exists("/opt/hapi/hapi.conf"))
-    config.load("/opt/hapi/hapi.conf");
-
-  // initialize the camera
-  std::shared_ptr<USBCamera> camera;
   try {
-    // initialize spinnaker system
-    USBCamera::init_sys();
-    // if no cameras are detected attempt to refresh a max of 5 times
-    for (unsigned int i = 0; i < 5 && USBCamera::num_cams() == 0; i++) {
-      std::this_thread::sleep_for(std::chrono::seconds(1));
-      USBCamera::update_cameras();
-    }
-    std::cout << "Number of cameras detected: " << USBCamera::num_cams()
-              << std::endl;
-    // if no cameras detected raise an error and exit
-    if (USBCamera::num_cams() == 0)
-      throw std::runtime_error("No cameras detected!");
-
-    // get the camera
-    camera = USBCamera::get(0);
-    camera->init();
-    // ensure camera is initialized
-    while (!camera->is_initialized()) std::this_thread::yield();
+    if (std::filesystem::exists("/opt/hapi/hapi.conf"))
+      config.load("/opt/hapi/hapi.conf");
   } catch (const std::exception &ex) {
+    std::cout << "Failed to load config. Using defaults." << std::endl;
     print_ex(ex);
-    USBCamera::cleanup();
-    std::cout << "Exiting..." << std::endl;
-    return -1;
   }
 
-  camera->print_device_info();
+  // get the image type from the config. default to png
+  std::string image_type;
+  try {
+    image_type = config["image_type"];
+  } catch (const std::exception &ex) {
+    std::cout << "Failed to load image type from config. Defaulting to png"
+              << std::endl;
+    print_ex(ex);
+    image_type = "png";
+  }
 
   // initialize the board
-  shared_ptr<Board> board;
+  std::shared_ptr<Board> board;
   try {
     board = Board::instance();
-
     board.set_arm_pin(config.get_int("arm_pin"));
     board.set_done_pin(config.get_int("done_pin"));
 
@@ -128,11 +117,60 @@ int main(int argc, char *argv[]) {
 
     board.disarm();
   } catch (const std::exception &ex) {
+    std::cout << "Failed to initialize HAPI-E board." << std::endl;
     print_ex(ex);
-    USBCamera::cleanup();
-    Board::cleanup();
     std::cout << "Exiting..." << std::endl;
     return -1;
+  }
+
+  SystemPtr system = System::GetInstance();
+  CameraList clist = system->GetCameras();
+
+  auto cleanup = [&board, &clist, &system]() {
+    std::cout << "Cleaning up..." << std::endl;
+    board->disarm();
+    clist.Clear();
+    system->ReleaseInstance();
+  };
+
+  // attempt to refresh cameras 5 times if none detected initially
+  std::cout << "No cameras detected. Attempting to refresh camera list."
+            << std::endl;
+  while (unsigned int i = 0; i < 5 && clist.GetSize() == 0; i++) {
+    std::cout << "Refreshing..." << std::endl;
+    system->UpdateCameras();
+    clist = system->GetCameras();
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+  }
+  std::cout << "Number of cameras detected: " << clist.GetSize() << std::endl;
+
+  // if no cameras detected exit
+  if (clist.GetSize() == 0) {
+    cleanup();
+    std::cout << "No cameras detected." << std::endl
+              << "Exiting..." << std::end;
+    return -1;
+  }
+
+  // initialize the camera
+  USBCamera camera = USBCamera(clist->GetByIndex(0));
+  try {
+    camera.init();
+    // wait until camera is initialized
+    while (!camera.is_initialized()) std::this_thread::yield();
+  } catch (const std::exception &ex) {
+    std::cout << "Failed to initialize camera." << std::endl;
+    print_ex(ex);
+    cleanup();
+    std::cout << "Exiting..." << std::endl;
+    return -1;
+  }
+
+  try {
+    camera.print_device_info();
+  } catch (const std::exception &ex) {
+    std::cout << "Failed to get device info." << std::endl;
+    print_ex(ex);
   }
 
   // create output directory where images are stored
@@ -143,70 +181,100 @@ int main(int argc, char *argv[]) {
     if (!std::filesystem::exists(out_dir))
       std::filesystem::create_directory(out_dir);
   } catch (const std::exception &ex) {
+    std::cout << "Failed to create output directory." << std::endl;
     print_ex(ex);
-    USBCamera::cleanup();
-    Board::cleanup();
+    cleanup();
     std::cout << "Exiting..." << std::endl;
-  }
-
-  try {
-    // configure trigger
-    USBCamera::TriggerType trigger_type = USBCamera::TriggerType::SOFTWARE;
-    if (config["trigger_type"] == "1")
-      trigger_type = USBCamera::TriggerType::HARDWARE;
-    camera->configure_trigger(trigger_type);
-
-    // begin acquisition
-    camera->set_aquisition_mode("Continuous");
-    camera->begin_acquisition();
-
-    board->arm();
-    while (running) {
-      // wait for the board to signal it has taken an image
-      while (!board->is_done()) {
-        if (running)
-          std::this_thread::yield();
-        else
-          // exit the program if signaled
-          break;
-      }
-      // exit if no image was captured and the program was signaled to exit
-      if (!board->is_done() && !running) break;
-      // disarm the board so no other images can be captured while we process
-      // the current one
-      board->disarm();
-
-      // get the image from the camera
-      ImagePtr result = camera->acquire_image();
-      // get the time the image was taken
-      std::string image_time = str_time();
-      if (!result->IsIncomplete()) {
-        ImagePtr converted = result->Convert(PixelFormat_Mono8, HQ_LINEAR);
-        // save the image
-        std::filesystem::path fname = out_dir;
-        fname /= image_time + "." + config["image_type"];
-        converted->Save(fname.c_str());
-      }
-      result->Release();
-      // wait for image to be freed before we arm
-      while (result->IsInUse()) std::this_thread::yield();
-      board->arm();
-      // sleep for 2 board clock cycles so the board can reset
-      std::this_thread::sleep_for(std::chrono::nanoseconds(20));
-    }
-
-    camera->end_acquisition();
-    camera->reset_trigger();
-    camera->deinit();
-  } catch (const std::exception &ex) {
-    print_ex(ex);
-    USBCamera::cleanup();
-    Board::cleanup();
     return -1;
   }
 
-  USBCamera::cleanup();
-  Board::cleanup();
+  // configure trigger
+  try {
+    USBCamera::TriggerType trigger_type = USBCamera::TriggerType::SOFTWARE;
+    if (config["trigger_type"] == "1")
+      trigger_type = USBCamera::TriggerType::HARDWARE;
+    camera.configure_trigger(trigger_type);
+  } catch (const std::exception &ex) {
+    std::cout << "Failed to configure trigger." << std::endl;
+    print_ex(ex);
+    cleanup();
+    std::cout << "Exiting..." << std::endl;
+    return -1;
+  }
+
+  try {
+    // begin acquisition
+    camera.set_aquisition_mode("Continuous");
+    camera.begin_acquisition();
+
+    // arm the board so it is ready to acquire images
+    board->arm();
+
+    // main acquisition loop
+    while (running) {
+      try {
+        // wait for the board to signal it has taken an image
+        while (!board->is_done()) {
+          if (running)
+            std::this_thread::yield();
+          else
+            // exit the program if signaled
+            break;
+        }
+        // exit if no image was captured and the program was signaled to exit
+        if (!board->is_done() && !running) break;
+        // disarm the board so no other images can be captured while we process
+        // the current one
+        board->disarm();
+
+        // get the image from the camera
+        ImagePtr result = camera.acquire_image();
+        // get the time the image was taken
+        std::string image_time = str_time();
+        if (result->IsIncomplete()) {
+          std::cout << "Image incomplete with status: "
+                    << result->GetImageStatus() << std::endl;
+        } else {
+          ImagePtr converted = result->Convert(PixelFormat_Mono8, HQ_LINEAR);
+          // save the image
+          std::filesystem::path fname = out_dir;
+          fname /= image_time + "." + image_type;
+          converted->Save(fname.c_str());
+        }
+        result->Release();
+        // wait for image to be freed before we arm
+        while (result->IsInUse()) std::this_thread::yield();
+        board->arm();
+        // sleep for 2 board clock cycles so the board can reset
+        std::this_thread::sleep_for(std::chrono::nanoseconds(20));
+      } catch (const std::exception &ex) {
+        std::cout << "Failed to acquire image." << std::endl;
+        print_ex(ex);
+      }
+    }
+    camera.end_acquisition();
+  } catch (const std::exception &ex) {
+    std::cout << "Failed to run acquisition loop." << std::endl;
+    print_ex(ex);
+    cleanup();
+    return -1;
+  }
+
+  try {
+    camera.reset_trigger();
+  } catch (const std::exception &ex) {
+    std::cout << "Failed to reset trigger." << std::endl;
+    print_ex(ex);
+  }
+
+  try {
+    camera.deinit();
+  } catch (const std::exception &ex) {
+    std::cout << "Failed to deinitialize the camera." << std::endl;
+    print_ex(ex);
+  }
+
+  cleanup();
 
   return 0;
 }

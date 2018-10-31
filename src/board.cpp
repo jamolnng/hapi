@@ -1,4 +1,5 @@
 #include "board.h"
+
 #include <wiringPi.h>
 
 using namespace hapi;
@@ -19,8 +20,6 @@ void Board::init() {
   wiringPiSetup();
   _board = std::make_shared<Board>();
 }
-
-void Board::cleanup() { _board->disarm(); }
 
 void Board::arm() { digitalWrite(_arm_pin, HIGH); }
 

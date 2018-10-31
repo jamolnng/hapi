@@ -9,8 +9,6 @@ class Board {
  public:
   // the board instance
   static std::shared_ptr<Board> instance();
-  // resets the board state
-  static void cleanup();
 
   // arms the board so it can capture images
   void arm();
