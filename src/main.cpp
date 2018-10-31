@@ -21,8 +21,6 @@
 
 using namespace hapi;
 
-using namespace Spinnaker;
-
 // bool that states whether the program should remain running
 volatile std::atomic<bool> running = true;
 
@@ -123,8 +121,8 @@ int main(int argc, char *argv[]) {
     return -1;
   }
 
-  SystemPtr system = System::GetInstance();
-  CameraList clist = system->GetCameras();
+  Spinnaker::SystemPtr system = Spinnaker::System::GetInstance();
+  Spinnaker::CameraList clist = system->GetCameras();
 
   auto cleanup = [&board, &clist, &system]() {
     std::cout << "Cleaning up..." << std::endl;
