@@ -56,6 +56,7 @@ tar xvfz spinnaker-1.15.0.63-armhf-pkg.tar.gz
 cd spinnaker-1.15.0.63-armhf/
 sudo sh install_spinnaker_arm.sh
 cd ..
+sudo echo "usbcore.usbfs_memory_mb=1000" >> /boot/extlinux/extlinux.conf
 
 # install git
 sudo apt-get install git -y

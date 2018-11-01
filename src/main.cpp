@@ -67,7 +67,10 @@ int main(int argc, char *argv[]) {
   }
 
   // register signal handler
-  for (int i = 0; i < 35) std::signal(i, signal_handler);
+  std::signal(SIGINT, signal_handler);
+  std::signal(SIGQUIT, signal_handler);
+  std::signal(SIGABRT, signal_handler);
+  std::signal(SIGKILL, signal_handler);
 
   // load config
   Config config = Config(config_defaults);
@@ -134,7 +137,7 @@ int main(int argc, char *argv[]) {
   // attempt to refresh cameras 5 times if none detected initially
   std::cout << "No cameras detected. Attempting to refresh camera list."
             << std::endl;
-  while (unsigned int i = 0; i < 5 && clist.GetSize() == 0; i++) {
+  for (unsigned int i = 0; i < 5 && clist.GetSize() == 0; i++) {
     std::cout << "Refreshing..." << std::endl;
     system->UpdateCameras();
     clist = system->GetCameras();
