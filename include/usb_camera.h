@@ -40,6 +40,16 @@ class USBCamera {
   void init();
   // de-initialize the camera
   void deinit();
+  // set auto exposure on/off
+  void set_auto_exposure(Spinnaker::ExposureAutoEnums a);
+  // set exposure mode
+  void set_exposure_mode(Spinnaker::ExposureModeEnums mode);
+  // set exposure time
+  void set_exposure(unsigned int microseconds);
+  // set auto gain on/off
+  void set_auto_gain(Spinnaker::GainAutoEnums a);
+  // set gain
+  void set_gain(float gain);
 
  private:
   // Spinnaker camera pointer

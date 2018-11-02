@@ -24,8 +24,8 @@ sudo service dhcpcd restart
 
 sudo mv /etc/dnsmasq.conf /etc/dnsmasq.conf.orig
 sudo echo "interface=wlan0"                                 >> /etc/dnsmasq.conf
-sudo echo "usually wlan0"                                   >> /etc/dnsmasq.conf
-sudo echo "  dhcp-range=1.1.1.2,1.1.1.20,255.255.255.0,24h" >> /etc/dnsmasq.conf
+#sudo echo "usually wlan0"                                   >> /etc/dnsmasq.conf
+sudo echo "dhcp-range=1.1.1.2,1.1.1.20,255.255.255.0,24h" >> /etc/dnsmasq.conf
 
 sudo echo "interface=wlan0"             >> /etc/hostapd/hostapd.conf
 sudo echo "driver=nl80211"              >> /etc/hostapd/hostapd.conf
@@ -56,7 +56,7 @@ tar xvfz spinnaker-1.15.0.63-armhf-pkg.tar.gz
 cd spinnaker-1.15.0.63-armhf/
 sudo sh install_spinnaker_arm.sh
 cd ..
-sudo echo "usbcore.usbfs_memory_mb=1000" >> /boot/extlinux/extlinux.conf
+# sudo echo "usbcore.usbfs_memory_mb=1000" >> /boot/extlinux/extlinux.conf
 
 # install git
 sudo apt-get install git -y
@@ -80,20 +80,17 @@ make
 sudo make install
 
 # create service
-sudo echo "Description=HAPI service"                    >> /etc/systemd/system/hapi.service
-sudo echo ""                                            >> /etc/systemd/system/hapi.service
-sudo echo "Wants=network.target"                        >> /etc/systemd/system/hapi.service
-sudo echo "After=syslog.target network-online.target"   >> /etc/systemd/system/hapi.service
-sudo echo ""                                            >> /etc/systemd/system/hapi.service
-sudo echo "[Service]"                                   >> /etc/systemd/system/hapi.service
-sudo echo "Type=simple"                                 >> /etc/systemd/system/hapi.service
-sudo echo "ExecStart=/usr/local/bin/hapi"               >> /etc/systemd/system/hapi.service
-sudo echo "Restart=on-failure"                          >> /etc/systemd/system/hapi.service
-sudo echo "RestartSec=10"                               >> /etc/systemd/system/hapi.service
-sudo echo "KillMode=process"                            >> /etc/systemd/system/hapi.service
-sudo echo ""                                            >> /etc/systemd/system/hapi.service
-sudo echo "[Install]"                                   >> /etc/systemd/system/hapi.service
-sudo echo "WantedBy=multi-user.target"                  >> /etc/systemd/system/hapi.service
+echo "[Unit]"                                   > /etc/systemd/system/hapi.service
+echo "Description=HAPI Service"                 >> /etc/systemd/system/hapi.service
+echo "[Service]"                                >> /etc/systemd/system/hapi.service
+echo "Type=simple"                              >> /etc/systemd/system/hapi.service
+echo "ExecStart=/usr/local/bin/hapi"            >> /etc/systemd/system/hapi.service
+echo "Restart=on-failure"                       >> /etc/systemd/system/hapi.service
+echo "RestartSec=10"                            >> /etc/systemd/system/hapi.service
+echo "StandardOutput=/home/pi/hapi/log.log"     >> /etc/systemd/system/hapi.service
+echo "[Install]"                                >> /etc/systemd/system/hapi.service
+echo "WantedBy=multi-user.target"               >> /etc/systemd/system/hapi.service
+echo "Alias=hapi.service"                       >> /etc/systemd/system/hapi.service
 
 sudo systemctl daemon-reload
 sudo systemctl enable hapi

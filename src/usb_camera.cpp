@@ -156,3 +156,21 @@ void USBCamera::end_acquisition() { _ptr->EndAcquisition(); }
 void USBCamera::init() { _ptr->Init(); }
 
 void USBCamera::deinit() { _ptr->DeInit(); }
+
+void USBCamera::set_auto_exposure(Spinnaker::ExposureAutoEnums a) {
+  _ptr->ExposureAuto.SetValue(a);
+}
+
+void USBCamera::set_exposure_mode(Spinnaker::ExposureModeEnums mode) {
+  _ptr->ExposureMode.SetValue(mode);
+}
+
+void USBCamera::set_exposure(unsigned int microseconds) {
+  _ptr->ExposureTime.SetValue(microseconds);
+}
+
+void USBCamera::set_auto_gain(Spinnaker::GainAutoEnums a) {
+  _ptr->GainAuto.SetValue(a);
+}
+
+void USBCamera::set_gain(float gain) { _ptr->Gain.SetValue(gain); }

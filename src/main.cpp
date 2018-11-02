@@ -1,5 +1,6 @@
 #include <atomic>
 #include <csignal>
+#include <cstdlib>
 #include <exception>
 #include <fstream>
 #include <iostream>
@@ -64,6 +65,11 @@ int main(int argc, char *argv[]) {
     std::cout << "root permissions required to run!" << std::endl;
     return -1;
   }
+
+  // set usbfs memory
+  std::system(
+      "sudo sh -c 'echo 1000 > "
+      "/sys/module/usbcore/parameters/usbfs_memory_mb'");
 
   // register signal handler
   std::signal(SIGINT, signal_handler);
@@ -166,6 +172,13 @@ int main(int argc, char *argv[]) {
     return -1;
   }
 
+  camera.set_auto_exposure(Spinnaker::ExposureAutoEnums::ExposureAuto_Off);
+  camera.set_exposure_mode(Spinnaker::ExposureModeEnums::ExposureMode_Timed);
+  camera.set_exposure(20000);
+
+  camera.set_auto_gain(Spinnaker::GainAutoEnums::GainAuto_Off);
+  camera.set_gain(1.0f);
+
   try {
     camera.print_device_info();
   } catch (const std::exception &ex) {
@@ -236,7 +249,7 @@ int main(int argc, char *argv[]) {
                     << result->GetImageStatus() << std::endl;
         } else {
           Spinnaker::ImagePtr converted = result->Convert(
-              Spinnaker::PixelFormat_Mono8, Spinnaker::HQ_LINEAR);
+              Spinnaker::PixelFormat_Mono8, Spinnaker::NO_COLOR_PROCESSING);
           // save the image
           std::filesystem::path fname = out_dir;
           fname /= image_time + "." + image_type;
