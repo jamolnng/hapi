@@ -15,10 +15,10 @@ USBCamera::USBCamera(CameraPtr ptr) : _ptr(ptr) {}
 
 USBCamera::~USBCamera() {}
 
-bool Camera::is_initialized() { return _ptr->IsInitialized(); }
+bool USBCamera::is_initialized() { return _ptr->IsInitialized(); }
 
 void USBCamera::configure_trigger(USBCamera::TriggerType type) {
-  INodeMap nmap = _ptr->GetNodeMap();
+  INodeMap& nmap = _ptr->GetNodeMap();
   CEnumerationPtr trigger_mode = nmap.GetNode("TriggerMode");
   if (!IsAvailable(trigger_mode) || !IsReadable(trigger_mode))
     throw std::runtime_error(
@@ -71,7 +71,7 @@ void USBCamera::configure_trigger(USBCamera::TriggerType type) {
 }
 
 void USBCamera::grab_next_image_by_trigger() {
-  INodeMap nmap = _ptr->GetNodeMap();
+  INodeMap& nmap = _ptr->GetNodeMap();
   if (_type == USBCamera::TriggerType::SOFTWARE) {
     CCommandPtr trigger_cmd = nmap.GetNode("TriggerSoftware");
     if (!IsAvailable(trigger_cmd) || !IsWritable(trigger_cmd))
@@ -83,15 +83,15 @@ void USBCamera::grab_next_image_by_trigger() {
 }
 
 void USBCamera::reset_trigger() {
-  INodeMap nmap = _ptr->GetNodeMap();
+  INodeMap& nmap = _ptr->GetNodeMap();
   CEnumerationPtr trigger_mode = nmap.GetNode("TriggerMode");
   if (!IsAvailable(trigger_mode) || !IsReadable(trigger_mode))
-    throw std::exception(
+    throw std::runtime_error(
         "reset_trigger: Unable to disable trigger mode (node retrieval).");
 
   CEnumEntryPtr trigger_mode_off = trigger_mode->GetEntryByName("Off");
   if (!IsAvailable(trigger_mode_off) || !IsReadable(trigger_mode_off))
-    throw std::exception(
+    throw std::runtime_error(
         "reset_trigger: Unable to disable trigger mode (enum entry "
         "retrieval).");
 
@@ -99,7 +99,7 @@ void USBCamera::reset_trigger() {
 }
 
 void USBCamera::print_device_info() {
-  INodeMap nmap = _ptr->GetTLDeviceNodeMap();
+  INodeMap& nmap = _ptr->GetTLDeviceNodeMap();
 
   std::cout << std::endl
             << "*** DEVICE INFORMATION ***" << std::endl
@@ -117,15 +117,15 @@ void USBCamera::print_device_info() {
       CValuePtr value = (CValuePtr)feature_node;
       std::cout << (IsReadable(value) ? value->ToString()
                                       : "Node not readable");
-      std::cout << endl;
+      std::cout << std::endl;
     }
   } else {
     std::cout << "Device control information not available." << std::endl;
   }
 }
 
-void USBCamera::set_acquisition_mode(gcstring mode) {
-  INodeMap nmap = _ptr->GetNodeMap();
+void USBCamera::set_acquisition_mode(const Spinnaker::GenICam::gcstring& mode) {
+  INodeMap& nmap = _ptr->GetNodeMap();
   CEnumerationPtr acquisition_mode = nmap.GetNode("AcquisitionMode");
   if (!IsAvailable(acquisition_mode) || !IsWritable(acquisition_mode))
     throw std::runtime_error(

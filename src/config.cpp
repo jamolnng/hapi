@@ -1,6 +1,5 @@
 #include "config.h"
 
-#include <filesystem>
 #include <fstream>
 #include <sstream>
 
@@ -30,14 +29,6 @@ void Config::load(std::filesystem::path p) {
 }
 
 bool Config::has(std::string &key) { return _items.find(key) != _items.end(); }
-
-std::string &Config::operator[](std::string &&key) {
-  return _items.insert(std::make_pair(key, std::string())).first->second;
-}
-
-std::string &Config::operator[](const std::string &&key) {
-  return _items.try_emplace(std::move(key)).first->second;
-}
 
 const std::string &Config::operator[](std::string &&key) const {
   return _items.at(key);

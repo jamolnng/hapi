@@ -1,7 +1,6 @@
 #include <atomic>
 #include <csignal>
 #include <exception>
-#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <map>
@@ -22,7 +21,7 @@
 using namespace hapi;
 
 // bool that states whether the program should remain running
-volatile std::atomic<bool> running = true;
+volatile std::atomic<bool> running{true};
 
 // default configuration parameters
 std::map<std::string, std::string> config_defaults = {
@@ -97,26 +96,26 @@ int main(int argc, char *argv[]) {
   std::shared_ptr<Board> board;
   try {
     board = Board::instance();
-    board.set_arm_pin(config.get_int("arm_pin"));
-    board.set_done_pin(config.get_int("done_pin"));
+    board->set_arm_pin(config.get_int("arm_pin"));
+    board->set_done_pin(config.get_int("done_pin"));
 
-    board.set_delay_pins(
+    board->set_delay_pins(
         config.get_int("delay_pin0"), config.get_int("delay_pin1"),
         config.get_int("delay_pin2"), config.get_int("delay_pin3"));
 
-    board.set_exp_pins(config.get_int("exp_pin0"), config.get_int("exp_pin1"),
-                       config.get_int("exp_pin2"), config.get_int("exp_pin3"));
+    board->set_exp_pins(config.get_int("exp_pin0"), config.get_int("exp_pin1"),
+                        config.get_int("exp_pin2"), config.get_int("exp_pin3"));
 
-    board.set_pulse_pins(
+    board->set_pulse_pins(
         config.get_int("pulse_pin0"), config.get_int("pulse_pin1"),
         config.get_int("pulse_pin2"), config.get_int("pulse_pin3"),
         config.get_int("pulse_pin4"));
 
-    board.set_delay(config.get_int("delay"));
-    board.set_exp(config.get_int("exp"));
-    board.set_pulse(config.get_int("pulse"));
+    board->set_delay(config.get_int("delay"));
+    board->set_exp(config.get_int("exp"));
+    board->set_pulse(config.get_int("pulse"));
 
-    board.disarm();
+    board->disarm();
   } catch (const std::exception &ex) {
     std::cout << "Failed to initialize HAPI-E board." << std::endl;
     print_ex(ex);
@@ -149,12 +148,12 @@ int main(int argc, char *argv[]) {
   if (clist.GetSize() == 0) {
     cleanup();
     std::cout << "No cameras detected." << std::endl
-              << "Exiting..." << std::end;
+              << "Exiting..." << std::endl;
     return -1;
   }
 
   // initialize the camera
-  USBCamera camera = USBCamera(clist->GetByIndex(0));
+  USBCamera camera = USBCamera(clist.GetByIndex(0));
   try {
     camera.init();
     // wait until camera is initialized
@@ -205,7 +204,7 @@ int main(int argc, char *argv[]) {
 
   try {
     // begin acquisition
-    camera.set_aquisition_mode("Continuous");
+    camera.set_acquisition_mode("Continuous");
     camera.begin_acquisition();
 
     // arm the board so it is ready to acquire images
@@ -229,14 +228,15 @@ int main(int argc, char *argv[]) {
         board->disarm();
 
         // get the image from the camera
-        ImagePtr result = camera.acquire_image();
+        Spinnaker::ImagePtr result = camera.acquire_image();
         // get the time the image was taken
         std::string image_time = str_time();
         if (result->IsIncomplete()) {
           std::cout << "Image incomplete with status: "
                     << result->GetImageStatus() << std::endl;
         } else {
-          ImagePtr converted = result->Convert(PixelFormat_Mono8, HQ_LINEAR);
+          Spinnaker::ImagePtr converted = result->Convert(
+              Spinnaker::PixelFormat_Mono8, Spinnaker::HQ_LINEAR);
           // save the image
           std::filesystem::path fname = out_dir;
           fname /= image_time + "." + image_type;

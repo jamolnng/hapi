@@ -3,7 +3,8 @@ set (CMAKE_CXX_STANDARD 11)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-project(hapi CXX)
+project(hapi VERSION 0.1 LANGUAGES CXX)
+set(CMAKE_BUILD_TYPE Release)
 
 function(get_include_dirs headers dirs)
     set (tlist "")
@@ -23,6 +24,8 @@ macro(basic_program program_name src_dir)
     add_executable(${program_name} ${${program_name}_SOURCES})
     target_include_directories(${program_name} PUBLIC ${${program_name}_INCLUDE_DIRS})
 endmacro()
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 
 basic_program(hapi "")
 target_include_directories(hapi PUBLIC "/usr/include/spinnaker")

@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include "SpinGenApi/SpinnakerGenApi.h"
 #include "Spinnaker.h"
 
 namespace hapi {
@@ -27,11 +28,12 @@ class USBCamera {
   // prints the device info to the console
   void print_device_info();
   // sets the acquisition mode (SingleFrame, MultiFrame, Continuous)
-  void set_acquisition_mode(Spinnaker::gcstring mode = "Continuous");
+  void set_acquisition_mode(
+      const Spinnaker::GenICam::gcstring& mode = "Continuous");
   // begin image acquisition
   void begin_acquisition();
   // get an acquired image, waits for one if there isn't one ready
-  ImagePtr acquire_image();
+  Spinnaker::ImagePtr acquire_image();
   // end image acquisition
   void end_acquisition();
   // initialize the camera
@@ -41,7 +43,7 @@ class USBCamera {
 
  private:
   // Spinnaker camera pointer
-  CameraPtr _ptr;
+  Spinnaker::CameraPtr _ptr;
   // trigger type
   TriggerType _type{TriggerType::SOFTWARE};
 };

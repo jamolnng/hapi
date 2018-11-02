@@ -7,6 +7,9 @@ namespace hapi {
 // Controls the HAPI-E board
 class Board {
  public:
+  Board();
+  ~Board();
+
   // the board instance
   static std::shared_ptr<Board> instance();
 
@@ -33,16 +36,13 @@ class Board {
   void set_pulse_pins(int pin0, int pin1, int pin2, int pin3, int pin4);
 
   // sets the delay in microseconds
-  void set_delay(int delay);
+  void set_delay(unsigned int delay);
   // sets the exposure in microseconds
-  void set_exp(int exp);
+  void set_exp(unsigned int exp);
   // sets the pulse width in tens of nanoseconds
-  void set_pulse(int pulse);
+  void set_pulse(unsigned int pulse);
 
  private:
-  Board();
-  ~Board();
-
   int _arm_pin{0};
   int _done_pin{0};
   int _delay_pins[4];

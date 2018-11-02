@@ -1,9 +1,13 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#include <filesystem>
+#include <experimental/filesystem>
 #include <map>
 #include <string>
+
+namespace std {
+namespace filesystem = std::experimental::filesystem;
+}
 
 namespace hapi {
 class Config {
@@ -15,8 +19,6 @@ class Config {
   void load(std::filesystem::path p);
 
   bool has(std::string &key);
-  std::string &operator[](std::string &&key);
-  std::string &operator[](const std::string &&key);
   const std::string &operator[](std::string &&key) const;
   const std::string &operator[](const std::string &&key) const;
 

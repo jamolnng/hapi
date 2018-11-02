@@ -68,17 +68,17 @@ void Board::set_pulse_pins(int pin0, int pin1, int pin2, int pin3, int pin4) {
   for (unsigned int i = 0; i < 5; i++) pinMode(_pulse_pins[i], OUTPUT);
 }
 
-void Board::set_delay(int delay) {
+void Board::set_delay(unsigned int delay) {
   for (unsigned int i = 0; i < 4; i++)
-    digitalWrite(_delay_pins[i], (delay > i) & 1);
+    digitalWrite(_delay_pins[i], (delay >> i) & 1);
 }
 
-void Board::set_exp(int exp) {
+void Board::set_exp(unsigned int exp) {
   for (unsigned int i = 0; i < 4; i++)
-    digitalWrite(_exp_pins[i], (delay > i) & 1);
+    digitalWrite(_exp_pins[i], (exp >> i) & 1);
 }
 
-void Board::set_pulse(int pulse) {
+void Board::set_pulse(unsigned int pulse) {
   for (unsigned int i = 0; i < 5; i++)
-    digitalWrite(_pulse_pins[i], (delay > i) & 1);
+    digitalWrite(_pulse_pins[i], (pulse >> i) & 1);
 }

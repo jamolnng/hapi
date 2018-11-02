@@ -1,7 +1,7 @@
 #!/bin/bash
 
-wifi_name = "hapinet"
-wifi_pass = "hapinetpass"
+wifi_name="hapinet"
+wifi_pass="hapinetpass"
 
 if [ "$EUID" -ne 0 ]; then
     echo "root permissions required to run!"
@@ -13,7 +13,7 @@ sudo apt-get update
 sudo apt-get upgrade -y
 
 # setup wifi
-sudo apt-get install dnsmasq hostapd
+sudo apt-get install dnsmasq hostapd -y
 sudo systemctl stop dnsmasq
 sudo systemctl stop hostapd
 
@@ -42,7 +42,7 @@ sudo echo "wpa_key_mgmt=WPA-PSK"        >> /etc/hostapd/hostapd.conf
 sudo echo "wpa_pairwise=TKIP"           >> /etc/hostapd/hostapd.conf
 sudo echo "rsn_pairwise=CCMP"           >> /etc/hostapd/hostapd.conf
 
-sudo echo >> "DAEMON_CONF=\"/etc/hostapd/hostapd.conf\"" >> /etc/default/hostapd
+sudo echo "DAEMON_CONF=\"/etc/hostapd/hostapd.conf\"" >> /etc/default/hostapd
 
 sudo systemctl start hostapd
 sudo systemctl start dnsmasq
@@ -71,7 +71,7 @@ cd ..
 sudo apt-get install cmake -y
 
 # configure usb
-sudo echo 1000 > /sys/module/usbcore/parameters/usbfs_memory_mb
+sudo sh -c "echo 1000 > /sys/module/usbcore/parameters/usbfs_memory_mb"
 
 # build and install hapi programs
 cd ../../
