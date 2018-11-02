@@ -166,6 +166,13 @@ int main(int argc, char *argv[]) {
     return -1;
   }
 
+  camera.set_auto_exposure(Spinnaker::ExposureAutoEnums::ExposureAuto_Off);
+  camera.set_exposure_mode(Spinnaker::ExposureModeEnums::ExposureMode_Timed);
+  camera.set_exposure(20000);
+
+  camera.set_auto_gain(Spinnaker::GainAutoEnums::GainAuto_Off);
+  camera.set_gain(1.0f);
+
   try {
     camera.print_device_info();
   } catch (const std::exception &ex) {

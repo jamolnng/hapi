@@ -25,7 +25,7 @@ macro(basic_program program_name src_dir)
     target_include_directories(${program_name} PUBLIC ${${program_name}_INCLUDE_DIRS})
 endmacro()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-unknown-pragmas")
 
 basic_program(hapi "")
 target_include_directories(hapi PUBLIC "/usr/include/spinnaker")
