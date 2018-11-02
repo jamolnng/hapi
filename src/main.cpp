@@ -249,7 +249,7 @@ int main(int argc, char *argv[]) {
                     << result->GetImageStatus() << std::endl;
         } else {
           Spinnaker::ImagePtr converted = result->Convert(
-              Spinnaker::PixelFormat_Mono8, Spinnaker::HQ_LINEAR);
+              Spinnaker::PixelFormat_Mono8, Spinnaker::NO_COLOR_PROCESSING);
           // save the image
           std::filesystem::path fname = out_dir;
           fname /= image_time + "." + image_type;
