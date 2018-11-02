@@ -1,5 +1,6 @@
 #include <atomic>
 #include <csignal>
+#include <cstdlib>
 #include <exception>
 #include <fstream>
 #include <iostream>
@@ -64,6 +65,11 @@ int main(int argc, char *argv[]) {
     std::cout << "root permissions required to run!" << std::endl;
     return -1;
   }
+
+  // set usbfs memory
+  std::system(
+      "sudo sh -c 'echo 1000 > "
+      "/sys/module/usbcore/parameters/usbfs_memory_mb'");
 
   // register signal handler
   std::signal(SIGINT, signal_handler);
