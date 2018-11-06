@@ -121,7 +121,7 @@ int main(int argc, char *argv[]) {
     board->set_exp(config.get_int("exp"));
     board->set_pulse(config.get_int("pulse"));
 
-    board->disarm();
+    board->reset();
   } catch (const std::exception &ex) {
     std::cout << "Failed to initialize HAPI-E board." << std::endl;
     print_ex(ex);

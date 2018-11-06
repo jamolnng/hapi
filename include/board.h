@@ -21,6 +21,9 @@ class Board {
   // returns true if the board has captured an image
   bool is_done();
 
+  // clears the state of the board
+  void reset();
+
   // sets the pin used to arm the board
   void set_arm_pin(int pin);
   // sets the pin used to determine if the board has captured an image

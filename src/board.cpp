@@ -1,5 +1,7 @@
 #include "board.h"
 
+#include <thread>
+
 #include <wiringPi.h>
 
 using namespace hapi;
@@ -27,6 +29,13 @@ void Board::arm() { digitalWrite(_arm_pin, HIGH); }
 void Board::disarm() { digitalWrite(_arm_pin, LOW); }
 
 bool Board::is_done() { return digitalRead(_done_pin); }
+
+void Board::reset() {
+  arm();
+  std::this_thread::sleep_for(std::chrono::nanoseconds(20));
+  disarm();
+  std::this_thread::sleep_for(std::chrono::nanoseconds(20));
+}
 
 void Board::set_arm_pin(int pin) {
   pinMode(pin, OUTPUT);
