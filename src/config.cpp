@@ -46,3 +46,5 @@ int Config::get_int(const std::string &&key, int base) {
   if (n != std::string::npos) return std::stoi(i.substr(n + 1), nullptr, 16);
   return std::stoi(i, nullptr, base);
 }
+
+const std::map<std::string, std::string> &Config::items() { return _items; }

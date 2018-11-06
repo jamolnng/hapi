@@ -24,6 +24,8 @@ class Config {
 
   int get_int(const std::string &&key, int base = 10);
 
+  const std::map<std::string, std::string> &items();
+
  private:
   std::map<std::string, std::string> _items;
 };

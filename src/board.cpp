@@ -6,35 +6,27 @@
 
 using namespace hapi;
 
-std::shared_ptr<Board> Board::_board = nullptr;
-
-Board::Board() {}
-
-Board::~Board() {}
-
-std::shared_ptr<Board> Board::instance() {
-  if (_board == nullptr) init();
-  return _board;
-}
-
-void Board::init() {
+Board::Board() {
   // initialize wiringPi and create the board instance
   wiringPiSetup();
   piHiPri(99);
-  _board = std::make_shared<Board>();
 }
 
-void Board::arm() { digitalWrite(_arm_pin, HIGH); }
+void Board::arm() {
+  digitalWrite(_arm_pin, HIGH);
+  std::this_thread::sleep_for(std::chrono::nanoseconds(20));
+}
 
-void Board::disarm() { digitalWrite(_arm_pin, LOW); }
+void Board::disarm() {
+  digitalWrite(_arm_pin, LOW);
+  std::this_thread::sleep_for(std::chrono::nanoseconds(20));
+}
 
 bool Board::is_done() { return digitalRead(_done_pin); }
 
 void Board::reset() {
   arm();
-  std::this_thread::sleep_for(std::chrono::nanoseconds(20));
   disarm();
-  std::this_thread::sleep_for(std::chrono::nanoseconds(20));
 }
 
 void Board::set_arm_pin(int pin) {
@@ -81,14 +73,17 @@ void Board::set_pulse_pins(int pin0, int pin1, int pin2, int pin3, int pin4) {
 void Board::set_delay(unsigned int delay) {
   for (unsigned int i = 0; i < 4; i++)
     digitalWrite(_delay_pins[i], (delay >> i) & 1);
+  std::this_thread::sleep_for(std::chrono::nanoseconds(20));
 }
 
 void Board::set_exp(unsigned int exp) {
   for (unsigned int i = 0; i < 4; i++)
     digitalWrite(_exp_pins[i], (exp >> i) & 1);
+  std::this_thread::sleep_for(std::chrono::nanoseconds(20));
 }
 
 void Board::set_pulse(unsigned int pulse) {
   for (unsigned int i = 0; i < 5; i++)
     digitalWrite(_pulse_pins[i], (pulse >> i) & 1);
+  std::this_thread::sleep_for(std::chrono::nanoseconds(20));
 }
