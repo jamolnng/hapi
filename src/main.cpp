@@ -177,7 +177,7 @@ int main(int argc, char *argv[]) {
   camera.set_exposure(20000);
 
   camera.set_auto_gain(Spinnaker::GainAutoEnums::GainAuto_Off);
-  camera.set_gain(1.0f);
+  camera.set_gain(47.994267f);  // max gain
 
   try {
     camera.print_device_info();
@@ -218,10 +218,14 @@ int main(int argc, char *argv[]) {
   try {
     // begin acquisition
     camera.set_acquisition_mode("Continuous");
+    std::cout << "Begining acquisition" << std::endl;
     camera.begin_acquisition();
 
     // arm the board so it is ready to acquire images
     board->arm();
+
+    // image count
+    unsigned int image_count = 0;
 
     // main acquisition loop
     while (running) {
@@ -248,12 +252,16 @@ int main(int argc, char *argv[]) {
           std::cout << "Image incomplete with status: "
                     << result->GetImageStatus() << std::endl;
         } else {
-          Spinnaker::ImagePtr converted = result->Convert(
-              Spinnaker::PixelFormat_Mono8, Spinnaker::NO_COLOR_PROCESSING);
           // save the image
           std::filesystem::path fname = out_dir;
           fname /= image_time + "." + image_type;
+          std::cout << "Writing image " << image_count << ": " << fname
+                    << "... ";
+          Spinnaker::ImagePtr converted = result->Convert(
+              Spinnaker::PixelFormat_Mono8, Spinnaker::NO_COLOR_PROCESSING);
           converted->Save(fname.c_str());
+
+          std::cout << "Done." << std::endl;
         }
         result->Release();
         // wait for image to be freed before we arm

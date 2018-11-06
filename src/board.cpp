@@ -18,6 +18,7 @@ std::shared_ptr<Board> Board::instance() {
 void Board::init() {
   // initialize wiringPi and create the board instance
   wiringPiSetup();
+  piHiPri(99);
   _board = std::make_shared<Board>();
 }
 
@@ -33,7 +34,7 @@ void Board::set_arm_pin(int pin) {
 }
 
 void Board::set_done_pin(int pin) {
-  pinMode(pin, OUTPUT);
+  pinMode(pin, INPUT);
   _done_pin = pin;
 }
 
