@@ -1,11 +1,10 @@
-#ifndef CAMERA_H
-#define CAMERA_H
+#ifndef HAPI_CAMERA_H
+#define HAPI_CAMERA_H
 
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "SpinGenApi/SpinnakerGenApi.h"
 #include "Spinnaker.h"
 
 namespace hapi {
@@ -28,8 +27,7 @@ class USBCamera {
   // prints the device info to the console
   void print_device_info();
   // sets the acquisition mode (SingleFrame, MultiFrame, Continuous)
-  void set_acquisition_mode(
-      const Spinnaker::GenICam::gcstring& mode = "Continuous");
+  void set_acquisition_mode(const Spinnaker::AcquisitionModeEnums mode);
   // begin image acquisition
   void begin_acquisition();
   // get an acquired image, waits for one if there isn't one ready
@@ -45,11 +43,11 @@ class USBCamera {
   // set exposure mode
   void set_exposure_mode(Spinnaker::ExposureModeEnums mode);
   // set exposure time
-  void set_exposure(unsigned int microseconds);
+  void set_exposure(double microseconds);
   // set auto gain on/off
   void set_auto_gain(Spinnaker::GainAutoEnums a);
   // set gain
-  void set_gain(float gain);
+  void set_gain(double gain);
 
  private:
   // Spinnaker camera pointer

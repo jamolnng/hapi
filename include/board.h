@@ -1,5 +1,5 @@
-#ifndef BOARD_H
-#define BOARD_H
+#ifndef HAPI_BOARD_H
+#define HAPI_BOARD_H
 
 #include <memory>
 
@@ -7,11 +7,11 @@ namespace hapi {
 // Controls the HAPI-E board
 class Board {
  public:
-  Board();
-  ~Board();
-
   // the board instance
-  static std::shared_ptr<Board> instance();
+  static Board& instance() {
+    static Board _instance;
+    return _instance;
+  }
 
   // arms the board so it can capture images
   void arm();
@@ -20,6 +20,9 @@ class Board {
 
   // returns true if the board has captured an image
   bool is_done();
+
+  // clears the state of the board
+  void reset();
 
   // sets the pin used to arm the board
   void set_arm_pin(int pin);
@@ -43,14 +46,13 @@ class Board {
   void set_pulse(unsigned int pulse);
 
  private:
+  Board();
+
   int _arm_pin{0};
   int _done_pin{0};
   int _delay_pins[4];
   int _exp_pins[4];
   int _pulse_pins[5];
-
-  static void init();
-  static std::shared_ptr<Board> _board;
 };
 }  // namespace hapi
 #endif

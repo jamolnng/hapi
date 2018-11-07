@@ -1,5 +1,5 @@
-#ifndef CONFIG_H
-#define CONFIG_H
+#ifndef HAPI_CONFIG_H
+#define HAPI_CONFIG_H
 
 #include <experimental/filesystem>
 #include <map>
@@ -23,6 +23,8 @@ class Config {
   const std::string &operator[](const std::string &&key) const;
 
   int get_int(const std::string &&key, int base = 10);
+
+  const std::map<std::string, std::string> &items();
 
  private:
   std::map<std::string, std::string> _items;
