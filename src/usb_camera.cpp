@@ -18,84 +18,24 @@ USBCamera::~USBCamera() {}
 bool USBCamera::is_initialized() { return _ptr->IsInitialized(); }
 
 void USBCamera::configure_trigger(USBCamera::TriggerType type) {
-  INodeMap& nmap = _ptr->GetNodeMap();
-  CEnumerationPtr trigger_mode = nmap.GetNode("TriggerMode");
-  if (!IsAvailable(trigger_mode) || !IsReadable(trigger_mode))
-    throw std::runtime_error(
-        "configure_trigger: Unable to disable trigger mode (node retrieval).");
-
-  CEnumEntryPtr trigger_mode_off = trigger_mode->GetEntryByName("Off");
-  if (!IsAvailable(trigger_mode_off) || !IsReadable(trigger_mode_off))
-    throw std::runtime_error(
-        "configure_trigger: Unable to disable trigger mode (enum entry "
-        "retrieval).");
-
-  trigger_mode->SetIntValue(trigger_mode_off->GetValue());
-
-  CEnumerationPtr trigger_source = nmap.GetNode("TriggerSource");
-  if (!IsAvailable(trigger_source) || !IsReadable(trigger_source))
-    throw std::runtime_error(
-        "configure_trigger: Unable to set trigger mode (node retrieval).");
-
-  if (type == USBCamera::TriggerType::SOFTWARE) {
-    CEnumEntryPtr trigger_source_software =
-        trigger_source->GetEntryByName("Software");
-    if (!IsAvailable(trigger_source_software) ||
-        !IsReadable(trigger_source_software))
-      throw std::runtime_error(
-          "configure_trigger: Unable to set trigger mode (enum entry "
-          "retrieval).");
-
-    trigger_source->SetIntValue(trigger_source_software->GetValue());
-  } else if (type == USBCamera::TriggerType::HARDWARE) {
-    CEnumEntryPtr trigger_source_hardware =
-        trigger_source->GetEntryByName("Line0");
-    if (!IsAvailable(trigger_source_hardware) ||
-        !IsReadable(trigger_source_hardware))
-      throw std::runtime_error(
-          "configure_trigger: Unable to set trigger mode (enum entry "
-          "retrieval).");
-
-    trigger_source->SetIntValue(trigger_source_hardware->GetValue());
-  }
-
-  CEnumEntryPtr trigger_mode_on = trigger_mode->GetEntryByName("On");
-  if (!IsAvailable(trigger_mode_on) || !IsReadable(trigger_mode_on))
-    throw std::runtime_error(
-        "configure_trigger: Unable to enable trigger mode (enum entry "
-        "retrieval).");
-
-  trigger_mode->SetIntValue(trigger_mode_on->GetValue());
-
+  _ptr->TriggerMode.SetValue(Spinnaker::TriggerModeEnums::TriggerMode_Off);
+  if (type == TriggerType::SOFTWARE)
+    _ptr->TriggerSource.SetValue(
+        Spinnaker::TriggerSourceEnums::TriggerSource_Software);
+  else
+    _ptr->TriggerSource.SetValue(
+        Spinnaker::TriggerSourceEnums::TriggerSource_Line0);
+  _ptr->TriggerMode.SetValue(Spinnaker::TriggerModeEnums::TriggerMode_On);
   _type = type;
 }
 
 void USBCamera::grab_next_image_by_trigger() {
-  INodeMap& nmap = _ptr->GetNodeMap();
-  if (_type == USBCamera::TriggerType::SOFTWARE) {
-    CCommandPtr trigger_cmd = nmap.GetNode("TriggerSoftware");
-    if (!IsAvailable(trigger_cmd) || !IsWritable(trigger_cmd))
-      throw std::runtime_error(
-          "grab_next_image_by_trigger: Unable to execute software trigger.");
-
-    trigger_cmd->Execute();
-  }
+  if (_type == USBCamera::TriggerType::SOFTWARE)
+    _ptr->TriggerSoftware.Execute();
 }
 
 void USBCamera::reset_trigger() {
-  INodeMap& nmap = _ptr->GetNodeMap();
-  CEnumerationPtr trigger_mode = nmap.GetNode("TriggerMode");
-  if (!IsAvailable(trigger_mode) || !IsReadable(trigger_mode))
-    throw std::runtime_error(
-        "reset_trigger: Unable to disable trigger mode (node retrieval).");
-
-  CEnumEntryPtr trigger_mode_off = trigger_mode->GetEntryByName("Off");
-  if (!IsAvailable(trigger_mode_off) || !IsReadable(trigger_mode_off))
-    throw std::runtime_error(
-        "reset_trigger: Unable to disable trigger mode (enum entry "
-        "retrieval).");
-
-  trigger_mode->SetIntValue(trigger_mode_off->GetValue());
+  _ptr->TriggerMode.SetValue(Spinnaker::TriggerModeEnums::TriggerMode_Off);
 }
 
 void USBCamera::print_device_info() {
@@ -124,21 +64,9 @@ void USBCamera::print_device_info() {
   }
 }
 
-void USBCamera::set_acquisition_mode(const Spinnaker::GenICam::gcstring& mode) {
-  INodeMap& nmap = _ptr->GetNodeMap();
-  CEnumerationPtr acquisition_mode = nmap.GetNode("AcquisitionMode");
-  if (!IsAvailable(acquisition_mode) || !IsWritable(acquisition_mode))
-    throw std::runtime_error(
-        "set_acquisition_mode: Unable to set acquisition mode to " + mode +
-        " (node retrieval).");
-
-  CEnumEntryPtr mode_entry = acquisition_mode->GetEntryByName(mode);
-  if (!IsAvailable(mode_entry) || !IsReadable(mode_entry))
-    throw std::runtime_error(
-        "set_acquisition_mode: Unable to set acquisition mode to " + mode +
-        " (entry retrieval).");
-
-  acquisition_mode->SetIntValue(mode_entry->GetValue());
+void USBCamera::set_acquisition_mode(
+    const Spinnaker::AcquisitionModeEnums mode) {
+  _ptr->AcquisitionMode.SetValue(mode);
 }
 
 void USBCamera::begin_acquisition() { _ptr->BeginAcquisition(); }
@@ -165,7 +93,7 @@ void USBCamera::set_exposure_mode(Spinnaker::ExposureModeEnums mode) {
   _ptr->ExposureMode.SetValue(mode);
 }
 
-void USBCamera::set_exposure(unsigned int microseconds) {
+void USBCamera::set_exposure(double microseconds) {
   _ptr->ExposureTime.SetValue(microseconds);
 }
 
@@ -173,4 +101,4 @@ void USBCamera::set_auto_gain(Spinnaker::GainAutoEnums a) {
   _ptr->GainAuto.SetValue(a);
 }
 
-void USBCamera::set_gain(float gain) { _ptr->Gain.SetValue(gain); }
+void USBCamera::set_gain(double gain) { _ptr->Gain.SetValue(gain); }

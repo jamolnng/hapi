@@ -270,7 +270,8 @@ int main(int argc, char *argv[]) {
   try {
     // begin acquisition
     log.info("Setting acquisition mode to continuous.");
-    camera.set_acquisition_mode("Continuous");
+    camera.set_acquisition_mode(
+        Spinnaker::AcquisitionModeEnums::AcquisitionMode_Continuous);
     log.info("Beginning acquisition.");
     camera.begin_acquisition();
 
