@@ -46,37 +46,32 @@ void Logger::set_streams(std::ostream &debug, std::ostream &info,
   _critical.rdbuf(critical.rdbuf());
 }
 
-void Logger::log(Logger::LogLevel l, std::string msg) {
+std::ostream &Logger::log(Logger::LogLevel l) {
   switch (l) {
     case Logger::LogLevel::DEBUG:
-      _debug << str_time() << ": DEBUG    | " << msg << std::endl;
-      break;
+      _debug << str_time() << " | DEBUG    | ";
+      return _debug;
     case Logger::LogLevel::INFO:
-      _info << str_time() << ": INFO     | " << msg << std::endl;
-      break;
+      _info << str_time() << " | INFO     | ";
+      return _info;
     case Logger::LogLevel::WARNING:
-      _warning << str_time() << ": WARNING  | " << msg << std::endl;
-      break;
+      _warning << str_time() << " | WARNING  | ";
+      return _warning;
     case Logger::LogLevel::ERROR:
-      _error << str_time() << ": ERROR    | " << msg << std::endl;
-      break;
+      _error << str_time() << " | ERROR    | ";
+      return _error;
     case Logger::LogLevel::CRITICAL:
-      _critical << str_time() << ": CRITICAL | " << msg << std::endl;
-      break;
+      _critical << str_time() << " | CRITICAL | ";
+      return _critical;
   }
 }
 
-void Logger::debug(std::string msg) { Logger::log(LogLevel::DEBUG, msg); }
-
-void Logger::info(std::string msg) { Logger::log(LogLevel::INFO, msg); }
-
-void Logger::warning(std::string msg) { Logger::log(LogLevel::WARNING, msg); }
-
-void Logger::error(std::string msg) { Logger::log(LogLevel::ERROR, msg); }
-
-void Logger::critical(std::string msg) { Logger::log(LogLevel::CRITICAL, msg); }
-
-void Logger::exception(const std::exception &ex, std::string msg) {
-  Logger::error(msg);
-  _error << "*** EXCEPTION ***" << std::endl << ex.what() << std::endl;
+std::ostream &Logger::debug() { return log(LogLevel::DEBUG); }
+std::ostream &Logger::info() { return log(LogLevel::INFO); }
+std::ostream &Logger::warning() { return log(LogLevel::WARNING); }
+std::ostream &Logger::error() { return log(LogLevel::ERROR); }
+std::ostream &Logger::critical() { return log(LogLevel::CRITICAL); }
+std::ostream &Logger::exception(const std::exception &ex) {
+  _error << "***** EXCEPTION *****" << std::endl << ex.what() << std::endl;
+  return log(LogLevel::ERROR);
 }

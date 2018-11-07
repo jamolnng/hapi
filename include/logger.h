@@ -19,13 +19,13 @@ class Logger {
   void set_streams(std::ostream &debug, std::ostream &info, std::ostream &warn,
                    std::ostream &error, std::ostream &critical);
 
-  void log(LogLevel l, std::string msg);
-  void debug(std::string msg);
-  void info(std::string msg);
-  void warning(std::string msg);
-  void error(std::string msg);
-  void critical(std::string msg);
-  void exception(const std::exception &ex, std::string msg);
+  std::ostream &log(LogLevel l);
+  std::ostream &debug();
+  std::ostream &info();
+  std::ostream &warning();
+  std::ostream &error();
+  std::ostream &critical();
+  std::ostream &exception(const std::exception &ex);
 
  private:
   Logger();
