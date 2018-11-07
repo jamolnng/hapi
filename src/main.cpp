@@ -323,7 +323,8 @@ int main(int argc, char *argv[]) {
             if (!std::filesystem::exists(out_dir)) {
               log.info() << "First image. Creating output directory."
                          << std::endl;
-              std::filesystem::create_directory(out_dir);
+              // creates out dir and thumbnail dir in one command
+              std::filesystem::create_directory(out_dir / "thumbs");
             }
           }
           // save the image
@@ -338,6 +339,11 @@ int main(int argc, char *argv[]) {
                      << "...";
           converted->Save(fname.c_str());
           log.info() << "Done." << std::endl;
+          std::filesystem::path thumb = outdir / "thumbs";
+          thumb /= image_time + "." + image_type;
+          log.info() << "Creating thumbnail image." << std::endl;
+          std::system("convert " + fname.str() + " -resize 600 " + thumb.str() +
+                      " &");
         }
         log.info() << "Releasing image." << std::endl;
         result->Release();
