@@ -4,7 +4,7 @@
 
 using namespace hapi;
 
-std::string str_time() {
+std::string strtime() {
   std::string str = "unknown";
   std::time_t t = std::time(nullptr);
   char mbstr[100];
@@ -49,21 +49,22 @@ void Logger::set_streams(std::ostream &debug, std::ostream &info,
 std::ostream &Logger::log(Logger::LogLevel l) {
   switch (l) {
     case Logger::LogLevel::DEBUG:
-      _debug << str_time() << " | DEBUG    | ";
+      _debug << strtime() << " | DEBUG    | ";
       return _debug;
     case Logger::LogLevel::INFO:
-      _info << str_time() << " | INFO     | ";
+      _info << strtime() << " | INFO     | ";
       return _info;
     case Logger::LogLevel::WARNING:
-      _warning << str_time() << " | WARNING  | ";
+      _warning << strtime() << " | WARNING  | ";
       return _warning;
     case Logger::LogLevel::ERROR:
-      _error << str_time() << " | ERROR    | ";
+      _error << strtime() << " | ERROR    | ";
       return _error;
     case Logger::LogLevel::CRITICAL:
-      _critical << str_time() << " | CRITICAL | ";
+      _critical << strtime() << " | CRITICAL | ";
       return _critical;
   }
+  return _debug;
 }
 
 std::ostream &Logger::debug() { return log(LogLevel::DEBUG); }

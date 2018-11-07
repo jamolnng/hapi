@@ -35,6 +35,11 @@ std::map<std::string, std::string> config_defaults = {
 // Returns true if this program is running with root permissions
 bool is_root() { return getuid() == 0 && geteuid() == 0; }
 
+// bool that states whether the program should remain running
+volatile std::atomic<bool> running{true};
+
+void signal_handler(int sig) { running = false; }
+
 // Returns a std::string of the current time in the format YYYY_MM_DD-HH_MM_SS
 std::string str_time() {
   std::time_t t = std::time(nullptr);
@@ -68,12 +73,9 @@ int main(int argc, char *argv[]) {
                     "/sys/module/usbcore/parameters/usbfs_memory_mb'")
              << std::endl;
 
-  // bool that states whether the program should remain running
-  volatile std::atomic<bool> running{true};
-
   auto set_sh = [&](int sig) {
     log.info() << "Registering signal handler for signal " << sig << std::endl;
-    if (std::signal(sig, [&running](int) { running = false; }) == SIG_ERR) {
+    if (std::signal(sig, signal_handler) == SIG_ERR) {
       log.critical() << "Failed to set signal handler for signal " << sig
                      << std::endl
                      << "Exiting (-1)..." << std::endl;
@@ -85,7 +87,7 @@ int main(int argc, char *argv[]) {
   set_sh(SIGINT);
   set_sh(SIGQUIT);
   set_sh(SIGABRT);
-  set_sh(SIGKILL);
+  // set_sh(SIGKILL);
 
   // load config
   Config config = Config(config_defaults);
@@ -163,7 +165,7 @@ int main(int argc, char *argv[]) {
   log.info() << "Getting list of cameras." << std::endl;
   Spinnaker::CameraList clist = system->GetCameras();
 
-  auto cleanup = [&board, &clist, &system]() {
+  auto cleanup = [&board, &clist, &system, &log]() {
     log.info() << "Cleaning up..." << std::endl;
     board.disarm();
     try {
@@ -225,7 +227,7 @@ int main(int argc, char *argv[]) {
              << std::endl;
   camera.set_exposure(20000);
 
-  double gain = 47.994267;  // 1.0 <= gain <= 47.994267
+  float gain = 47.994267f;  // 1.0 <= gain <= 47.994267
   log.info() << "Disabling auto gain." << std::endl;
   camera.set_auto_gain(Spinnaker::GainAutoEnums::GainAuto_Off);
   log.info() << "Setting gain to " << gain << " dB." << std::endl;
@@ -314,17 +316,14 @@ int main(int argc, char *argv[]) {
         Spinnaker::ImagePtr result = camera.acquire_image();
         if (result->IsIncomplete()) {
           log.info() << "Image incomplete with status "
-                     << result->GetImageStatus() << " "
-                     << Spinnaker::ImagePtrGetImageStatusDescription(
-                            result->GetImageStatus())
-                     << "." << std::endl;
+                     << result->GetImageStatus() << "." << std::endl;
         } else {
           if (image_count == 0) {
             if (!std::filesystem::exists(out_dir)) {
               log.info() << "First image. Creating output directory."
                          << std::endl;
               // creates out dir and thumbnail dir in one command
-              std::filesystem::create_directory(out_dir / "thumbs");
+              std::filesystem::create_directories(out_dir / "thumbs");
             }
           }
           // save the image
@@ -335,15 +334,16 @@ int main(int argc, char *argv[]) {
               << std::endl;
           Spinnaker::ImagePtr converted = result->Convert(
               Spinnaker::PixelFormat_Mono8, Spinnaker::NO_COLOR_PROCESSING);
-          log.info() << "Saving image (" << image_count << ") " << fname
+          log.info() << "Saving image (" << image_count++ << ") " << fname
                      << "...";
           converted->Save(fname.c_str());
           log.info() << "Done." << std::endl;
-          std::filesystem::path thumb = outdir / "thumbs";
+          std::filesystem::path thumb = out_dir / "thumbs";
           thumb /= image_time + "." + image_type;
           log.info() << "Creating thumbnail image." << std::endl;
-          std::system("convert " + fname.str() + " -resize 600 " + thumb.str() +
-                      " &");
+          std::system(("sudo convert " + fname.string() + " -resize 600 " +
+                       thumb.string() + " &")
+                          .c_str());
         }
         log.info() << "Releasing image." << std::endl;
         result->Release();

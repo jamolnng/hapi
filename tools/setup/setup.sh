@@ -71,7 +71,7 @@ cd ..
 sudo apt-get install cmake -y
 
 # install imagemagick
-sudo apt-get install imagemagick
+sudo apt-get install imagemagick -y
 
 # configure usb
 sudo sh -c "echo 1000 > /sys/module/usbcore/parameters/usbfs_memory_mb"
