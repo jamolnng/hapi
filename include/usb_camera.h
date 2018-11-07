@@ -1,5 +1,5 @@
-#ifndef CAMERA_H
-#define CAMERA_H
+#ifndef HAPI_CAMERA_H
+#define HAPI_CAMERA_H
 
 #include <memory>
 #include <string>

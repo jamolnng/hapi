@@ -1,5 +1,5 @@
-#ifndef CONFIG_H
-#define CONFIG_H
+#ifndef HAPI_CONFIG_H
+#define HAPI_CONFIG_H
 
 #include <experimental/filesystem>
 #include <map>

@@ -1,5 +1,5 @@
-#ifndef BOARD_H
-#define BOARD_H
+#ifndef HAPI_BOARD_H
+#define HAPI_BOARD_H
 
 #include <memory>
 
