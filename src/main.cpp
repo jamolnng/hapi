@@ -165,21 +165,6 @@ int main(int argc, char *argv[]) {
   log.info() << "Getting list of cameras." << std::endl;
   Spinnaker::CameraList clist = system->GetCameras();
 
-  auto cleanup = [&board, &clist, &system, &log]() {
-    log.info() << "Cleaning up..." << std::endl;
-    board.disarm();
-    try {
-      clist.Clear();
-    } catch (const std::exception &ex) {
-      log.exception(ex) << "Failed to clear camera list." << std::endl;
-    }
-    try {
-      system->ReleaseInstance();
-    } catch (const std::exception &ex) {
-      log.exception(ex) << "Failed to release Spinnaker system." << std::endl;
-    }
-  };
-
   if (clist.GetSize() == 0) {
     // attempt to refresh cameras 5 times if none detected initially
     log.error() << "No cameras detected." << std::endl;
@@ -195,7 +180,8 @@ int main(int argc, char *argv[]) {
   // if no cameras detected exit
   if (clist.GetSize() == 0) {
     log.critical() << "No cameras detected." << std::endl;
-    cleanup();
+    clist.Clear();
+    system->ReleaseInstance();
     log.critical() << "Exiting (-1)..." << std::endl;
     return -1;
   } else {
@@ -205,12 +191,34 @@ int main(int argc, char *argv[]) {
 
   // initialize the camera
   log.info() << "Getting camera object." << std::endl;
-  USBCamera camera = USBCamera(clist.GetByIndex(0));
+  USBCamera *camera = new USBCamera(clist.GetByIndex(0));
+
+  auto cleanup = [&board, &clist, &system, &log, &camera]() {
+    log.info() << "Cleaning up..." << std::endl;
+    log.info() << "Releasing camera." << std::endl;
+    if (camera->is_initialized()) camera->deinit();
+    delete camera;
+    log.info() << "Disarming HAPI-E board." << std::endl;
+    board.disarm();
+    try {
+      log.info() << "Clearing camera list." << std::endl;
+      clist.Clear();
+      try {
+        log.info() << "Releasing Spinnaker system." << std::endl;
+        system->ReleaseInstance();
+      } catch (const std::exception &ex) {
+        log.exception(ex) << "Failed to release Spinnaker system." << std::endl;
+      }
+    } catch (const std::exception &ex) {
+      log.exception(ex) << "Failed to clear camera list." << std::endl;
+    }
+  };
+
   try {
     log.info() << "Initializing camera." << std::endl;
-    camera.init();
+    camera->init();
     // wait until camera is initialized
-    while (!camera.is_initialized()) std::this_thread::yield();
+    while (!camera->is_initialized()) std::this_thread::yield();
   } catch (const std::exception &ex) {
     log.exception(ex) << "Failed to initialize camera." << std::endl;
     cleanup();
@@ -220,22 +228,22 @@ int main(int argc, char *argv[]) {
   log.info() << "Camera initialized." << std::endl;
 
   log.info() << "Disabling auto exposure." << std::endl;
-  camera.set_auto_exposure(Spinnaker::ExposureAutoEnums::ExposureAuto_Off);
+  camera->set_auto_exposure(Spinnaker::ExposureAutoEnums::ExposureAuto_Off);
   log.info() << "Setting exposure mode to timed." << std::endl;
-  camera.set_exposure_mode(Spinnaker::ExposureModeEnums::ExposureMode_Timed);
+  camera->set_exposure_mode(Spinnaker::ExposureModeEnums::ExposureMode_Timed);
   log.info() << "Setting camera exposure time to 20,000 microseconds."
              << std::endl;
-  camera.set_exposure(20000);
+  camera->set_exposure(20000);
 
   float gain = 47.994267f;  // 1.0 <= gain <= 47.994267
   log.info() << "Disabling auto gain." << std::endl;
-  camera.set_auto_gain(Spinnaker::GainAutoEnums::GainAuto_Off);
+  camera->set_auto_gain(Spinnaker::GainAutoEnums::GainAuto_Off);
   log.info() << "Setting gain to " << gain << " dB." << std::endl;
-  camera.set_gain(gain);
+  camera->set_gain(gain);
 
   log.info() << "Device info:" << std::endl;
   try {
-    camera.print_device_info();
+    camera->print_device_info();
   } catch (const std::exception &ex) {
     log.exception(ex) << "Failed to print device info." << std::endl;
   }
@@ -262,7 +270,7 @@ int main(int argc, char *argv[]) {
     } else {
       log.info() << "Using software trigger." << std::endl;
     }
-    camera.configure_trigger(trigger_type);
+    camera->configure_trigger(trigger_type);
   } catch (const std::exception &ex) {
     log.exception(ex) << "Failed to configure trigger." << std::endl;
     cleanup();
@@ -273,10 +281,10 @@ int main(int argc, char *argv[]) {
   try {
     // begin acquisition
     log.info() << "Setting acquisition mode to continuous." << std::endl;
-    camera.set_acquisition_mode(
+    camera->set_acquisition_mode(
         Spinnaker::AcquisitionModeEnums::AcquisitionMode_Continuous);
     log.info() << "Beginning acquisition." << std::endl;
-    camera.begin_acquisition();
+    camera->begin_acquisition();
 
     // arm the board so it is ready to acquire images
     log.info() << "Arming the HAPI-E board." << std::endl;
@@ -313,7 +321,7 @@ int main(int argc, char *argv[]) {
 
         // get the image from the camera
         log.info() << "Acquiring image from camera." << std::endl;
-        Spinnaker::ImagePtr result = camera.acquire_image();
+        Spinnaker::ImagePtr result = camera->acquire_image();
         if (result->IsIncomplete()) {
           log.info() << "Image incomplete with status "
                      << result->GetImageStatus() << "." << std::endl;
@@ -356,7 +364,7 @@ int main(int argc, char *argv[]) {
       }
     }
     log.info() << "Ending acquisition." << std::endl;
-    camera.end_acquisition();
+    camera->end_acquisition();
   } catch (const std::exception &ex) {
     log.exception(ex) << "Failed to run acquisition loop." << std::endl;
     cleanup();
@@ -366,14 +374,14 @@ int main(int argc, char *argv[]) {
 
   log.info() << "Resetting camera trigger." << std::endl;
   try {
-    camera.reset_trigger();
+    camera->reset_trigger();
   } catch (const std::exception &ex) {
     log.exception(ex) << "Failed to reset camera trigger." << std::endl;
   }
 
   log.info() << "De-initializing camera." << std::endl;
   try {
-    camera.deinit();
+    camera->deinit();
   } catch (const std::exception &ex) {
     log.exception(ex) << "Failed to de-initialize camera." << std::endl;
   }
