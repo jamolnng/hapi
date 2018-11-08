@@ -1,6 +1,7 @@
 #ifndef HAPI_CAMERA_H
 #define HAPI_CAMERA_H
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -25,7 +26,7 @@ class USBCamera {
   // resets the trigger and disables it
   void reset_trigger();
   // prints the device info to the console
-  void print_device_info();
+  std::map<std::string, std::string> get_device_info();
   // sets the acquisition mode (SingleFrame, MultiFrame, Continuous)
   void set_acquisition_mode(const Spinnaker::AcquisitionModeEnums mode);
   // begin image acquisition
