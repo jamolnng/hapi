@@ -277,7 +277,7 @@ void acquisition_loop(USBCamera *camera, std::filesystem::path &out_dir,
                    << std::endl;
         converted->Save(fname.c_str());
         std::filesystem::path thumb = out_dir / "thumbs";
-        thumb /= image_time + "." + image_type;
+        thumb /= image_time + "thumb" + "." + image_type;
         log.info() << "Creating thumbnail image." << std::endl;
         std::system(("sudo convert " + fname.string() + " -resize 600 " +
                      thumb.string() + " &")

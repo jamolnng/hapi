@@ -3,6 +3,7 @@
 
 #include <ostream>
 #include <string>
+#include <vector>
 
 namespace hapi {
 class Logger {
@@ -27,6 +28,8 @@ class Logger {
   std::ostream &critical();
   std::ostream &exception(const std::exception &ex);
 
+  std::ostream &append();
+
  private:
   Logger();
   ~Logger();
@@ -35,6 +38,7 @@ class Logger {
   std::ostream _warning;
   std::ostream _error;
   std::ostream _critical;
+  std::ostream &_last;
 };
 }  // namespace hapi
 

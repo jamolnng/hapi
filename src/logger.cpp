@@ -18,7 +18,8 @@ Logger::Logger()
       _info(nullptr),
       _warning(nullptr),
       _error(nullptr),
-      _critical(nullptr){};
+      _critical(nullptr),
+      _last(_debug){};
 
 Logger::~Logger() {
   _debug.flush();
@@ -73,6 +74,9 @@ std::ostream &Logger::warning() { return log(LogLevel::WARNING); }
 std::ostream &Logger::error() { return log(LogLevel::ERROR); }
 std::ostream &Logger::critical() { return log(LogLevel::CRITICAL); }
 std::ostream &Logger::exception(const std::exception &ex) {
-  _error << "***** EXCEPTION *****" << std::endl << ex.what() << std::endl;
+  error() << "***** EXCEPTION *****" << std::endl;
+  error() << ex.what() << std::endl;
   return log(LogLevel::ERROR);
 }
+
+std::ostream &Logger::append() { return _last; }
