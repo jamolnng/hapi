@@ -1,8 +1,6 @@
 #ifndef HAPI_BOARD_H
 #define HAPI_BOARD_H
 
-#include <memory>
-
 namespace hapi {
 // Controls the HAPI-E board
 class Board {
@@ -45,6 +43,13 @@ class Board {
   // sets the pulse width in tens of nanoseconds
   void set_pulse(unsigned int pulse);
 
+  // sets the pmt gain voltage 0.5-1.1V
+  // steps of 0.6/256 volts 0x00-0xFF
+  void set_pmt_gain(int gain_byte);
+  // sets the pmt threshold voltage 0.0-3.3V
+  // steps of 3.3/256 volts 0x00-0xFF
+  void set_pmt_threshold(int threshold_byte);
+
  private:
   Board();
 
@@ -53,6 +58,8 @@ class Board {
   int _delay_pins[4];
   int _exp_pins[4];
   int _pulse_pins[5];
+
+  int _i2c;
 };
 }  // namespace hapi
 #endif

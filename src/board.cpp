@@ -3,12 +3,14 @@
 #include <thread>
 
 #include <wiringPi.h>
+#include <wiringPiI2C.h>
 
 using namespace hapi;
 
 Board::Board() {
   // initialize wiringPi and create the board instance
   wiringPiSetup();
+  _i2c = wiringPiI2CSetup(0x51);
   piHiPri(99);
 }
 
@@ -86,4 +88,13 @@ void Board::set_pulse(unsigned int pulse) {
   for (unsigned int i = 0; i < 5; i++)
     digitalWrite(_pulse_pins[i], (pulse >> i) & 1);
   std::this_thread::sleep_for(std::chrono::nanoseconds(20));
+}
+void Board::set_pmt_gain(int gain_byte) {
+  wiringPiI2CWriteReg8(_i2c, 0x00, gain_byte);
+  std::this_thread::sleep_for(std::chrono::seconds(1));
+}
+
+void Board::set_pmt_threshold(int threshold_byte) {
+  wiringPiI2CWriteReg8(_i2c, 0x01, threshold_byte);
+  std::this_thread::sleep_for(std::chrono::seconds(1));
 }

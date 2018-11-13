@@ -25,13 +25,14 @@ using namespace hapi;
 
 // default configuration parameters
 std::map<std::string, std::string> config_defaults = {
-    {"output", "."},      {"trigger_type", "1"}, {"arm_pin", "26"},
-    {"delay_pin0", "7"},  {"delay_pin1", "0"},   {"delay_pin2", "1"},
-    {"delay_pin3", "2"},  {"exp_pin0", "13"},    {"exp_pin1", "6"},
-    {"exp_pin2", "14"},   {"exp_pin3", "10"},    {"pulse_pin0", "24"},
-    {"pulse_pin1", "27"}, {"pulse_pin2", "25"},  {"pulse_pin3", "28"},
-    {"pulse_pin4", "29"}, {"done_pin", "23"},    {"delay", "0b1000"},
-    {"exp", "0b0010"},    {"pulse", "0b11111"},  {"image_type", "png"}};
+    {"output", "."},           {"trigger_type", "1"}, {"arm_pin", "26"},
+    {"delay_pin0", "7"},       {"delay_pin1", "0"},   {"delay_pin2", "1"},
+    {"delay_pin3", "2"},       {"exp_pin0", "13"},    {"exp_pin1", "6"},
+    {"exp_pin2", "14"},        {"exp_pin3", "10"},    {"pulse_pin0", "24"},
+    {"pulse_pin1", "27"},      {"pulse_pin2", "25"},  {"pulse_pin3", "28"},
+    {"pulse_pin4", "29"},      {"done_pin", "23"},    {"delay", "0b1000"},
+    {"exp", "0b0010"},         {"pulse", "0b11111"},  {"image_type", "png"},
+    {"pmt_threshold", "0x10"}, {"pmt_gain", "0xFF"}};
 
 // Returns true if this program is running with root permissions
 bool is_root() { return getuid() == 0 && geteuid() == 0; }
@@ -66,13 +67,14 @@ bool set_usbfs_mb() {
   unsigned int mb = 0;
   if (in) {
     in >> mb;
-    in.close()
+    in.close();
   }
   return mb == 1000;
 }
 
 bool initialize_signal_handlers() {
   // set signal handler
+  Logger &log = Logger::instance();
   auto set_sh = [&](int sig) -> bool {
     log.info() << "Registering signal handler for signal " << sig << "."
                << std::endl;
@@ -112,6 +114,10 @@ void initialize_board(Config &config) {
   board.set_delay(config.get_int("delay"));
   board.set_exp(config.get_int("exp"));
   board.set_pulse(config.get_int("pulse"));
+
+  log.info() << "Setting PMT gain and threshold." << std::endl;
+  board.set_pmt_gain(config.get_int("pmt_gain"));
+  board.set_pmt_threshold(config.get_int("pmt_threshold"));
 
   log.info() << "Resetting board." << std::endl;
   board.reset();
@@ -157,6 +163,7 @@ void cleanup(Spinnaker::CameraList &clist, Spinnaker::SystemPtr &system,
 }
 
 void initialize_camera(USBCamera *camera, Config &config) {
+  Logger &log = Logger::instance();
   log.info() << "Initializing camera." << std::endl;
   camera->init();
   // wait until camera is initialized
@@ -203,7 +210,8 @@ void initialize_camera(USBCamera *camera, Config &config) {
       Spinnaker::AcquisitionModeEnums::AcquisitionMode_Continuous);
 }
 
-void acquisition_loop(USBCamera *camera, std::filesystem::path &out_dir) {
+void acquisition_loop(USBCamera *camera, std::filesystem::path &out_dir,
+                      std::string &image_type) {
   Board &board = Board::instance();
   Logger &log = Logger::instance();
 
@@ -319,7 +327,7 @@ std::string get_image_type(Config &config) {
   try {
     image_type = config["image_type"];
     std::transform(image_type.begin(), image_type.end(), image_type.begin(),
-                   std::tolower);
+                   ::tolower);
     // png, ppm, pgm, tiff, jpeg, jpg, bmp
     if (image_type != "png" && image_type != "ppm" && image_type != "pgm" &&
         image_type != "tiff" && image_type != "jpeg" && image_type != "jpg" &&
@@ -383,13 +391,12 @@ int main(int argc, char *argv[]) {
   std::filesystem::path out_dir = get_out_dir(start_time, config);
 
   try {
-    initialize_board(config)
+    initialize_board(config);
   } catch (const std::exception &ex) {
     log.exception(ex) << "Failed to initialize the HAPI-E board." << std::endl;
     log.critical() << "Exiting (-1)..." << std::endl;
     return -1;
   }
-  Board &board = Board::instance();
 
   log.info() << "Initializing Spinnaker system." << std::endl;
   Spinnaker::SystemPtr system = Spinnaker::System::GetInstance();
@@ -424,7 +431,7 @@ int main(int argc, char *argv[]) {
 
   try {
     initialize_camera(camera, config);
-    acquisition_loop(camera, out_dir);
+    acquisition_loop(camera, out_dir, image_type);
   } catch (const std::exception &ex) {
     log.exception(ex) << std::endl;
     cleanup(clist, system, camera);
