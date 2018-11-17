@@ -40,10 +40,10 @@ const std::string &Config::operator[](const std::string &&key) const {
 
 int Config::get_int(const std::string &&key, int base) {
   std::string i = _items.at(key);
-  std::string::size_type n = i.find_first_of('b');
-  if (n != std::string::npos) return std::stoi(i.substr(n + 1), nullptr, 2);
-  n = i.find_first_of('x');
+  std::string::size_type n = i.find_first_of('x');
   if (n != std::string::npos) return std::stoi(i.substr(n + 1), nullptr, 16);
+  n = i.find_first_of('b');
+  if (n != std::string::npos) return std::stoi(i.substr(n + 1), nullptr, 2);
   return std::stoi(i, nullptr, base);
 }
 
