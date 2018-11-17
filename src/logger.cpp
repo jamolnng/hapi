@@ -19,7 +19,7 @@ Logger::Logger()
       _warning(nullptr),
       _error(nullptr),
       _critical(nullptr),
-      _last(_debug){};
+      _last(nullptr){};
 
 Logger::~Logger() {
   _debug.flush();
