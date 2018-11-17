@@ -51,21 +51,26 @@ std::ostream &Logger::log(Logger::LogLevel l) {
   switch (l) {
     case Logger::LogLevel::DEBUG:
       _debug << strtime() << " | DEBUG    | ";
+      _last.rdbuf(_debug.rdbuf());
       return _debug;
     case Logger::LogLevel::INFO:
       _info << strtime() << " | INFO     | ";
+      _last.rdbuf(_info.rdbuf());
       return _info;
     case Logger::LogLevel::WARNING:
       _warning << strtime() << " | WARNING  | ";
+      _last.rdbuf(_warning.rdbuf());
       return _warning;
     case Logger::LogLevel::ERROR:
       _error << strtime() << " | ERROR    | ";
+      _last.rdbuf(_error.rdbuf());
       return _error;
     case Logger::LogLevel::CRITICAL:
       _critical << strtime() << " | CRITICAL | ";
+      _last.rdbuf(_critical.rdbuf());
       return _critical;
   }
-  return _debug;
+  return _last;
 }
 
 std::ostream &Logger::debug() { return log(LogLevel::DEBUG); }
