@@ -15,6 +15,8 @@ class Board {
   void arm();
   // disarms the board
   void disarm();
+  // triggers the board in place of the pmt trigger
+  void trigger();
 
   // returns true if the board has captured an image
   bool is_done();

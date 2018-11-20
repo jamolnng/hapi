@@ -26,6 +26,10 @@ void Board::disarm() {
   std::this_thread::sleep_for(HAPI_PIN_DELAY);
 }
 
+void Board::trigger() {
+  throw std::logic_error("Board::trigger not yet implemented.");
+}
+
 bool Board::is_done() { return digitalRead(_done_pin); }
 
 void Board::reset() {
