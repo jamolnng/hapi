@@ -30,14 +30,31 @@ enum HAPIMode { TRIGGER, INTERVAL, TRIGGER_TEST };
 
 // default configuration parameters
 std::map<std::string, std::string> config_defaults = {
-    {"output", "."},           {"trigger_type", "1"}, {"arm_pin", "26"},
-    {"delay_pin0", "7"},       {"delay_pin1", "0"},   {"delay_pin2", "1"},
-    {"delay_pin3", "2"},       {"exp_pin0", "13"},    {"exp_pin1", "6"},
-    {"exp_pin2", "14"},        {"exp_pin3", "10"},    {"pulse_pin0", "24"},
-    {"pulse_pin1", "27"},      {"pulse_pin2", "25"},  {"pulse_pin3", "28"},
-    {"pulse_pin4", "29"},      {"done_pin", "23"},    {"delay", "0b1000"},
-    {"exp", "0b0010"},         {"pulse", "0b11111"},  {"image_type", "png"},
-    {"pmt_threshold", "0x10"}, {"pmt_gain", "0xFF"},  {"interval", "1000"}};
+    {"output", "."},
+    {"trigger_type", "1"},
+    {"arm_pin", "26"},
+    {"delay_pin0", "7"},
+    {"delay_pin1", "0"},
+    {"delay_pin2", "1"},
+    {"delay_pin3", "2"},
+    {"exp_pin0", "13"},
+    {"exp_pin1", "6"},
+    {"exp_pin2", "14"},
+    {"exp_pin3", "10"},
+    {"pulse_pin0", "24"},
+    {"pulse_pin1", "27"},
+    {"pulse_pin2", "25"},
+    {"pulse_pin3", "28"},
+    {"pulse_pin4", "29"},
+    {"done_pin", "23"},
+    {"delay", "0b1000"},
+    {"exp", "0b0010"},
+    {"pulse", "0b11111"},
+    {"image_type", "png"},
+    {"pmt_threshold", "0x10"},
+    {"pmt_gain", "0xFF"},
+    {"interval", "3000"},
+    {"camera_gain", "47.994267"}};
 
 // bool that states whether the program should remain running
 volatile std::atomic<bool> running{true};
@@ -178,7 +195,7 @@ int main(int argc, char *argv[]) {
   }
 
   std::chrono::milliseconds interval_time =
-      std::chrono::milliseconds(config.get_int("interval"));
+      std::chrono::milliseconds(config["interval"]);
 
   try {
     acquisition_loop(camera, out_dir, image_type, interval_time, mode);
@@ -251,29 +268,27 @@ void initialize_board(Config &config) {
   log.info() << "Initializing the HAPI-E board." << std::endl;
   Board &board = Board::instance();
   log.info() << "Configuring I/O." << std::endl;
-  board.set_arm_pin(config.get_int("arm_pin"));
-  board.set_done_pin(config.get_int("done_pin"));
+  board.set_arm_pin(config["arm_pin"]);
+  board.set_done_pin(config["done_pin"]);
 
-  board.set_delay_pins(
-      config.get_int("delay_pin0"), config.get_int("delay_pin1"),
-      config.get_int("delay_pin2"), config.get_int("delay_pin3"));
+  board.set_delay_pins(config["delay_pin0"], config["delay_pin1"],
+                       config["delay_pin2"], config["delay_pin3"]);
 
-  board.set_exp_pins(config.get_int("exp_pin0"), config.get_int("exp_pin1"),
-                     config.get_int("exp_pin2"), config.get_int("exp_pin3"));
+  board.set_exp_pins(config["exp_pin0"], config["exp_pin1"], config["exp_pin2"],
+                     config["exp_pin3"]);
 
-  board.set_pulse_pins(
-      config.get_int("pulse_pin0"), config.get_int("pulse_pin1"),
-      config.get_int("pulse_pin2"), config.get_int("pulse_pin3"),
-      config.get_int("pulse_pin4"));
+  board.set_pulse_pins(config["pulse_pin0"], config["pulse_pin1"],
+                       config["pulse_pin2"], config["pulse_pin3"],
+                       config["pulse_pin4"]);
 
   log.info() << "Setting delay, exposure, and pulse width." << std::endl;
-  board.set_delay(config.get_int("delay"));
-  board.set_exp(config.get_int("exp"));
-  board.set_pulse(config.get_int("pulse"));
+  board.set_delay(config["delay"]);
+  board.set_exp(config["exp"]);
+  board.set_pulse(config["pulse"]);
 
   log.info() << "Setting PMT gain and threshold." << std::endl;
-  board.set_pmt_gain(config.get_int("pmt_gain"));
-  board.set_pmt_threshold(config.get_int("pmt_threshold"));
+  board.set_pmt_gain(config["pmt_gain"]);
+  board.set_pmt_threshold(config["pmt_threshold"]);
 
   log.info() << "Resetting board." << std::endl;
   board.reset();
@@ -338,7 +353,10 @@ void initialize_camera(std::shared_ptr<USBCamera> &camera, Config &config) {
   log.info() << "Disabling auto gain." << std::endl;
   camera->set_auto_gain(Spinnaker::GainAutoEnums::GainAuto_Off);
 
-  float gain = 47.994267f;  // 1.0 <= gain <= 47.994267
+  float gain = config["camera_gain"];  // 1.0 <= gain <= 47.994267
+  if (gain < 1 || gain > 47.994267f)
+    throw std::out_of_range("Gain must be between 1.0 and 47.994267");
+
   log.info() << "Setting gain to " << gain << " dB." << std::endl;
   camera->set_gain(gain);
 

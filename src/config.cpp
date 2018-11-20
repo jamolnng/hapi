@@ -30,21 +30,12 @@ void Config::load(std::filesystem::path p) {
 
 bool Config::has(std::string &key) { return _items.find(key) != _items.end(); }
 
-const std::string &Config::operator[](std::string &&key) const {
-  return _items.at(key);
-}
-
-const std::string &Config::operator[](const std::string &&key) const {
-  return _items.at(key);
-}
-
-int Config::get_int(const std::string &&key, int base) {
-  std::string i = _items.at(key);
-  std::string::size_type n = i.find_first_of('x');
-  if (n != std::string::npos) return std::stoi(i.substr(n + 1), nullptr, 16);
-  n = i.find_first_of('b');
-  if (n != std::string::npos) return std::stoi(i.substr(n + 1), nullptr, 2);
-  return std::stoi(i, nullptr, base);
-}
+// const std::string &Config::operator[](std::string &&key) const {
+//  return _items.at(key);
+//}
+//
+// const std::string &Config::operator[](const std::string &&key) const {
+//  return _items.at(key);
+//}
 
 const std::map<std::string, std::string> &Config::items() { return _items; }
