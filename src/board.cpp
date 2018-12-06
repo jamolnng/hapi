@@ -16,6 +16,17 @@ Board::Board() {
   piHiPri(99);
 }
 
+void Board::trigger() {
+  if (_trigger_source == Board::TriggerSource::PI) {
+    digitalWrite(_trigger_pin, HIGH);
+    std::this_thread::sleep_for(HAPI_PIN_DELAY);
+    digitalWrite(_trigger_pin, LOW);
+    std::this_thread::sleep_for(HAPI_PIN_DELAY);
+  } else {
+    throw Board::TriggerSourceError();
+  }
+}
+
 void Board::arm() {
   digitalWrite(_arm_pin, HIGH);
   std::this_thread::sleep_for(HAPI_PIN_DELAY);
@@ -26,16 +37,21 @@ void Board::disarm() {
   std::this_thread::sleep_for(HAPI_PIN_DELAY);
 }
 
-void Board::trigger() {
-  throw std::logic_error("Board::trigger not yet implemented.");
-}
-
 bool Board::is_done() { return digitalRead(_done_pin); }
 
 void Board::reset() {
   arm();
   disarm();
 }
+
+void Board::set_trigger_source(Board::TriggerSource source) {
+  _trigger_source = source;
+  digitalWrite(_trigger_source_pin, (int)source);
+}
+
+void Board::set_trigger_pin(int pin) { _trigger_pin = pin; }
+
+void Board::set_trigger_mode_pin(int pin) { _trigger_source_pin = pin; }
 
 void Board::set_arm_pin(int pin) {
   pinMode(pin, OUTPUT);

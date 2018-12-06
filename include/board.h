@@ -5,18 +5,25 @@ namespace hapi {
 // Controls the HAPI-E board
 class Board {
  public:
+  enum TriggerSource { PMT = 0, PI = 1 };
+  class TriggerSourceError() : public std::runtime_error {
+   public:
+    TriggerSourceError()
+        : std::runtime_error(
+              "Trigger source not set to come from the RaspberryPi") {}
+  }
   // the board instance
   static Board& instance() {
     static Board _instance;
     return _instance;
   }
-
+  // Triggers the HAPI-E board if the trigger source is set to the PI, if not
+  // throws an error
+  void trigger();
   // arms the board so it can capture images
   void arm();
   // disarms the board
   void disarm();
-  // triggers the board in place of the pmt trigger
-  void trigger();
 
   // returns true if the board has captured an image
   bool is_done();
@@ -24,6 +31,12 @@ class Board {
   // clears the state of the board
   void reset();
 
+  // sets the trigger source to either come from the PMT or the PI.
+  void set_trigger_source(TriggerSource source);
+  //
+  void set_trigger_pin(int pin);
+  //
+  void set_trigger_source_pin(int pin);
   // sets the pin used to arm the board
   void set_arm_pin(int pin);
   // sets the pin used to determine if the board has captured an image
@@ -62,6 +75,10 @@ class Board {
   int _pulse_pins[5];
 
   int _i2c;
+
+  int _trigger_pin{3};
+  int _trigger_source_pin{4};
+  TriggerSource _trigger_source{TriggerSource::PMT};
 };
 }  // namespace hapi
 #endif
