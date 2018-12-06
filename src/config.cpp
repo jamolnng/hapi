@@ -12,7 +12,7 @@ Config::Config(std::map<std::string, std::string> &defaults) {
 Config::~Config() {}
 
 void Config::load(std::filesystem::path p) {
-  std::ifstream in = std::ifstream(p);
+  std::ifstream in(p, std::ios::binary);
   if (in) {
     std::string line;
     while (std::getline(in, line)) {
@@ -25,6 +25,16 @@ void Config::load(std::filesystem::path p) {
       }
     }
     in.close();
+  }
+}
+
+void Config::save(std::filesystem::path p) {
+  std::ofstream out(p, std::ios::binary);
+  if (out) {
+    for (auto const &i : _items) {
+      out << i.first << "=" << i.second << std::endl;
+    }
+    out.close();
   }
 }
 

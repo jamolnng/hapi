@@ -20,6 +20,8 @@ class Config {
 
   void load(std::filesystem::path p);
 
+  void save(std::filesystem::path p);
+
   bool has(std::string &key);
   // const std::string &operator[](std::string &&key) const;
   // const std::string &operator[](const std::string &&key) const;
