@@ -83,20 +83,20 @@ make
 sudo make install
 
 # create service
-echo "[Unit]"                                   > /etc/systemd/system/hapi.service
-echo "Description=HAPI Service"                 >> /etc/systemd/system/hapi.service
-echo "[Service]"                                >> /etc/systemd/system/hapi.service
-echo "Type=simple"                              >> /etc/systemd/system/hapi.service
-echo "ExecStart=/usr/local/bin/hapi"            >> /etc/systemd/system/hapi.service
-echo "Restart=on-failure"                       >> /etc/systemd/system/hapi.service
-echo "RestartSec=10"                            >> /etc/systemd/system/hapi.service
-echo "StandardOutput=/home/pi/hapi/log.log"     >> /etc/systemd/system/hapi.service
-echo "[Install]"                                >> /etc/systemd/system/hapi.service
-echo "WantedBy=multi-user.target"               >> /etc/systemd/system/hapi.service
-echo "Alias=hapi.service"                       >> /etc/systemd/system/hapi.service
-
-sudo systemctl daemon-reload
-sudo systemctl enable hapi
+# echo "[Unit]"                                   > /etc/systemd/system/hapi.service
+# echo "Description=HAPI Service"                 >> /etc/systemd/system/hapi.service
+# echo "[Service]"                                >> /etc/systemd/system/hapi.service
+# echo "Type=simple"                              >> /etc/systemd/system/hapi.service
+# echo "ExecStart=/usr/local/bin/hapi"            >> /etc/systemd/system/hapi.service
+# echo "Restart=on-failure"                       >> /etc/systemd/system/hapi.service
+# echo "RestartSec=10"                            >> /etc/systemd/system/hapi.service
+# echo "StandardOutput=/home/pi/hapi/log.log"     >> /etc/systemd/system/hapi.service
+# echo "[Install]"                                >> /etc/systemd/system/hapi.service
+# echo "WantedBy=multi-user.target"               >> /etc/systemd/system/hapi.service
+# echo "Alias=hapi.service"                       >> /etc/systemd/system/hapi.service
+# 
+# sudo systemctl daemon-reload
+# sudo systemctl enable hapi
 
 # configure hapi
 sudo /usr/local/bin/hapi-config
