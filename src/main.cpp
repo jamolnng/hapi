@@ -22,6 +22,7 @@
 #include "routines/acquisition.h"
 #include "routines/get_config.h"
 #include "routines/is_root.h"
+#include "routines/pmt_calibrate.h"
 #include "routines/str_utils.h"
 #include "usb_camera.h"
 
@@ -55,6 +56,12 @@ int main(int argc, char *argv[]) {
                       "Sets the mode (trigger, interval, test). Trigger=use "
                       "pmt trigger, interval=take image at set interval, "
                       "test=test pmt trigger");
+  parser.add_argument("-c",
+                      "-c [interval ms] Runs the PMT calibration code with the "
+                      "given test interval.");
+  parser.add_argument("--calibrate",
+                      "--calibrate [interval ms] Runs the PMT calibration code "
+                      "with the given test interval.");
   try {
     parser.parse(argc, argv);
   } catch (const ArgumentParser::ArgumentNotFound &ex) {
@@ -98,6 +105,28 @@ int main(int argc, char *argv[]) {
   Config config = get_config();
   std::string image_type = get_image_type(config);
   std::filesystem::path out_dir = get_out_dir(start_time, config);
+
+  if (parser.exists("c") || parser.exists("calibrate")) {
+    try {
+      long long ms;
+      if (parser.exists("c"))
+        ms = parser.get<long long>("c");
+      else
+        ms = parser.get<long long>("calibrate");
+      auto vals = pmt_calibrate(ms);
+      auto gain = vals.first;
+      auto threshold = vals.second;
+      log.info() << "Calibration success!" << std::endl;
+      config["pmt_gain"] = std::to_string(gain);
+      config["pmt_threshold"] = std::to_string(threshold);
+      log.info() << std::hex << "Gain: " << gain << std::endl;
+      log.info() << std::hex << "Threshold: " << threshold << std::endl;
+    } catch (const PMTCalibrationError &ex) {
+      log.exception(ex) << "Failed to calibrate the PMT." << std::endl;
+      log.error() << "Exiting (-1)..." << std::endl;
+      return -1;
+    }
+  }
 
   try {
     initialize_board(config);
