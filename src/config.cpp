@@ -40,12 +40,12 @@ void Config::save(std::filesystem::path p) {
 
 bool Config::has(std::string &key) { return _items.find(key) != _items.end(); }
 
-// const std::string &Config::operator[](std::string &&key) const {
-//  return _items.at(key);
-//}
-//
-// const std::string &Config::operator[](const std::string &&key) const {
-//  return _items.at(key);
-//}
+std::string &Config::operator[](std::string &&key) {
+  return _items.try_emplace(std::move(key)).first->second;
+}
+
+const std::string &Config::operator[](const std::string &&key) const {
+  return _items.at(key);
+}
 
 const std::map<std::string, std::string> &Config::items() { return _items; }

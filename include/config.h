@@ -23,11 +23,11 @@ class Config {
   void save(std::filesystem::path p);
 
   bool has(std::string &key);
-  // const std::string &operator[](std::string &&key) const;
-  // const std::string &operator[](const std::string &&key) const;
+  std::string &operator[](std::string &&key);
+  const std::string &operator[](const std::string &&key) const;
 
   template <typename T>
-  T operator[](const std::string &&key) const {
+  T get(const std::string &&key) const {
     std::string i = _items.at(key);
     if (std::is_same<T, std::string>::value) return i;
     std::istringstream in(i);
