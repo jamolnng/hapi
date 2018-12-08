@@ -343,9 +343,9 @@ void initialize_camera(std::shared_ptr<USBCamera> &camera, Config &config) {
   USBCamera::TriggerType trigger_type = USBCamera::TriggerType::SOFTWARE;
   if (config["camera_trigger"] == "1") {
     trigger_type = USBCamera::TriggerType::HARDWARE;
-    log.info() << "Using hardware trigger." << std::endl;
+    log.info() << "Camera using hardware trigger." << std::endl;
   } else {
-    log.info() << "Using software trigger." << std::endl;
+    log.info() << "Camera using software trigger." << std::endl;
   }
   camera->configure_trigger(trigger_type);
 

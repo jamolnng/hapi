@@ -71,7 +71,7 @@ void acquisition_loop(std::shared_ptr<USBCamera> &camera,
 
     if (mode != HAPIMode::TRIGGER_TEST) {
       try {
-        acquire_image(camera, out_dir, image_type, image_count);
+        acquire_image(camera, out_dir, image_type, image_count, image_time);
         image_count++;
       } catch (const std::exception &ex) {
         log.exception(ex) << "Failed to acquire image." << std::endl;
@@ -87,8 +87,8 @@ void acquisition_loop(std::shared_ptr<USBCamera> &camera,
 
 void acquire_image(std::shared_ptr<USBCamera> &camera,
                    std::filesystem::path &out_dir, std::string &image_type,
-                   unsigned int image_count) {
-  Logger log = Logger::instance();
+                   unsigned int image_count, const std::string &image_time) {
+  Logger &log = Logger::instance();
   // get the image from the camera
   log.info() << "Acquiring image from camera." << std::endl;
   Spinnaker::ImagePtr result = camera->acquire_image();
@@ -112,12 +112,13 @@ void acquire_image(std::shared_ptr<USBCamera> &camera,
         Spinnaker::PixelFormat_Mono8, Spinnaker::NO_COLOR_PROCESSING);
     log.info() << "Saving image (" << image_count << ") " << fname << "."
                << std::endl;
-    converted->Save(fname.c_str());
+    converted->Save(fname.string().c_str());
     std::filesystem::path thumb = out_dir / "thumbs";
     thumb /= image_time + "thumb" + "." + image_type;
+    std::filesystem::path last = out_dir / ("last." + image_type);
     log.info() << "Creating thumbnail image." << std::endl;
-    std::system(("sudo convert " + fname.string() + " -resize 600 " +
-                 thumb.string() + " &")
+    std::system(("(sudo convert " + fname.string() + " -resize 600 " +
+                 thumb.string() + ") &")
                     .c_str());
   }
   log.info() << "Releasing image." << std::endl;
