@@ -1,7 +1,6 @@
 #include <algorithm>
 #include <atomic>
 #include <chrono>
-#include <csignal>
 #include <cstdlib>
 #include <exception>
 #include <fstream>
@@ -21,7 +20,7 @@
 #include "logger.h"
 #include "routines/acquisition.h"
 #include "routines/get_config.h"
-#include "routines/is_root.h"
+#include "routines/os_utils.h"
 #include "routines/pmt_calibrate.h"
 #include "routines/str_utils.h"
 #include "usb_camera.h"
@@ -31,10 +30,6 @@ using namespace hapi;
 // bool that states whether the program should remain running
 extern volatile std::atomic<bool> running{true};
 
-void signal_handler(int sig);
-// sets usb filesystem memory to 1000 megabytes
-bool set_usbfs_mb();
-bool initialize_signal_handlers();
 void initialize_board(Config &config);
 // resets board and frees spinnaker system
 void cleanup(Spinnaker::CameraList &clist, Spinnaker::SystemPtr &system,
@@ -194,46 +189,6 @@ int main(int argc, char *argv[]) {
   cleanup(clist, system, camera);
   log.info() << "Exiting (0)..." << std::endl;
   return 0;
-}
-
-void signal_handler(int sig) { running = false; }
-
-bool set_usbfs_mb() {
-  Logger &log = Logger::instance();
-  // set usbfs memory
-  log.info() << "Setting usbfs memory to 1000mb." << std::endl;
-  std::system(
-      "sudo sh -c 'echo 1000 > "
-      "/sys/module/usbcore/parameters/usbfs_memory_mb'");
-  std::ifstream in("/sys/module/usbcore/parameters/usbfs_memory_mb",
-                   std::ios::binary);
-  unsigned int mb = 0;
-  if (in) {
-    in >> mb;
-    in.close();
-  }
-  return mb == 1000;
-}
-
-bool initialize_signal_handlers() {
-  // set signal handler
-  Logger &log = Logger::instance();
-  auto set_sh = [&](int sig) -> bool {
-    log.info() << "Registering signal handler for signal " << sig << "."
-               << std::endl;
-    if (std::signal(sig, signal_handler) == SIG_ERR) {
-      log.critical() << "Failed to set signal handler for signal " << sig
-                     << std::endl;
-      return false;
-    }
-    return true;
-  };
-  // register signal handlers
-  return set_sh(SIGINT) &&
-#ifdef SIGQUIT
-#define set_sh(SIGQUIT) &&
-#endif
-         set_sh(SIGABRT);
 }
 
 void initialize_board(Config &config) {

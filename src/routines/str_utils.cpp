@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <ctime>
 
+namespace hapi {
 // Returns a std::string of the current time in the format YYYY_MM_DD-HH_MM_SS
 std::string str_time() {
   std::time_t t = std::time(nullptr);
@@ -19,3 +20,4 @@ std::string str_time() {
 void lower(std::string &in) {
   std::transform(in.begin(), in.end(), in.begin(), ::tolower);
 }
+}  // namespace hapi

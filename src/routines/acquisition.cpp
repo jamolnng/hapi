@@ -7,10 +7,9 @@
 #include <atomic>
 #include <thread>
 
-using namespace hapi;
-
 extern volatile std::atomic<bool> running;
 
+namespace hapi {
 void acquisition_loop(std::shared_ptr<USBCamera> &camera,
                       std::filesystem::path &out_dir, std::string &image_type,
                       std::chrono::milliseconds interval_time, HAPIMode mode) {
@@ -126,3 +125,4 @@ void acquire_image(std::shared_ptr<USBCamera> &camera,
   // wait for image to be freed before we arm
   while (result->IsInUse()) std::this_thread::yield();
 }
+};  // namespace hapi

@@ -4,8 +4,7 @@
 
 #include <filesystem>
 
-using namespace hapi;
-
+namespace hapi {
 // default configuration parameters
 std::map<std::string, std::string> config_defaults = {
     {"output", "."},       {"camera_trigger", "1"},     {"trigger_source", "0"},
@@ -75,3 +74,4 @@ std::filesystem::path get_out_dir(std::string &start_time, Config &config) {
   log.info() << "Output directory set to " << out_dir << std::endl;
   return out_dir;
 }
+};  // namespace hapi

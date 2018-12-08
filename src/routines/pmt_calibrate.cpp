@@ -1,11 +1,10 @@
 #include "routines/pmt_calibrate.h"
 
-#include "board.h"
-
 #include <chrono>
 
-using namespace hapi;
+#include "board.h"
 
+namespace hapi {
 /**
  * pass
  *
@@ -49,3 +48,4 @@ std::pair<unsigned int, unsigned int> pmt_calibrate(long long time_limit) {
 
   throw PMTCalibrationError();
 }
+}  // namespace hapi

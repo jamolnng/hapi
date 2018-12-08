@@ -7,7 +7,7 @@
 #include "config.h"
 #include "logger.h"
 #include "routines/get_config.h"
-#include "routines/is_root.h"
+#include "routines/os_utils.h"
 #include "routines/pmt_calibrate.h"
 
 using namespace hapi;
