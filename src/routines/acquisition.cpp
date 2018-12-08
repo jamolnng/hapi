@@ -104,8 +104,7 @@ void acquire_image(std::shared_ptr<USBCamera> &camera,
       }
     }
     // save the image
-    std::filesystem::path fname = out_dir;
-    fname /= image_time + "." + image_type;
+    std::filesystem::path fname = out_dir / (image_time + "." + image_type);
     log.info() << "Converting image to mono 8 bit with no color processing."
                << std::endl;
     Spinnaker::ImagePtr converted = result->Convert(
@@ -118,7 +117,8 @@ void acquire_image(std::shared_ptr<USBCamera> &camera,
     std::filesystem::path last = out_dir / ("last." + image_type);
     log.info() << "Creating thumbnail image." << std::endl;
     std::system(("(sudo convert " + fname.string() + " -resize 600 " +
-                 thumb.string() + ") &")
+                 thumb.string() + " && sudo ln -s " + thumb.string() + " " +
+                 last.string() + ") &")
                     .c_str());
   }
   log.info() << "Releasing image." << std::endl;
