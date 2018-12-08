@@ -16,6 +16,8 @@ function(get_include_dirs headers dirs)
 endfunction()
 
 macro(basic_program program_name src_dir)
+    file(GLOB_RECURSE ${program_name}_SOURCES "src/*.cpp")
+    file(GLOB_RECURSE ${program_name}_HEADERS "include/*.h")
     file(GLOB_RECURSE ${program_name}_SOURCES "${src_dir}src/*.cpp")
     file(GLOB_RECURSE ${program_name}_HEADERS "${src_dir}include/*.h")
 
@@ -34,6 +36,9 @@ target_link_libraries(hapi wiringPi Spinnaker stdc++fs)
 basic_program(hapi-config "tools/config/")
 target_link_libraries(hapi-config stdc++fs)
 
-install(TARGETS hapi hapi-config
+basic_program(hapi-pmt-calibrate "tools/pmt_calibrate/")
+target_link_libraries(hapi-pmt-calibrate stdc++fs)
+
+install(TARGETS hapi hapi-config hapi-pmt-calibrate
         LIBRARY DESTINATION lib/
         RUNTIME DESTINATION bin/)
