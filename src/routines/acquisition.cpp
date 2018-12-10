@@ -115,12 +115,13 @@ void acquire_image(std::shared_ptr<USBCamera> &camera,
     std::filesystem::path thumb =
         out_dir / (out_dir.stem().string() + "_thumbs");
     thumb /= image_time + "_thumb" + "." + image_type;
-    std::filesystem::path last = out_dir.parent_path() / ("last." + image_type);
+    std::filesystem::path last = out_dir.parent_path() / "last.png";
     log.info() << "Creating thumbnail image." << std::endl;
     std::string convert =
         "sudo convert " + fname.string() + " -resize 600 " + thumb.string();
-    std::string cp = "sudo cp " + thumb.string() + " " + last.string();
-    std::string cmd = "(" + convert + " && " + cp + ") &";
+    std::string convert_last =
+        "sudo convert " + thumb.string() + " " + last.string();
+    std::string cmd = "(" + convert + " && " + convert_last + ") &";
     std::system(cmd.c_str());
   }
   log.info() << "Releasing image." << std::endl;
