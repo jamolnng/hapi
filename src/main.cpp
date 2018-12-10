@@ -27,9 +27,6 @@
 
 using namespace hapi;
 
-// bool that states whether the program should remain running
-extern volatile std::atomic<bool> running{true};
-
 void initialize_board(Config &config);
 // resets board and frees spinnaker system
 void cleanup(Spinnaker::CameraList &clist, Spinnaker::SystemPtr &system,
@@ -155,7 +152,7 @@ int main(int argc, char *argv[]) {
     // if no cameras detected exit
     if (clist.GetSize() == 0) {
       log.critical() << "No cameras detected." << std::endl;
-      cleanup(clist, system, {nullptr});
+      cleanup(clist, system, camera);
       log.critical() << "Exiting (-1)..." << std::endl;
       return -1;
     }

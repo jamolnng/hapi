@@ -16,8 +16,6 @@ function(get_include_dirs headers dirs)
 endfunction()
 
 macro(basic_program program_name src_dir)
-    file(GLOB_RECURSE ${program_name}_SOURCES "src/*.cpp")
-    file(GLOB_RECURSE ${program_name}_HEADERS "include/*.h")
     file(GLOB_RECURSE ${program_name}_SOURCES "${src_dir}src/*.cpp")
     file(GLOB_RECURSE ${program_name}_HEADERS "${src_dir}include/*.h")
 
@@ -37,7 +35,11 @@ basic_program(hapi-config "tools/config/")
 target_link_libraries(hapi-config stdc++fs)
 
 basic_program(hapi-pmt-calibrate "tools/pmt_calibrate/")
-target_link_libraries(hapi-pmt-calibrate stdc++fs)
+target_sources(hapi-pmt-calibrate PUBLIC "src/board.cpp" "src/config.cpp" "src/logger.cpp"
+                                         "src/routines/get_config.cpp" "src/routines/os_utils.cpp"
+                                         "src/routines/pmt_calibrate.cpp" "src/routines/str_utils.cpp")
+target_include_directories(hapi-pmt-calibrate PUBLIC "include/" "include/routines/")
+target_link_libraries(hapi-pmt-calibrate wiringPi stdc++fs)
 
 install(TARGETS hapi hapi-config hapi-pmt-calibrate
         LIBRARY DESTINATION lib/

@@ -1,10 +1,16 @@
 #include "routines/pmt_calibrate.h"
 
+#include <atomic>
 #include <chrono>
 
 #include "board.h"
 
 namespace hapi {
+
+// bool that states whether the program should remain running. Defined in
+// os_utils.cpp
+extern volatile std::atomic<bool> running;
+
 /**
  * pass
  *
@@ -23,7 +29,7 @@ inline bool pass(const unsigned int gain, const unsigned int threshold,
   board.set_pmt_threshold(threshold);
   board.arm();
   while (current_time - start_time < time_limit) {
-    if (board.is_done()) {
+    if (board.is_done() || !running) {
       board.disarm();
       return false;
     }
@@ -42,10 +48,13 @@ std::pair<unsigned int, unsigned int> pmt_calibrate(long long time_limit) {
   board.set_trigger_source(Board::TriggerSource::PMT);
 
   for (gain = 0xFFu; gain > 0; gain--)
-    for (threshold = 0xFFu; threshold > 0; threshold--)
+    for (threshold = 0xFFu; threshold > 0; threshold--) {
       if (pass(gain, threshold, ms, board))
         return std::make_pair(gain, threshold);
+      if (!running) goto exit;
+    }
 
+exit:
   throw PMTCalibrationError();
 }
 }  // namespace hapi

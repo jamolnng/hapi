@@ -2,8 +2,6 @@
 #include "logger.h"
 #include "routines/str_utils.h"
 
-#include <filesystem>
-
 namespace hapi {
 // default configuration parameters
 std::map<std::string, std::string> config_defaults = {

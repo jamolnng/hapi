@@ -1,6 +1,5 @@
 #include "routines/os_utils.h"
 
-#include <atomic>
 #include <csignal>
 #include <fstream>
 
@@ -9,9 +8,10 @@
 
 #include "logger.h"
 
-extern volatile std::atomic<bool> running;
+// bool that states whether the program should remain running
 
 namespace hapi {
+volatile std::atomic<bool> running{true};
 
 bool is_root() { return getuid() == 0 && geteuid() == 0; }
 
@@ -50,7 +50,7 @@ bool initialize_signal_handlers() {
   // register signal handlers
   return set_sh(SIGINT) &&
 #ifdef SIGQUIT
-#define set_sh(SIGQUIT) &&
+         set_sh(SIGQUIT) &&
 #endif
          set_sh(SIGABRT);
 }

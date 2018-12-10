@@ -119,7 +119,7 @@ class ArgumentParser {
     std::string _desc;
     bool _required;
   };
-  inline bool _add_variable(std::string name,
+  inline void _add_variable(std::string name,
                             std::vector<std::string> &arg_parts, char *argv[]) {
     if (name == "h" || name == "-help") {
       _help = true;
@@ -192,8 +192,8 @@ class ArgumentParser {
     return s;
   }
 
-  bool _help;
   std::string _desc;
+  bool _help;
   std::vector<Argument> _arguments;
   std::unordered_map<std::string, std::string> _variables;
 };

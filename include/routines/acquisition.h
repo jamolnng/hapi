@@ -2,13 +2,15 @@
 #define HAPI_ACQUISITON_H
 
 #include <chrono>
-#include <filesystem>
 #include <memory>
 #include <string>
 
 #include "usb_camera.h"
 
-#if !(_HAS_CXX17)
+#if _HAS_CXX17
+#include <filesystem>
+#else
+#include <experimental/filesystem>
 namespace std {
 namespace filesystem = std::experimental::filesystem;
 };

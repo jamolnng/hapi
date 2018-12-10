@@ -7,9 +7,9 @@
 #include <atomic>
 #include <thread>
 
+namespace hapi {
 extern volatile std::atomic<bool> running;
 
-namespace hapi {
 void acquisition_loop(std::shared_ptr<USBCamera> &camera,
                       std::filesystem::path &out_dir, std::string &image_type,
                       std::chrono::milliseconds interval_time, HAPIMode mode) {
