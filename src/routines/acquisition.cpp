@@ -99,7 +99,8 @@ void acquire_image(std::shared_ptr<USBCamera> &camera,
       if (!std::filesystem::exists(out_dir)) {
         log.info() << "First image. Creating output directory." << std::endl;
         // creates out dir and thumbnail dir in one command
-        std::filesystem::create_directories(out_dir / "thumbs");
+        std::filesystem::create_directories(
+            out_dir / (out_dir.stem().string() + "_thumbs"));
       }
     }
     // save the image
@@ -111,14 +112,16 @@ void acquire_image(std::shared_ptr<USBCamera> &camera,
     log.info() << "Saving image (" << image_count << ") " << fname << "."
                << std::endl;
     converted->Save(fname.string().c_str());
-    std::filesystem::path thumb = out_dir / "thumbs";
-    thumb /= image_time + "thumb" + "." + image_type;
-    std::filesystem::path last = out_dir / ("last." + image_type);
+    std::filesystem::path thumb =
+        out_dir / (out_dir.stem().string() + "_thumbs");
+    thumb /= image_time + "_thumb" + "." + image_type;
+    std::filesystem::path last = out_dir.parent_path() / ("last." + image_type);
     log.info() << "Creating thumbnail image." << std::endl;
-    std::system(("(sudo convert " + fname.string() + " -resize 600 " +
-                 thumb.string() + " && sudo ln -s " + thumb.string() + " " +
-                 last.string() + ") &")
-                    .c_str());
+    std::string convert =
+        "sudo convert " + fname.string() + " -resize 600 " + thumb.string();
+    std::string cp = "sudo cp " + thumb.string() + " " + last.string();
+    std::string cmd = "(" + convert + " && " + cp + ") &";
+    std::system(cmd.c_str());
   }
   log.info() << "Releasing image." << std::endl;
   result->Release();
