@@ -17,14 +17,12 @@ int main(int argc, char* argv[]) {
   log.set_stream(std::cout);
 
   ArgumentParser parser("HAPI PMT Calibration");
-  parser.add_argument("-w", "Writes the calibrated values to the hapi config.");
-  parser.add_argument("--write",
-                      "Writes the calibrated values to the hapi config.");
+  parser.add_argument("-w", "--write",
+                      "Writes the calibrated values to the hapi config.",
+                      false);
   parser.add_argument(
-      "-i", "The time interval in milliseconds that it should check in.");
-  parser.add_argument(
-      "--interval",
-      "The time interval in milliseconds that it should check in.");
+      "-i", "--interval",
+      "The time interval in milliseconds that it should check in.", false);
   try {
     parser.parse(argc, argv);
   } catch (const ArgumentParser::ArgumentNotFound& ex) {
@@ -34,12 +32,9 @@ int main(int argc, char* argv[]) {
   }
   if (parser.is_help()) return 0;
 
-  auto write = parser.get<bool>("w") || parser.get<bool>("write");
+  auto write = parser.get<bool>("w");
   long long ms = 5000;
-  if (parser.exists("i"))
-    ms = parser.get<int>("i");
-  else if (parser.exists("interval"))
-    ms = parser.get<int>("interval");
+  if (parser.exists("i")) ms = parser.get<int>("i");
 
   std::pair<unsigned int, unsigned int> vals;
   try {
@@ -56,8 +51,10 @@ int main(int argc, char* argv[]) {
   auto threshold = vals.second;
 
   log.info() << "Calibration success!" << std::endl;
-  log.info() << std::hex << "Gain: " << gain << std::endl;
-  log.info() << std::hex << "Threshold: " << threshold << std::endl;
+  log.info() << std::hex << "Gain:      0x" << std::setw(2) << std::setfill('0')
+             << gain << std::endl;
+  log.info() << std::hex << "Threshold: 0x" << std::setw(2) << std::setfill('0')
+             << threshold << std::endl;
 
   if (write) {
     if (!is_root()) {
