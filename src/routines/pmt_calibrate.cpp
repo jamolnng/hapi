@@ -2,8 +2,10 @@
 
 #include <atomic>
 #include <chrono>
+#include <iomanip>
 
 #include "board.h"
+#include "logger.h"
 
 namespace hapi {
 
@@ -46,13 +48,18 @@ std::pair<unsigned int, unsigned int> pmt_calibrate(long long time_limit) {
   Board& board = Board::instance();
 
   board.set_trigger_source(Board::TriggerSource::PMT);
+  Logger& log = Logger::instance();
 
-  for (gain = 0xFFu; gain > 0; gain--)
+  for (gain = 0xFFu; gain > 0; gain--) {
+    if ((gain + 1) % 16 == 0)
+      log.info() << std::setfill('0') << std::setw(2) << std::hex
+                 << "Testing with gain: 0x" << gain << std::endl;
     for (threshold = 0xFFu; threshold > 0; threshold--) {
       if (pass(gain, threshold, ms, board))
         return std::make_pair(gain, threshold);
       if (!running) goto exit;
     }
+  }
 
 exit:
   throw PMTCalibrationError();

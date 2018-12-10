@@ -14,6 +14,8 @@ using namespace hapi;
 
 int main(int argc, char* argv[]) {
   Logger& log = Logger::instance();
+  log.set_stream(std::cout);
+
   ArgumentParser parser("HAPI PMT Calibration");
   parser.add_argument("-w", "Writes the calibrated values to the hapi config.");
   parser.add_argument("--write",
@@ -30,6 +32,8 @@ int main(int argc, char* argv[]) {
     log.critical() << "Exiting (-1)..." << std::endl;
     return -1;
   }
+  if (parser.is_help()) return 0;
+
   auto write = parser.get<bool>("w") || parser.get<bool>("write");
   long long ms = 5000;
   if (parser.exists("i"))

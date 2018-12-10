@@ -60,6 +60,7 @@ int main(int argc, char *argv[]) {
     log.exception(ex) << "Failed to parse command line arguments." << std::endl;
     return -1;
   }
+  if (parser.is_help()) return 0;
 
   std::string mode_str = "trigger";
   if (parser.exists("mode"))
