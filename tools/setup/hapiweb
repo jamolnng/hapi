@@ -1,0 +1,3 @@
+#!/bin/bash
+sudo shellinaboxd &
+(cd /home/pi/hapi; sudo python -m SimpleHTTPServer 80) &

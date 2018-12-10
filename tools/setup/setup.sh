@@ -82,21 +82,15 @@ cmake .
 make
 sudo make install
 
+### web portal ###
+
+# shell in a box
+sudo apt-get install libssl-dev libpam0g-dev zlib1g-dev dh-autoreconf shellinabox -y
+
 # create service
-# echo "[Unit]"                                   > /etc/systemd/system/hapi.service
-# echo "Description=HAPI Service"                 >> /etc/systemd/system/hapi.service
-# echo "[Service]"                                >> /etc/systemd/system/hapi.service
-# echo "Type=simple"                              >> /etc/systemd/system/hapi.service
-# echo "ExecStart=/usr/local/bin/hapi"            >> /etc/systemd/system/hapi.service
-# echo "Restart=on-failure"                       >> /etc/systemd/system/hapi.service
-# echo "RestartSec=10"                            >> /etc/systemd/system/hapi.service
-# echo "StandardOutput=/home/pi/hapi/log.log"     >> /etc/systemd/system/hapi.service
-# echo "[Install]"                                >> /etc/systemd/system/hapi.service
-# echo "WantedBy=multi-user.target"               >> /etc/systemd/system/hapi.service
-# echo "Alias=hapi.service"                       >> /etc/systemd/system/hapi.service
-# 
-# sudo systemctl daemon-reload
-# sudo systemctl enable hapi
+sudo cp hapiweb /etc/init.d/hapiweb
+sudo chmod 755 /etc/init.d/hapiweb
+udo update-rc.d hapiweb defaults
 
 # configure hapi
 sudo /usr/local/bin/hapi-config
