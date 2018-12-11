@@ -40,20 +40,15 @@ int main(int argc, char *argv[]) {
   log.set_stream(std::cout);
 
   ArgumentParser parser("HAPI");
-  parser.add_argument("--mode",
-                      "Sets the mode (trigger, interval, test). Trigger=use "
+  parser.add_argument("-m", "--mode",
+                      "Sets the mode (trigger, interval, test). trigger=use "
                       "pmt trigger, interval=take image at set interval, "
-                      "test=test pmt trigger");
-  parser.add_argument("-m",
-                      "Sets the mode (trigger, interval, test). Trigger=use "
-                      "pmt trigger, interval=take image at set interval, "
-                      "test=test pmt trigger");
-  parser.add_argument("-c",
-                      "-c [interval ms] Runs the PMT calibration code with the "
-                      "given test interval.");
-  parser.add_argument("--calibrate",
+                      "test=test pmt trigger",
+                      false);
+  parser.add_argument("-c", "--calibrate",
                       "--calibrate [interval ms] Runs the PMT calibration code "
-                      "with the given test interval.");
+                      "with the given test interval.",
+                      false);
   try {
     parser.parse(argc, argv);
   } catch (const ArgumentParser::ArgumentNotFound &ex) {
@@ -63,10 +58,7 @@ int main(int argc, char *argv[]) {
   if (parser.is_help()) return 0;
 
   std::string mode_str = "trigger";
-  if (parser.exists("mode"))
-    mode_str = parser.get<std::string>("mode");
-  else if (parser.exists("m"))
-    mode_str = parser.get<std::string>("m");
+  if (parser.exists("m")) mode_str = parser.get<std::string>("m");
   lower(mode_str);
 
   HAPIMode mode = HAPIMode::TRIGGER;
@@ -99,20 +91,25 @@ int main(int argc, char *argv[]) {
   std::string image_type = get_image_type(config);
   std::filesystem::path out_dir = get_out_dir(start_time, config);
 
-  if (parser.exists("c") || parser.exists("calibrate")) {
+  if (parser.exists("c")) {
     try {
-      long long ms;
-      if (parser.exists("c"))
+      long long ms = 5000;
+      try {
         ms = parser.get<long long>("c");
-      else
-        ms = parser.get<long long>("calibrate");
+      } catch (const std::exception &ex) {
+        if (parser.get<std::string>("c").size() > 0) {
+          log.exception(ex)
+              << "Failed to get interval time. Defaulting to 5000 ms."
+              << std::endl;
+        }
+      }
       auto vals = pmt_calibrate(ms);
       auto gain = vals.first;
       auto threshold = vals.second;
       log.info() << "Calibration success!" << std::endl;
       config["pmt_gain"] = std::to_string(gain);
       config["pmt_threshold"] = std::to_string(threshold);
-      log.info() << std::hex << "Gain: " << gain << std::endl;
+      log.info() << std::hex << "Gain:      " << gain << std::endl;
       log.info() << std::hex << "Threshold: " << threshold << std::endl;
     } catch (const PMTCalibrationError &ex) {
       log.exception(ex) << "Failed to calibrate the PMT." << std::endl;
