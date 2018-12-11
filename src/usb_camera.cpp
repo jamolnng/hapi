@@ -3,7 +3,6 @@
 #include <iostream>
 
 #include "SpinGenApi/SpinnakerGenApi.h"
-#include "Spinnaker.h"
 
 using namespace hapi;
 

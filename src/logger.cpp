@@ -1,17 +1,8 @@
 #include "logger.h"
 
-#include <ctime>
+#include "routines/str_utils.h"
 
 using namespace hapi;
-
-std::string strtime() {
-  std::string str = "unknown";
-  std::time_t t = std::time(nullptr);
-  char mbstr[100];
-  if (std::strftime(mbstr, sizeof(mbstr), "%Y-%m-%d %H:%M:%S", std::gmtime(&t)))
-    str = std::string(mbstr);
-  return str;
-}
 
 Logger::Logger()
     : _debug(nullptr),
@@ -50,23 +41,23 @@ void Logger::set_streams(std::ostream &debug, std::ostream &info,
 std::ostream &Logger::log(Logger::LogLevel l) {
   switch (l) {
     case Logger::LogLevel::DEBUG:
-      _debug << strtime() << " | DEBUG    | ";
+      _debug << str_time() << " | DEBUG    | ";
       _last.rdbuf(_debug.rdbuf());
       return _debug;
     case Logger::LogLevel::INFO:
-      _info << strtime() << " | INFO     | ";
+      _info << str_time() << " | INFO     | ";
       _last.rdbuf(_info.rdbuf());
       return _info;
     case Logger::LogLevel::WARNING:
-      _warning << strtime() << " | WARNING  | ";
+      _warning << str_time() << " | WARNING  | ";
       _last.rdbuf(_warning.rdbuf());
       return _warning;
     case Logger::LogLevel::ERROR:
-      _error << strtime() << " | ERROR    | ";
+      _error << str_time() << " | ERROR    | ";
       _last.rdbuf(_error.rdbuf());
       return _error;
     case Logger::LogLevel::CRITICAL:
-      _critical << strtime() << " | CRITICAL | ";
+      _critical << str_time() << " | CRITICAL | ";
       _last.rdbuf(_critical.rdbuf());
       return _critical;
   }
