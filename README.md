@@ -1,6 +1,6 @@
 # hapi
-Source code for HAPI DHM
+Source code for Holographic Aerosol Particle Imager (HAPI)
 
-DHM is digital holographic microscopy. hapi is an instrument that detects particles of microns in size and takes holograms of them for analysis
+Instrument to image large aerosol particles from an unmanned aerial vehicle
 
 Advising Professor: Matthew J. Berg, Kansas State University
