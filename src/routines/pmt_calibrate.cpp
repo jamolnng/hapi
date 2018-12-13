@@ -50,10 +50,13 @@ std::pair<unsigned int, unsigned int> pmt_calibrate(long long time_limit) {
   board.set_trigger_source(Board::TriggerSource::PMT);
   Logger& log = Logger::instance();
 
+  log.append();
   for (gain = 0xFFu; gain > 0; gain--) {
-    if ((gain + 1) % 16 == 0)
-      log.info() << std::setfill('0') << std::setw(2) << std::hex
-                 << "Testing with gain: 0x" << gain << std::endl;
+    if ((gain + 1) % 16 == 0) {
+      log.info() << std::setfill('0') << std::right << std::hex
+                 << "Testing gain range: 0x" << std::setw(2) << gain << "-0x"
+                 << std::setw(2) << (gain - 0x0Fu) << std::endl;
+    }
     for (threshold = 0xFFu; threshold > 0; threshold--) {
       if (pass(gain, threshold, ms, board))
         return std::make_pair(gain, threshold);
