@@ -16,9 +16,11 @@ void acquisition_loop(std::shared_ptr<USBCamera> &camera,
   Board &board = Board::instance();
   Logger &log = Logger::instance();
 
-  // begin acquisition
-  log.info() << "Beginning acquisition." << std::endl;
-  camera->begin_acquisition();
+  if (mode != HAPIMode::TRIGGER_TEST) {
+    // begin acquisition
+    log.info() << "Beginning acquisition." << std::endl;
+    camera->begin_acquisition();  
+  }
 
   // arm the board so it is ready to acquire images
   log.info() << "Arming the HAPI-E board." << std::endl;
@@ -80,8 +82,10 @@ void acquisition_loop(std::shared_ptr<USBCamera> &camera,
     board.arm();
   }
 
-  log.info() << "Ending acquisition." << std::endl;
-  camera->end_acquisition();
+  if (mode != HAPIMode::TRIGGER_TEST) {
+    log.info() << "Ending acquisition." << std::endl;
+    camera->end_acquisition();
+  }
 }
 
 void acquire_image(std::shared_ptr<USBCamera> &camera,

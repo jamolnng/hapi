@@ -30,7 +30,7 @@ using namespace hapi;
 void initialize_board(Config &config);
 // resets board and frees spinnaker system
 void cleanup(Spinnaker::CameraList &clist, Spinnaker::SystemPtr &system,
-             std::shared_ptr<USBCamera> &camera);
+             std::shared_ptr<USBCamera> &camera, HAPIMode mode);
 void initialize_camera(std::shared_ptr<USBCamera> &camera, Config &config);
 
 int main(int argc, char *argv[]) {
@@ -91,6 +91,14 @@ int main(int argc, char *argv[]) {
   std::string image_type = get_image_type(config);
   std::filesystem::path out_dir = get_out_dir(start_time, config);
 
+  try {
+    initialize_board(config);
+  } catch (const std::exception &ex) {
+    log.exception(ex) << "Failed to initialize the HAPI-E board." << std::endl;
+    log.critical() << "Exiting (-1)..." << std::endl;
+    return -1;
+  }
+
   if (parser.exists("c")) {
     try {
       long long ms = 5000;
@@ -103,12 +111,14 @@ int main(int argc, char *argv[]) {
               << std::endl;
         }
       }
+      log.info() << "Calibrating with interval: " << ms << "." << std::endl;
       auto vals = pmt_calibrate(ms);
       auto gain = vals.first;
       auto threshold = vals.second;
       log.info() << "Calibration success!" << std::endl;
-      config["pmt_gain"] = std::to_string(gain);
-      config["pmt_threshold"] = std::to_string(threshold);
+      Board &board = Board::instance();
+      board.set_pmt_gain(gain);
+      board.set_pmt_threshold(threshold);
       log.info() << std::hex << "Gain:      " << gain << std::endl;
       log.info() << std::hex << "Threshold: " << threshold << std::endl;
     } catch (const PMTCalibrationError &ex) {
@@ -116,14 +126,6 @@ int main(int argc, char *argv[]) {
       log.error() << "Exiting (-1)..." << std::endl;
       return -1;
     }
-  }
-
-  try {
-    initialize_board(config);
-  } catch (const std::exception &ex) {
-    log.exception(ex) << "Failed to initialize the HAPI-E board." << std::endl;
-    log.critical() << "Exiting (-1)..." << std::endl;
-    return -1;
   }
 
   Spinnaker::SystemPtr system;
@@ -150,7 +152,7 @@ int main(int argc, char *argv[]) {
     // if no cameras detected exit
     if (clist.GetSize() == 0) {
       log.critical() << "No cameras detected." << std::endl;
-      cleanup(clist, system, camera);
+      cleanup(clist, system, camera, mode);
       log.critical() << "Exiting (-1)..." << std::endl;
       return -1;
     }
@@ -165,7 +167,7 @@ int main(int argc, char *argv[]) {
       initialize_camera(camera, config);
     } catch (const std::exception &ex) {
       log.exception(ex) << std::endl;
-      cleanup(clist, system, camera);
+      cleanup(clist, system, camera, mode);
       return -1;
     }
   }
@@ -177,11 +179,11 @@ int main(int argc, char *argv[]) {
     acquisition_loop(camera, out_dir, image_type, interval_time, mode);
   } catch (const std::exception &ex) {
     log.exception(ex) << std::endl;
-    cleanup(clist, system, camera);
+    cleanup(clist, system, camera, mode);
     return -1;
   }
 
-  cleanup(clist, system, camera);
+  cleanup(clist, system, camera, mode);
   log.info() << "Exiting (0)..." << std::endl;
   return 0;
 }
@@ -215,7 +217,7 @@ void initialize_board(Config &config) {
 }
 
 void cleanup(Spinnaker::CameraList &clist, Spinnaker::SystemPtr &system,
-             std::shared_ptr<USBCamera> &camera) {
+             std::shared_ptr<USBCamera> &camera, HAPIMode mode) {
   Board &board = Board::instance();
   Logger &log = Logger::instance();
   log.info() << "Cleaning up..." << std::endl;
@@ -239,17 +241,19 @@ void cleanup(Spinnaker::CameraList &clist, Spinnaker::SystemPtr &system,
   }
   log.info() << "Disarming HAPI-E board." << std::endl;
   board.disarm();
-  log.info() << "Clearing camera list." << std::endl;
-  try {
-    clist.Clear();
-  } catch (const std::exception &ex) {
-    log.exception(ex) << "Failed to clear camera list." << std::endl;
-  }
-  log.info() << "Releasing Spinnaker system." << std::endl;
-  try {
-    system->ReleaseInstance();
-  } catch (const std::exception &ex) {
-    log.exception(ex) << "Failed to release Spinnaker system." << std::endl;
+  if (mode != HAPIMode::TRIGGER_TEST) {
+    log.info() << "Clearing camera list." << std::endl;
+    try {
+      clist.Clear();
+    } catch (const std::exception &ex) {
+      log.exception(ex) << "Failed to clear camera list." << std::endl;
+    }
+    log.info() << "Releasing Spinnaker system." << std::endl;
+    try {
+      system->ReleaseInstance();
+    } catch (const std::exception &ex) {
+      log.exception(ex) << "Failed to release Spinnaker system." << std::endl;
+    }
   }
 }
 

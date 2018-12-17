@@ -7,7 +7,7 @@
 
 using namespace hapi;
 
-#define HAPI_PIN_DELAY std::chrono::microseconds(1)
+#define HAPI_PIN_DELAY std::chrono::milliseconds(100)
 
 Board::Board() {
   // initialize wiringPi and create the board instance
@@ -72,10 +72,10 @@ void Board::set_pulse(unsigned int pulse) {
 }
 void Board::set_pmt_gain(int gain_byte) {
   wiringPiI2CWriteReg8(_i2c, 0x00, gain_byte);
-  std::this_thread::sleep_for(std::chrono::milliseconds(1));
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
 }
 
 void Board::set_pmt_threshold(int threshold_byte) {
   wiringPiI2CWriteReg8(_i2c, 0x01, threshold_byte);
-  std::this_thread::sleep_for(std::chrono::milliseconds(1));
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
 }

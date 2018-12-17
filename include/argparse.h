@@ -214,7 +214,7 @@ inline std::string ArgumentParser::get<std::string>(const std::string &name) {
   std::string t = _delimit(name);
   if (_pairs.find(t) != _pairs.end()) t = _pairs[t];
   auto v = _variables.find(t);
-  if (v != _variables.end()) return v->second;
+  if (v != _variables.end()) return _ltrim_copy(v->second);
   return "";
 }
 template <>

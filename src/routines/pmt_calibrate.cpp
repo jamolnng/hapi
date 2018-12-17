@@ -2,6 +2,7 @@
 
 #include <atomic>
 #include <chrono>
+#include <cmath>
 #include <iomanip>
 
 #include "board.h"
@@ -25,13 +26,22 @@ extern volatile std::atomic<bool> running;
  */
 inline bool pass(const unsigned int gain, const unsigned int threshold,
                  const std::chrono::milliseconds& time_limit, Board& board) {
-  auto start_time = std::chrono::high_resolution_clock::now();
-  auto current_time = start_time;
+  Logger& log = Logger::instance();
   board.set_pmt_gain(gain);
   board.set_pmt_threshold(threshold);
+  board.reset();
   board.arm();
+  auto start_time = std::chrono::high_resolution_clock::now();
+  auto current_time = start_time;
   while (current_time - start_time < time_limit) {
     if (board.is_done() || !running) {
+      auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+                    current_time - start_time)
+                    .count();
+      if (ms > 0)
+        log.debug() << "Gain: 0x" << std::hex << gain << " Threshold: 0x"
+                    << threshold << " Triggered in: " << std::dec << ms
+                    << " milliseconds." << std::endl;
       board.disarm();
       return false;
     }
@@ -42,25 +52,30 @@ inline bool pass(const unsigned int gain, const unsigned int threshold,
 }
 
 std::pair<unsigned int, unsigned int> pmt_calibrate(long long time_limit) {
-  unsigned int gain;
-  unsigned int threshold;
   auto ms = std::chrono::milliseconds(time_limit);
   Board& board = Board::instance();
 
   board.set_trigger_source(Board::TriggerSource::PMT);
   Logger& log = Logger::instance();
 
-  log.append();
-  for (gain = 0xFFu; gain > 0; gain--) {
+  int gain = 0xFF;
+  int threshold = 0x00;
+  for (gain = 0xFF; gain >= 0; gain--) {
+    if (!running) goto exit;
     if ((gain + 1) % 16 == 0) {
       log.info() << std::setfill('0') << std::right << std::hex
                  << "Testing gain range: 0x" << std::setw(2) << gain << "-0x"
                  << std::setw(2) << (gain - 0x0Fu) << std::endl;
     }
-    for (threshold = 0xFFu; threshold > 0; threshold--) {
-      if (pass(gain, threshold, ms, board))
-        return std::make_pair(gain, threshold);
-      if (!running) goto exit;
+    if (pass(gain, threshold, ms, board)) {
+      log.info() << "Found gain: 0x" << std::hex << std::setw(2)
+                 << std::setfill('0') << gain << std::endl;
+      for (threshold = 0x00; threshold <= 0xFF; threshold++) {
+        if (!running) goto exit;
+        if (!pass(gain, threshold, ms, board))
+          return std::make_pair(gain, std::max(threshold - 1, 0));
+      }
+      break;
     }
   }
 
