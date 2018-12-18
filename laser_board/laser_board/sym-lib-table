@@ -1,0 +1,3 @@
+(sym_lib_table
+  (lib (name hapi)(type Legacy)(uri ${KIPRJMOD}/hapi.lib)(options "")(descr ""))
+)
