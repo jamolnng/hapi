@@ -1,0 +1,30 @@
+.title KiCad schematic
+U3 Net-_R10-Pad2_ Net-_R9-Pad2_ VCC Net-_R7-Pad2_ Net-_R2-Pad2_ Net-_R7-Pad2_ Net-_R3-Pad2_ Net-_R7-Pad2_ Net-_R5-Pad2_ Net-_R7-Pad2_ Net-_R4-Pad2_ Net-_D2-Pad2_ Net-_R11-Pad2_ Net-_R12-Pad2_ LM339
+D1 Net-_D1-Pad1_ GND 1N4735A
+C1 VCC GND 0.1uF
+BT1 Net-_BT1-Pad1_ Net-_BT1-Pad2_ Battery
+D3 Net-_D3-Pad1_ VCC LED
+D4 Net-_D4-Pad1_ VCC LED
+D5 Net-_D5-Pad1_ VCC LED
+D6 Net-_D6-Pad1_ VCC LED
+D7 Net-_D7-Pad1_ VCC LED
+D2 GND Net-_D2-Pad2_ 1N4148
+R7 VCC Net-_R7-Pad2_ 16k
+R8 Net-_R7-Pad2_ GND 6.2k
+R1 VCC Net-_D1-Pad1_ 1k
+R9 Net-_D3-Pad1_ Net-_R9-Pad2_ 2.2k
+R10 Net-_D4-Pad1_ Net-_R10-Pad2_ 2.2k
+R11 Net-_D5-Pad1_ Net-_R11-Pad2_ 2.2k
+R12 Net-_D6-Pad1_ Net-_R12-Pad2_ 2.2k
+R13 Net-_D7-Pad1_ Net-_D2-Pad2_ 2.2k
+R2 Net-_D1-Pad1_ Net-_R2-Pad2_ R
+R3 Net-_R2-Pad2_ Net-_R3-Pad2_ R
+R4 Net-_R3-Pad2_ Net-_R4-Pad2_ R
+R5 Net-_R4-Pad2_ Net-_R5-Pad2_ R
+R6 Net-_R5-Pad2_ GND R
+U1 VCC GND Net-_J1-Pad1_ LM7812_TO220
+U2 VCC GND Net-_J1-Pad1_ LM7812_TO220
+J1 Net-_J1-Pad1_ GND Conn_01x02_Female
+BT2 Net-_BT1-Pad2_ GND Battery
+SW1 VCC Net-_BT1-Pad1_ SW_SPST
+.end
