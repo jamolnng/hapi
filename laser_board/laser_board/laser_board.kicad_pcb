@@ -30,7 +30,7 @@
     (46 B.CrtYd user)
     (47 F.CrtYd user)
     (48 B.Fab user)
-    (49 F.Fab user hide)
+    (49 F.Fab user)
   )
 
   (setup
@@ -158,7 +158,7 @@
     (add_net VCC)
   )
 
-  (module hapi:te_conn_bnc_1634503 (layer F.Cu) (tedit 5C195CA5) (tstamp 5C4B1241)
+  (module hapi:te_conn_bnc_1634503 (layer F.Cu) (tedit 5C1BCFFB) (tstamp 5C4B1241)
     (at 113.665 81.28)
     (path /5C193C4E)
     (fp_text reference J2 (at 10.16 -1.905) (layer F.SilkS)
@@ -167,16 +167,17 @@
     (fp_text value "Trigger In" (at 3.13 11.43) (layer F.Fab)
       (effects (font (size 1 1) (thickness 0.15)))
     )
-    (fp_circle (center 3.13 3.13) (end 9.63 3.13) (layer F.SilkS) (width 0.5))
-    (pad 2 thru_hole circle (at 0 0) (size 3.2 3.2) (drill 1.6) (layers *.Cu *.Mask)
+    (fp_circle (center 3.13 3.13) (end 10.83 3.13) (layer F.SilkS) (width 0.01))
+    (fp_circle (center 3.13 3.13) (end 9.63 3.13) (layer F.SilkS) (width 0.01))
+    (pad 2 thru_hole circle (at 6.26 0) (size 3.2 3.2) (drill 1.6) (layers *.Cu *.Mask)
       (net 2 GND))
-    (pad 2 thru_hole circle (at 0 6.26) (size 3.2 3.2) (drill 1.6) (layers *.Cu *.Mask)
+    (pad 2 thru_hole circle (at 6.26 6.26) (size 3.2 3.2) (drill 1.6) (layers *.Cu *.Mask)
       (net 2 GND))
     (pad 1 thru_hole circle (at 3.13 3.13) (size 2.2 2.2) (drill 1.1) (layers *.Cu *.Mask)
       (net 3 "Net-(J2-Pad1)"))
-    (pad 2 thru_hole circle (at 6.26 6.26) (size 3.2 3.2) (drill 1.6) (layers *.Cu *.Mask)
+    (pad 2 thru_hole circle (at 0 6.26) (size 3.2 3.2) (drill 1.6) (layers *.Cu *.Mask)
       (net 2 GND))
-    (pad 2 thru_hole circle (at 6.26 0) (size 3.2 3.2) (drill 1.6) (layers *.Cu *.Mask)
+    (pad 2 thru_hole circle (at 0 0) (size 3.2 3.2) (drill 1.6) (layers *.Cu *.Mask)
       (net 2 GND))
   )
 
@@ -751,7 +752,7 @@
     )
   )
 
-  (module MountingHole:MountingHole_2.7mm_M2.5 (layer F.Cu) (tedit 5C19875F) (tstamp 5C4B4BC2)
+  (module MountingHole:MountingHole_2.7mm_M2.5 (layer F.Cu) (tedit 5C1A9F14) (tstamp 5C4B4BC2)
     (at 133.985 80.01)
     (descr "Mounting Hole 2.7mm, no annular, M2.5")
     (tags "mounting hole 2.7mm no annular m2.5")
@@ -759,7 +760,7 @@
     (fp_text reference REF** (at 0 -3.7) (layer F.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)))
     )
-    (fp_text value MountingHole_2.7mm_M2.5 (at 0 3.7) (layer F.Fab)
+    (fp_text value MountingHole_2.7mm_M2.5 (at 0 3.7) (layer F.Fab) hide
       (effects (font (size 1 1) (thickness 0.15)))
     )
     (fp_circle (center 0 0) (end 2.95 0) (layer F.CrtYd) (width 0.05))
@@ -770,7 +771,7 @@
     (pad 1 np_thru_hole circle (at 0 0) (size 2.7 2.7) (drill 2.7) (layers *.Cu *.Mask))
   )
 
-  (module MountingHole:MountingHole_2.7mm_M2.5 (layer F.Cu) (tedit 5C198765) (tstamp 5C4B4BF9)
+  (module MountingHole:MountingHole_2.7mm_M2.5 (layer F.Cu) (tedit 5C1A9F19) (tstamp 5C4B4BF9)
     (at 106.045 80.01)
     (descr "Mounting Hole 2.7mm, no annular, M2.5")
     (tags "mounting hole 2.7mm no annular m2.5")
@@ -778,7 +779,7 @@
     (fp_text reference REF** (at 0 -3.7) (layer F.SilkS) hide
       (effects (font (size 1 1) (thickness 0.15)))
     )
-    (fp_text value MountingHole_2.7mm_M2.5 (at 0 3.7) (layer F.Fab)
+    (fp_text value MountingHole_2.7mm_M2.5 (at 0 3.7) (layer F.Fab) hide
       (effects (font (size 1 1) (thickness 0.15)))
     )
     (fp_circle (center 0 0) (end 2.95 0) (layer F.CrtYd) (width 0.05))
