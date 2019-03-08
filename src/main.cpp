@@ -49,6 +49,7 @@ void cleanup(Spinnaker::CameraList &clist, Spinnaker::SystemPtr &system,
              std::shared_ptr<USBCamera> &camera, HAPIMode mode,
              OBISLaser &laser);
 void initialize_camera(std::shared_ptr<USBCamera> &camera, Config &config);
+void initialize_laser(OBISLaser &laser);
 
 int main(int argc, char *argv[]) {
   std::string start_time = str_time();
@@ -148,12 +149,16 @@ int main(int argc, char *argv[]) {
     }
   }
 
+  log.info() << "Initializing laser." << std::endl;
   std::string device = "/dev/" + exec("ls /dev | grep ttyACM");
   OBISLaser laser(device);
-  laser.handshake(OBISLaser::State::Off);
-  laser.cdrh(OBISLaser::State::Off);
-  laser.mode(OBISLaser::SourceType::Digital);
-  laser.auto_start(OBISLaser::State::On);
+  try {
+    initialize_laser(laser);
+  } catch (const std::exception &ex) {
+    log.exception(ex) << "Failed to initialize the laser." << std::endl;
+    log.error() << "Exiting (-1)..." << std::endl;
+    return -1;
+  }
 
   Spinnaker::SystemPtr system;
   Spinnaker::CameraList clist;
@@ -199,13 +204,11 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  log.error() << config.get<unsigned int>("interval") << std::endl;
-
   std::chrono::milliseconds interval_time =
       std::chrono::milliseconds(config.get<unsigned int>("interval"));
 
   try {
-    acquisition_loop(camera, out_dir, image_type, interval_time, mode);
+    acquisition_loop(camera, laser, out_dir, image_type, interval_time, mode);
   } catch (const std::exception &ex) {
     log.exception(ex) << std::endl;
     cleanup(clist, system, camera, mode, laser);
@@ -230,12 +233,6 @@ void initialize_board(Config &config, HAPIMode mode) {
   log.info() << "Setting PMT gain and threshold." << std::endl;
   board.set_pmt_gain(config.get<unsigned int>("pmt_gain"));
   board.set_pmt_threshold(config.get<unsigned int>("pmt_threshold"));
-
-  log.debug() << config.get<std::string>("delay") << std::endl;
-  log.debug() << config.get<unsigned int>("exp") << std::endl;
-  log.debug() << config.get<unsigned int>("pulse") << std::endl;
-  log.debug() << config.get<unsigned int>("pmt_gain") << std::endl;
-  log.debug() << config.get<unsigned int>("pmt_threshold") << std::endl;
 
   if (mode == HAPIMode::INTERVAL) {
     board.set_trigger_source(Board::TriggerSource::PI);
@@ -319,10 +316,10 @@ void initialize_camera(std::shared_ptr<USBCamera> &camera, Config &config) {
   log.info() << "Setting gain to " << gain << " dB." << std::endl;
   camera->set_gain(gain);
 
-  log.info() << "Device info:" << std::endl;
+  log.info() << "Camera info:" << std::endl;
   try {
     for (auto i : camera->get_device_info())
-      log.info() << i.first << ": " << i.second << std::endl;
+      log.info() << "    " << i.first << ": " << i.second << std::endl;
   } catch (const std::exception &ex) {
     log.exception(ex) << "Failed to print device info." << std::endl;
   }
@@ -341,4 +338,31 @@ void initialize_camera(std::shared_ptr<USBCamera> &camera, Config &config) {
   log.info() << "Setting acquisition mode to continuous." << std::endl;
   camera->set_acquisition_mode(
       Spinnaker::AcquisitionModeEnums::AcquisitionMode_Continuous);
+}
+
+void initialize_laser(OBISLaser &laser) {
+  Logger &log = Logger::instance();
+  laser.handshake(OBISLaser::State::Off);
+  laser.cdrh(OBISLaser::State::Off);
+  laser.mode(OBISLaser::SourceType::Digital);
+  laser.auto_start(OBISLaser::State::On);
+  laser.state(OBISLaser::State::On);
+
+  log.info() << "Laser info:" << std::endl;
+  log.info() << "    IDN: " << laser.sys_info()._idn;
+  log.info() << "    Model: " << laser.sys_info()._model;
+  log.info() << "    Serial Number: " << laser.sys_info()._snumber;
+  log.info() << "    Firmware: " << laser.sys_info()._firmware;
+  log.info() << "    Wavelength: " << laser.sys_info()._wavelength << std::endl;
+  log.info() << "    Laser cycles: " << laser.cycles() << std::endl;
+  log.info() << "    Laser hours: " << laser.hours() << std::endl;
+  log.info() << "    Laser diode hours: " << laser.diode_hours() << std::endl;
+
+  FaultCode fault = laser.fault();
+  if (fault != 0) {
+    for (auto f : laser.fault_bits(fault)) {
+      log.error() << "Laser fault: " << laser.fault_str(f) << std::endl;
+    }
+    throw std::runtime_error("Laser fault");
+  }
 }

@@ -149,7 +149,7 @@ const std::string OBISLaser::user(const unsigned short index) {
 }
 
 const unsigned int OBISLaser::cycles(void) {
-  return query<unsigned int>("syst:cycl");
+  return query<unsigned int>("syst:cycl?");
 }
 
 const unsigned int OBISLaser::hours(void) {

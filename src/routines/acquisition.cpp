@@ -12,7 +12,7 @@
 namespace hapi {
 extern volatile std::atomic<bool> running;
 
-void acquisition_loop(std::shared_ptr<USBCamera> &camera,
+void acquisition_loop(std::shared_ptr<USBCamera> &camera, OBISLaser &laser,
                       std::filesystem::path &out_dir, std::string &image_type,
                       std::chrono::milliseconds interval_time, HAPIMode mode) {
   Board &board = Board::instance();
@@ -43,10 +43,18 @@ void acquisition_loop(std::shared_ptr<USBCamera> &camera,
                  current_time - last_time)
                  .count() < interval_time.count()) {
         current_time = std::chrono::high_resolution_clock::now();
-        if (running)
+        FaultCode fault = laser.fault();
+        if (fault != 0) {
+          std::vector<OBISLaser::FaultBits> faults = laser.fault_bits(fault);
+          for (auto f : faults) {
+            log.error() << "Laser fault: " << laser.fault_str(f) << std::endl;
+          }
+        }
+        if (running) {
           std::this_thread::yield();
-        else
+        } else {
           break;
+        }
       }
       log.info() << "Sending trigger." << std::endl;
       board.trigger();
@@ -55,11 +63,12 @@ void acquisition_loop(std::shared_ptr<USBCamera> &camera,
     }
     // wait for the board to signal it has taken an image
     while (!board.is_done()) {
-      if (running)
+      if (running) {
         std::this_thread::yield();
-      else
+      } else {
         // exit the program if signaled
         break;
+      }
     }
     // exit if no image was captured and the program was signaled to exit
     if (!board.is_done() && !running) {
@@ -135,7 +144,6 @@ void acquire_image(std::shared_ptr<USBCamera> &camera,
   log.info() << "Releasing image." << std::endl;
   result->Release();
   // wait for image to be freed before we arm
-  while (result->IsInUse())
-    std::this_thread::yield();
+  while (result->IsInUse()) std::this_thread::yield();
 }
-}; // namespace hapi
+};  // namespace hapi
