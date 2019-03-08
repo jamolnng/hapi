@@ -38,7 +38,14 @@ add_executable(hapi-config ${HAPI_CONFIG_SOURCES})
 target_include_directories(hapi-config PUBLIC ${HAPI_CONFIG_INCLUDE_DIRS})
 target_link_libraries(hapi-config stdc++fs)
 
-install(TARGETS hapi hapi-config
+basic_program(hapi-pmt-calibrate "tools/pmt_calibrate/")
+target_sources(hapi-pmt-calibrate PUBLIC "src/board.cpp" "src/config.cpp" "src/logger.cpp"
+                                         "src/routines/get_config.cpp" "src/routines/os_utils.cpp"
+                                         "src/routines/pmt_calibrate.cpp" "src/routines/str_utils.cpp")
+target_include_directories(hapi-pmt-calibrate PUBLIC "include/" "include/routines/")
+target_link_libraries(hapi-pmt-calibrate wiringPi stdc++fs)
+
+install(TARGETS hapi hapi-config hapi-pmt-calibrate
         LIBRARY DESTINATION lib/
         RUNTIME DESTINATION bin/)
 
