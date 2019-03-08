@@ -16,9 +16,19 @@ Board::Board() {
   piHiPri(99);
   pinMode(_arm_pin, OUTPUT);
   pinMode(_done_pin, INPUT);
-  for (unsigned int i = 0; i < 4; i++) pinMode(_delay_pins[i], OUTPUT);
-  for (unsigned int i = 0; i < 4; i++) pinMode(_exp_pins[i], OUTPUT);
-  for (unsigned int i = 0; i < 5; i++) pinMode(_pulse_pins[i], OUTPUT);
+  pinMode(_trigger_pin, OUTPUT);
+  pinMode(_trigger_source_pin, OUTPUT);
+  for (unsigned int i = 0; i < 4; i++) {
+    pinMode(_delay_pins[i], OUTPUT);
+  }
+  for (unsigned int i = 0; i < 4; i++) {
+    pinMode(_exp_pins[i], OUTPUT);
+  }
+  for (unsigned int i = 0; i < 5; i++) {
+    pinMode(_pulse_pins[i], OUTPUT);
+  }
+  reset();
+  set_trigger_source(_trigger_source);
 }
 
 void Board::trigger() {
@@ -54,20 +64,23 @@ void Board::set_trigger_source(Board::TriggerSource source) {
 }
 
 void Board::set_delay(unsigned int delay) {
-  for (unsigned int i = 0; i < 4; i++)
+  for (unsigned int i = 0; i < 4; i++) {
     digitalWrite(_delay_pins[i], (delay >> i) & 1);
+  }
   std::this_thread::sleep_for(HAPI_PIN_DELAY);
 }
 
 void Board::set_exp(unsigned int exp) {
-  for (unsigned int i = 0; i < 4; i++)
+  for (unsigned int i = 0; i < 4; i++) {
     digitalWrite(_exp_pins[i], (exp >> i) & 1);
+  }
   std::this_thread::sleep_for(HAPI_PIN_DELAY);
 }
 
 void Board::set_pulse(unsigned int pulse) {
-  for (unsigned int i = 0; i < 5; i++)
+  for (unsigned int i = 0; i < 5; i++) {
     digitalWrite(_pulse_pins[i], (pulse >> i) & 1);
+  }
   std::this_thread::sleep_for(HAPI_PIN_DELAY);
 }
 void Board::set_pmt_gain(int gain_byte) {

@@ -1,6 +1,8 @@
 #include <algorithm>
+#include <array>
 #include <atomic>
 #include <chrono>
+#include <cstdio>
 #include <cstdlib>
 #include <exception>
 #include <fstream>
@@ -12,12 +14,15 @@
 #include <string>
 #include <thread>
 
+#include <unistd.h>
+
 #include "Spinnaker.h"
 
 #include "argparse.h"
 #include "board.h"
 #include "config.h"
 #include "logger.h"
+#include "obis.h"
 #include "routines/acquisition.h"
 #include "routines/get_config.h"
 #include "routines/os_utils.h"
@@ -27,11 +32,24 @@
 
 using namespace hapi;
 
-void initialize_board(Config &config);
+std::string exec(const char *cmd) {
+  std::array<char, 128> buffer;
+  std::string result;
+  std::shared_ptr<FILE> pipe(popen(cmd, "r"), pclose);
+  if (!pipe) throw std::runtime_error("popen() failed!");
+  while (!feof(pipe.get())) {
+    if (fgets(buffer.data(), 128, pipe.get()) != NULL) result += buffer.data();
+  }
+  return result.substr(0, result.length() - 1);
+}
+
+void initialize_board(Config &config, HAPIMode mode);
 // resets board and frees spinnaker system
 void cleanup(Spinnaker::CameraList &clist, Spinnaker::SystemPtr &system,
-             std::shared_ptr<USBCamera> &camera, HAPIMode mode);
+             std::shared_ptr<USBCamera> &camera, HAPIMode mode,
+             OBISLaser &laser);
 void initialize_camera(std::shared_ptr<USBCamera> &camera, Config &config);
+void initialize_laser(OBISLaser &laser);
 
 int main(int argc, char *argv[]) {
   std::string start_time = str_time();
@@ -58,16 +76,19 @@ int main(int argc, char *argv[]) {
   if (parser.is_help()) return 0;
 
   std::string mode_str = "trigger";
-  if (parser.exists("m")) mode_str = parser.get<std::string>("m");
+  if (parser.exists("m")) {
+    mode_str = parser.get<std::string>("m");
+  }
   lower(mode_str);
 
   HAPIMode mode = HAPIMode::TRIGGER;
-  if (mode_str == "trigger")
+  if (mode_str == "trigger") {
     mode = HAPIMode::TRIGGER;
-  else if (mode_str == "interval")
+  } else if (mode_str == "interval") {
     mode = HAPIMode::INTERVAL;
-  else if (mode_str == "test")
+  } else if (mode_str == "test") {
     mode = HAPIMode::TRIGGER_TEST;
+  }
 
   // require sudo permissions to access hardware
   if (!is_root()) {
@@ -92,7 +113,7 @@ int main(int argc, char *argv[]) {
   std::filesystem::path out_dir = get_out_dir(start_time, config);
 
   try {
-    initialize_board(config);
+    initialize_board(config, mode);
   } catch (const std::exception &ex) {
     log.exception(ex) << "Failed to initialize the HAPI-E board." << std::endl;
     log.critical() << "Exiting (-1)..." << std::endl;
@@ -128,6 +149,17 @@ int main(int argc, char *argv[]) {
     }
   }
 
+  log.info() << "Initializing laser." << std::endl;
+  std::string device = "/dev/" + exec("ls /dev | grep ttyACM");
+  OBISLaser laser(device);
+  try {
+    initialize_laser(laser);
+  } catch (const std::exception &ex) {
+    log.exception(ex) << "Failed to initialize the laser." << std::endl;
+    log.error() << "Exiting (-1)..." << std::endl;
+    return -1;
+  }
+
   Spinnaker::SystemPtr system;
   Spinnaker::CameraList clist;
   std::shared_ptr<USBCamera> camera;
@@ -152,7 +184,7 @@ int main(int argc, char *argv[]) {
     // if no cameras detected exit
     if (clist.GetSize() == 0) {
       log.critical() << "No cameras detected." << std::endl;
-      cleanup(clist, system, camera, mode);
+      cleanup(clist, system, camera, mode, laser);
       log.critical() << "Exiting (-1)..." << std::endl;
       return -1;
     }
@@ -167,28 +199,28 @@ int main(int argc, char *argv[]) {
       initialize_camera(camera, config);
     } catch (const std::exception &ex) {
       log.exception(ex) << std::endl;
-      cleanup(clist, system, camera, mode);
+      cleanup(clist, system, camera, mode, laser);
       return -1;
     }
   }
 
   std::chrono::milliseconds interval_time =
-      std::chrono::milliseconds(config.get<int>("interval"));
+      std::chrono::milliseconds(config.get<unsigned int>("interval"));
 
   try {
-    acquisition_loop(camera, out_dir, image_type, interval_time, mode);
+    acquisition_loop(camera, laser, out_dir, image_type, interval_time, mode);
   } catch (const std::exception &ex) {
     log.exception(ex) << std::endl;
-    cleanup(clist, system, camera, mode);
+    cleanup(clist, system, camera, mode, laser);
     return -1;
   }
 
-  cleanup(clist, system, camera, mode);
+  cleanup(clist, system, camera, mode, laser);
   log.info() << "Exiting (0)..." << std::endl;
   return 0;
 }
 
-void initialize_board(Config &config) {
+void initialize_board(Config &config, HAPIMode mode) {
   Logger &log = Logger::instance();
   // initialize the board
   log.info() << "Initializing the HAPI-E board." << std::endl;
@@ -199,25 +231,25 @@ void initialize_board(Config &config) {
   board.set_pulse(config.get<unsigned int>("pulse"));
 
   log.info() << "Setting PMT gain and threshold." << std::endl;
-  board.set_pmt_gain(config.get<int>("pmt_gain"));
-  board.set_pmt_threshold(config.get<int>("pmt_threshold"));
+  board.set_pmt_gain(config.get<unsigned int>("pmt_gain"));
+  board.set_pmt_threshold(config.get<unsigned int>("pmt_threshold"));
 
-  Board::TriggerSource source =
-      static_cast<Board::TriggerSource>(config.get<int>("trigger_source"));
-
-  board.set_trigger_source(source);
-
-  if (source == Board::TriggerSource::PMT)
-    log.info() << "Using PMT as trigger source." << std::endl;
-  else
+  if (mode == HAPIMode::INTERVAL) {
+    board.set_trigger_source(Board::TriggerSource::PI);
     log.info() << "Using PI as trigger source." << std::endl;
+  } else {
+    board.set_trigger_source(Board::TriggerSource::PMT);
+    log.info() << "Using PMT as trigger source." << std::endl;
+  }
 
   log.info() << "Resetting board." << std::endl;
   board.reset();
 }
 
 void cleanup(Spinnaker::CameraList &clist, Spinnaker::SystemPtr &system,
-             std::shared_ptr<USBCamera> &camera, HAPIMode mode) {
+             std::shared_ptr<USBCamera> &camera, HAPIMode mode,
+             OBISLaser &laser) {
+  laser.state(OBISLaser::State::Off);
   Board &board = Board::instance();
   Logger &log = Logger::instance();
   log.info() << "Cleaning up..." << std::endl;
@@ -284,10 +316,10 @@ void initialize_camera(std::shared_ptr<USBCamera> &camera, Config &config) {
   log.info() << "Setting gain to " << gain << " dB." << std::endl;
   camera->set_gain(gain);
 
-  log.info() << "Device info:" << std::endl;
+  log.info() << "Camera info:" << std::endl;
   try {
     for (auto i : camera->get_device_info())
-      log.info() << i.first << ": " << i.second << std::endl;
+      log.info() << "    " << i.first << ": " << i.second << std::endl;
   } catch (const std::exception &ex) {
     log.exception(ex) << "Failed to print device info." << std::endl;
   }
@@ -306,4 +338,31 @@ void initialize_camera(std::shared_ptr<USBCamera> &camera, Config &config) {
   log.info() << "Setting acquisition mode to continuous." << std::endl;
   camera->set_acquisition_mode(
       Spinnaker::AcquisitionModeEnums::AcquisitionMode_Continuous);
+}
+
+void initialize_laser(OBISLaser &laser) {
+  Logger &log = Logger::instance();
+  laser.handshake(OBISLaser::State::Off);
+  laser.cdrh(OBISLaser::State::Off);
+  laser.mode(OBISLaser::SourceType::Digital);
+  laser.auto_start(OBISLaser::State::On);
+  laser.state(OBISLaser::State::On);
+
+  log.info() << "Laser info:" << std::endl;
+  log.info() << "    IDN: " << laser.sys_info()._idn;
+  log.info() << "    Model: " << laser.sys_info()._model;
+  log.info() << "    Serial Number: " << laser.sys_info()._snumber;
+  log.info() << "    Firmware: " << laser.sys_info()._firmware;
+  log.info() << "    Wavelength: " << laser.sys_info()._wavelength << std::endl;
+  log.info() << "    Laser cycles: " << laser.cycles() << std::endl;
+  log.info() << "    Laser hours: " << laser.hours() << std::endl;
+  log.info() << "    Laser diode hours: " << laser.diode_hours() << std::endl;
+
+  FaultCode fault = laser.fault();
+  if (fault != 0) {
+    for (auto f : laser.fault_bits(fault)) {
+      log.error() << "Laser fault: " << laser.fault_str(f) << std::endl;
+    }
+    throw std::runtime_error("Laser fault");
+  }
 }

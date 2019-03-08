@@ -7,10 +7,12 @@
 #include <atomic>
 #include <thread>
 
+#include <iostream>
+
 namespace hapi {
 extern volatile std::atomic<bool> running;
 
-void acquisition_loop(std::shared_ptr<USBCamera> &camera,
+void acquisition_loop(std::shared_ptr<USBCamera> &camera, OBISLaser &laser,
                       std::filesystem::path &out_dir, std::string &image_type,
                       std::chrono::milliseconds interval_time, HAPIMode mode) {
   Board &board = Board::instance();
@@ -19,7 +21,7 @@ void acquisition_loop(std::shared_ptr<USBCamera> &camera,
   if (mode != HAPIMode::TRIGGER_TEST) {
     // begin acquisition
     log.info() << "Beginning acquisition." << std::endl;
-    camera->begin_acquisition();  
+    camera->begin_acquisition();
   }
 
   // arm the board so it is ready to acquire images
@@ -37,12 +39,22 @@ void acquisition_loop(std::shared_ptr<USBCamera> &camera,
   while (running) {
     if (mode == HAPIMode::INTERVAL) {
       log.info() << "Waiting for interval." << std::endl;
-      while ((current_time - last_time) < interval_time) {
+      while (std::chrono::duration_cast<std::chrono::milliseconds>(
+                 current_time - last_time)
+                 .count() < interval_time.count()) {
         current_time = std::chrono::high_resolution_clock::now();
-        if (running)
+        FaultCode fault = laser.fault();
+        if (fault != 0) {
+          std::vector<OBISLaser::FaultBits> faults = laser.fault_bits(fault);
+          for (auto f : faults) {
+            log.error() << "Laser fault: " << laser.fault_str(f) << std::endl;
+          }
+        }
+        if (running) {
           std::this_thread::yield();
-        else
+        } else {
           break;
+        }
       }
       log.info() << "Sending trigger." << std::endl;
       board.trigger();
@@ -51,11 +63,12 @@ void acquisition_loop(std::shared_ptr<USBCamera> &camera,
     }
     // wait for the board to signal it has taken an image
     while (!board.is_done()) {
-      if (running)
+      if (running) {
         std::this_thread::yield();
-      else
+      } else {
         // exit the program if signaled
         break;
+      }
     }
     // exit if no image was captured and the program was signaled to exit
     if (!board.is_done() && !running) {

@@ -14,6 +14,8 @@ namespace filesystem = std::experimental::filesystem;
 #include <string>
 #include <type_traits>
 
+#include <iostream>
+
 namespace std {
 namespace filesystem = std::experimental::filesystem;
 }
@@ -34,7 +36,7 @@ class Config {
   const std::string &operator[](const std::string &&key) const;
 
   template <typename T>
-  T get(const std::string &&key) const {
+  T get(const std::string &&key) {
     std::string i = _items.at(key);
     std::istringstream in(i);
     T t;
@@ -43,6 +45,8 @@ class Config {
         in >> std::hex >> t >> std::ws;
       } else if (i.find('b') != std::string::npos) {
         t = std::stoi(i.substr(i.find('b') + 1), nullptr, 2);
+      } else {
+        in >> t >> std::ws;
       }
     } else {
       in >> t >> std::ws;
@@ -56,7 +60,7 @@ class Config {
   std::map<std::string, std::string> _items;
 };
 template <>
-inline std::string Config::get<std::string>(const std::string &&key) const {
+inline std::string Config::get<std::string>(const std::string &&key) {
   return _items.at(key);
 }
 }  // namespace hapi
