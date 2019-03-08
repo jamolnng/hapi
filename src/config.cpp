@@ -12,7 +12,7 @@ Config::Config(std::map<std::string, std::string> &defaults) {
 Config::~Config() {}
 
 void Config::load(std::filesystem::path p) {
-  std::ifstream in = std::ifstream(p);
+  std::ifstream in(p, std::ios::binary);
   if (in) {
     std::string line;
     while (std::getline(in, line)) {
@@ -28,23 +28,22 @@ void Config::load(std::filesystem::path p) {
   }
 }
 
+void Config::save(std::filesystem::path p) {
+  std::ofstream out(p, std::ios::binary);
+  if (out) {
+    for (auto const &i : _items) {
+      out << i.first << "=" << i.second << std::endl;
+    }
+    out.close();
+  }
+}
+
 bool Config::has(std::string &key) { return _items.find(key) != _items.end(); }
 
-const std::string &Config::operator[](std::string &&key) const {
-  return _items.at(key);
-}
+std::string &Config::operator[](std::string &&key) { return _items.at(key); }
 
 const std::string &Config::operator[](const std::string &&key) const {
   return _items.at(key);
-}
-
-int Config::get_int(const std::string &&key, int base) {
-  std::string i = _items.at(key);
-  std::string::size_type n = i.find_first_of('b');
-  if (n != std::string::npos) return std::stoi(i.substr(n + 1), nullptr, 2);
-  n = i.find_first_of('x');
-  if (n != std::string::npos) return std::stoi(i.substr(n + 1), nullptr, 16);
-  return std::stoi(i, nullptr, base);
 }
 
 const std::map<std::string, std::string> &Config::items() { return _items; }

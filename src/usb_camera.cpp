@@ -3,7 +3,6 @@
 #include <iostream>
 
 #include "SpinGenApi/SpinnakerGenApi.h"
-#include "Spinnaker.h"
 
 using namespace hapi;
 
@@ -38,12 +37,9 @@ void USBCamera::reset_trigger() {
   _ptr->TriggerMode.SetValue(Spinnaker::TriggerModeEnums::TriggerMode_Off);
 }
 
-void USBCamera::print_device_info() {
+std::map<std::string, std::string> USBCamera::get_device_info() {
+  std::map<std::string, std::string> device_info;
   INodeMap& nmap = _ptr->GetTLDeviceNodeMap();
-
-  std::cout << std::endl
-            << "*** DEVICE INFORMATION ***" << std::endl
-            << std::endl;
 
   FeatureList_t features;
   CCategoryPtr category = nmap.GetNode("DeviceInformation");
@@ -53,15 +49,18 @@ void USBCamera::print_device_info() {
     FeatureList_t::const_iterator it;
     for (it = features.begin(); it != features.end(); ++it) {
       CNodePtr feature_node = *it;
-      std::cout << feature_node->GetName() << " : ";
       CValuePtr value = (CValuePtr)feature_node;
-      std::cout << (IsReadable(value) ? value->ToString()
-                                      : "Node not readable");
-      std::cout << std::endl;
+      std::string node = std::string(feature_node->GetName().c_str());
+      std::string val =
+          (IsReadable(value) ? std::string(value->ToString().c_str())
+                             : "Node not readable");
+
+      device_info[node] = val;
     }
   } else {
-    std::cout << "Device control information not available." << std::endl;
+    throw std::runtime_error("Device control information not available.");
   }
+  return device_info;
 }
 
 void USBCamera::set_acquisition_mode(
