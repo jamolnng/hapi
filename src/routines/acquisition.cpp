@@ -144,6 +144,8 @@ void acquire_image(std::shared_ptr<USBCamera> &camera,
   log.info() << "Releasing image." << std::endl;
   result->Release();
   // wait for image to be freed before we arm
-  while (result->IsInUse()) std::this_thread::yield();
+  while (result->IsInUse()) {
+    std::this_thread::yield();
+  }
 }
 };  // namespace hapi

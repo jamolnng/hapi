@@ -38,10 +38,11 @@ inline bool pass(const unsigned int gain, const unsigned int threshold,
       auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(
                     current_time - start_time)
                     .count();
-      if (ms > 0)
+      if (ms > 0) {
         log.debug() << "Gain: 0x" << std::hex << gain << " Threshold: 0x"
                     << threshold << " Triggered in: " << std::dec << ms
                     << " milliseconds." << std::endl;
+      }
       board.disarm();
       return false;
     }
@@ -61,7 +62,9 @@ std::pair<unsigned int, unsigned int> pmt_calibrate(long long time_limit) {
   int gain = 0xFF;
   int threshold = 0x00;
   for (gain = 0xFF; gain >= 0; gain--) {
-    if (!running) goto exit;
+    if (!running) {
+      goto exit;
+    }
     if ((gain + 1) % 16 == 0) {
       log.info() << std::setfill('0') << std::right << std::hex
                  << "Testing gain range: 0x" << std::setw(2) << gain << "-0x"
@@ -71,9 +74,12 @@ std::pair<unsigned int, unsigned int> pmt_calibrate(long long time_limit) {
       log.info() << "Found gain: 0x" << std::hex << std::setw(2)
                  << std::setfill('0') << gain << std::endl;
       for (threshold = 0x00; threshold <= 0xFF; threshold++) {
-        if (!running) goto exit;
-        if (!pass(gain, threshold, ms, board))
+        if (!running) {
+          goto exit;
+        }
+        if (!pass(gain, threshold, ms, board)) {
           return std::make_pair(gain, std::max(threshold - 1, 0));
+        }
       }
       break;
     }

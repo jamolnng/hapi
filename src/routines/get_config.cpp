@@ -18,17 +18,19 @@ Config get_config() {
   std::filesystem::path config_path = "/opt/hapi/hapi.conf";
   log.info() << "Loading config from " << config_path << "." << std::endl;
   try {
-    if (std::filesystem::exists(config_path))
+    if (std::filesystem::exists(config_path)) {
       config.load(config_path);
-    else
+    } else {
       log.warning() << "Config file not found. Using defaults." << std::endl;
+    }
   } catch (const std::exception &ex) {
     log.exception(ex) << "Failed to load config. Using defaults." << std::endl;
     config = Config(config_defaults);
   }
   log.info() << "Config:" << std::endl;
-  for (auto const &item : config.items())
+  for (auto const &item : config.items()) {
     log.info() << "    " << item.first << ": " << item.second << std::endl;
+  }
   return config;
 }
 

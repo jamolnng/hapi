@@ -11,6 +11,7 @@ bool set_usbfs_mb();
 bool initialize_signal_handlers();
 
 bool is_root();
+std::string exec(const char *cmd);
 };  // namespace hapi
 
 #endif

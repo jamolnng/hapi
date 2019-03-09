@@ -32,24 +32,13 @@
 
 using namespace hapi;
 
-std::string exec(const char *cmd) {
-  std::array<char, 128> buffer;
-  std::string result;
-  std::shared_ptr<FILE> pipe(popen(cmd, "r"), pclose);
-  if (!pipe) throw std::runtime_error("popen() failed!");
-  while (!feof(pipe.get())) {
-    if (fgets(buffer.data(), 128, pipe.get()) != NULL) result += buffer.data();
-  }
-  return result.substr(0, result.length() - 1);
-}
-
 void initialize_board(Config &config, HAPIMode mode);
+void initialize_camera(std::shared_ptr<USBCamera> &camera, Config &config);
+void initialize_laser(OBISLaser &laser);
 // resets board and frees spinnaker system
 void cleanup(Spinnaker::CameraList &clist, Spinnaker::SystemPtr &system,
              std::shared_ptr<USBCamera> &camera, HAPIMode mode,
              OBISLaser &laser);
-void initialize_camera(std::shared_ptr<USBCamera> &camera, Config &config);
-void initialize_laser(OBISLaser &laser);
 
 int main(int argc, char *argv[]) {
   std::string start_time = str_time();
@@ -73,7 +62,9 @@ int main(int argc, char *argv[]) {
     log.exception(ex) << "Failed to parse command line arguments." << std::endl;
     return -1;
   }
-  if (parser.is_help()) return 0;
+  if (parser.is_help()) {
+    return 0;
+  }
 
   std::string mode_str = "trigger";
   if (parser.exists("m")) {
@@ -88,6 +79,11 @@ int main(int argc, char *argv[]) {
     mode = HAPIMode::INTERVAL;
   } else if (mode_str == "test") {
     mode = HAPIMode::TRIGGER_TEST;
+  } else {
+    log.critical() << "Unknown mode: " << mode_str
+                   << ". Options are trigger, interval, test." << std::endl;
+    log.critical() << "Exiting (-1)..." << std::endl;
+    return -1;
   }
 
   // require sudo permissions to access hardware
@@ -132,7 +128,8 @@ int main(int argc, char *argv[]) {
               << std::endl;
         }
       }
-      log.info() << "Calibrating with interval: " << ms << "." << std::endl;
+      log.info() << "Calibrating with interval: " << ms << " milliseconds."
+                 << std::endl;
       auto vals = pmt_calibrate(ms);
       auto gain = vals.first;
       auto threshold = vals.second;
@@ -144,7 +141,7 @@ int main(int argc, char *argv[]) {
       log.info() << std::hex << "Threshold: " << threshold << std::endl;
     } catch (const PMTCalibrationError &ex) {
       log.exception(ex) << "Failed to calibrate the PMT." << std::endl;
-      log.error() << "Exiting (-1)..." << std::endl;
+      log.critical() << "Exiting (-1)..." << std::endl;
       return -1;
     }
   }
@@ -156,7 +153,7 @@ int main(int argc, char *argv[]) {
     initialize_laser(laser);
   } catch (const std::exception &ex) {
     log.exception(ex) << "Failed to initialize the laser." << std::endl;
-    log.error() << "Exiting (-1)..." << std::endl;
+    log.critical() << "Exiting (-1)..." << std::endl;
     return -1;
   }
 
@@ -200,18 +197,19 @@ int main(int argc, char *argv[]) {
     } catch (const std::exception &ex) {
       log.exception(ex) << std::endl;
       cleanup(clist, system, camera, mode, laser);
+      log.critical() << "Exiting (-1)..." << std::endl;
       return -1;
     }
   }
 
-  std::chrono::milliseconds interval_time =
-      std::chrono::milliseconds(config.get<unsigned int>("interval"));
+  std::chrono::milliseconds interval_time(config.get<unsigned int>("interval"));
 
   try {
     acquisition_loop(camera, laser, out_dir, image_type, interval_time, mode);
   } catch (const std::exception &ex) {
     log.exception(ex) << std::endl;
     cleanup(clist, system, camera, mode, laser);
+    log.critical() << "Exiting (-1)..." << std::endl;
     return -1;
   }
 
@@ -294,7 +292,9 @@ void initialize_camera(std::shared_ptr<USBCamera> &camera, Config &config) {
   log.info() << "Initializing camera." << std::endl;
   camera->init();
   // wait until camera is initialized
-  while (!camera->is_initialized()) std::this_thread::yield();
+  while (!camera->is_initialized()) {
+    std::this_thread::yield();
+  }
 
   log.info() << "Disabling auto exposure." << std::endl;
   camera->set_auto_exposure(Spinnaker::ExposureAutoEnums::ExposureAuto_Off);
@@ -310,16 +310,18 @@ void initialize_camera(std::shared_ptr<USBCamera> &camera, Config &config) {
   camera->set_auto_gain(Spinnaker::GainAutoEnums::GainAuto_Off);
 
   float gain = config.get<float>("camera_gain");  // 1.0 <= gain <= 47.994267
-  if (gain < 1.0f || gain > 47.994267f)
+  if (gain < 1.0f || gain > 47.994267f) {
     throw std::out_of_range("Gain must be between 1.0 and 47.994267");
+  }
 
   log.info() << "Setting gain to " << gain << " dB." << std::endl;
   camera->set_gain(gain);
 
   log.info() << "Camera info:" << std::endl;
   try {
-    for (auto i : camera->get_device_info())
+    for (auto i : camera->get_device_info()) {
       log.info() << "    " << i.first << ": " << i.second << std::endl;
+    }
   } catch (const std::exception &ex) {
     log.exception(ex) << "Failed to print device info." << std::endl;
   }

@@ -18,19 +18,21 @@ bool USBCamera::is_initialized() { return _ptr->IsInitialized(); }
 
 void USBCamera::configure_trigger(USBCamera::TriggerType type) {
   _ptr->TriggerMode.SetValue(Spinnaker::TriggerModeEnums::TriggerMode_Off);
-  if (type == TriggerType::SOFTWARE)
+  if (type == TriggerType::SOFTWARE) {
     _ptr->TriggerSource.SetValue(
         Spinnaker::TriggerSourceEnums::TriggerSource_Software);
-  else
+  } else {
     _ptr->TriggerSource.SetValue(
         Spinnaker::TriggerSourceEnums::TriggerSource_Line0);
+  }
   _ptr->TriggerMode.SetValue(Spinnaker::TriggerModeEnums::TriggerMode_On);
   _type = type;
 }
 
 void USBCamera::grab_next_image_by_trigger() {
-  if (_type == USBCamera::TriggerType::SOFTWARE)
+  if (_type == USBCamera::TriggerType::SOFTWARE) {
     _ptr->TriggerSoftware.Execute();
+  }
 }
 
 void USBCamera::reset_trigger() {
