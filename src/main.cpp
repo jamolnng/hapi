@@ -34,7 +34,7 @@ using namespace hapi;
 
 void initialize_board(Config &config, HAPIMode mode);
 void initialize_camera(std::shared_ptr<USBCamera> &camera, Config &config);
-void initialize_laser(OBISLaser &laser);
+void initialize_laser(OBISLaser &laser, HAPIMode mode);
 // resets board and frees spinnaker system
 void cleanup(Spinnaker::CameraList &clist, Spinnaker::SystemPtr &system,
              std::shared_ptr<USBCamera> &camera, HAPIMode mode,
@@ -45,6 +45,18 @@ int main(int argc, char *argv[]) {
 
   Logger &log = Logger::instance();
   log.set_stream(std::cout);
+
+  // require sudo permissions to access hardware
+  if (!is_root()) {
+    log.critical() << "Root permissions required to run." << std::endl;
+    log.critical() << "Exiting (-1)..." << std::endl;
+    return -1;
+  }
+
+  if (!initialize_signal_handlers()) {
+    log.critical() << "Exiting (-1)..." << std::endl;
+    return -1;
+  }
 
   ArgumentParser parser("HAPI");
   parser.add_argument("-m", "--mode",
@@ -79,6 +91,8 @@ int main(int argc, char *argv[]) {
     mode = HAPIMode::INTERVAL;
   } else if (mode_str == "test") {
     mode = HAPIMode::TRIGGER_TEST;
+  } else if (mode_str == "align") {
+    mode = HAPIMode::ALIGN;
   } else {
     log.critical() << "Unknown mode: " << mode_str
                    << ". Options are trigger, interval, test." << std::endl;
@@ -86,20 +100,8 @@ int main(int argc, char *argv[]) {
     return -1;
   }
 
-  // require sudo permissions to access hardware
-  if (!is_root()) {
-    log.critical() << "Root permissions required to run." << std::endl;
-    log.critical() << "Exiting (-1)..." << std::endl;
-    return -1;
-  }
-
   if (!set_usbfs_mb()) {
     log.critical() << "Failed to set usbfs memory." << std::endl;
-    log.critical() << "Exiting (-1)..." << std::endl;
-    return -1;
-  }
-
-  if (!initialize_signal_handlers()) {
     log.critical() << "Exiting (-1)..." << std::endl;
     return -1;
   }
@@ -150,7 +152,7 @@ int main(int argc, char *argv[]) {
   std::string device = "/dev/" + hapi::exec("ls /dev | grep ttyACM");
   OBISLaser laser(device);
   try {
-    initialize_laser(laser);
+    initialize_laser(laser, mode);
   } catch (const std::exception &ex) {
     log.exception(ex) << "Failed to initialize the laser." << std::endl;
     log.critical() << "Exiting (-1)..." << std::endl;
@@ -160,7 +162,7 @@ int main(int argc, char *argv[]) {
   Spinnaker::SystemPtr system;
   Spinnaker::CameraList clist;
   std::shared_ptr<USBCamera> camera;
-  if (mode != HAPIMode::TRIGGER_TEST) {
+  if (use_camera(mode)) {
     log.info() << "Initializing Spinnaker system." << std::endl;
     system = Spinnaker::System::GetInstance();
     log.info() << "Getting list of cameras." << std::endl;
@@ -244,49 +246,6 @@ void initialize_board(Config &config, HAPIMode mode) {
   board.reset();
 }
 
-void cleanup(Spinnaker::CameraList &clist, Spinnaker::SystemPtr &system,
-             std::shared_ptr<USBCamera> &camera, HAPIMode mode,
-             OBISLaser &laser) {
-  laser.state(OBISLaser::State::Off);
-  Board &board = Board::instance();
-  Logger &log = Logger::instance();
-  log.info() << "Cleaning up..." << std::endl;
-  if (camera != nullptr) {
-    if (camera->is_initialized()) {
-      log.info() << "Resetting camera trigger." << std::endl;
-      try {
-        camera->reset_trigger();
-      } catch (const std::exception &ex) {
-        log.exception(ex) << "Failed to reset camera trigger." << std::endl;
-      }
-      log.info() << "De-initializing camera." << std::endl;
-      try {
-        camera->deinit();
-      } catch (const std::exception &ex) {
-        log.exception(ex) << "Failed to de-initialize camera." << std::endl;
-      }
-    }
-    log.info() << "Releasing camera." << std::endl;
-    camera.reset();
-  }
-  log.info() << "Disarming HAPI-E board." << std::endl;
-  board.disarm();
-  if (mode != HAPIMode::TRIGGER_TEST) {
-    log.info() << "Clearing camera list." << std::endl;
-    try {
-      clist.Clear();
-    } catch (const std::exception &ex) {
-      log.exception(ex) << "Failed to clear camera list." << std::endl;
-    }
-    log.info() << "Releasing Spinnaker system." << std::endl;
-    try {
-      system->ReleaseInstance();
-    } catch (const std::exception &ex) {
-      log.exception(ex) << "Failed to release Spinnaker system." << std::endl;
-    }
-  }
-}
-
 void initialize_camera(std::shared_ptr<USBCamera> &camera, Config &config) {
   Logger &log = Logger::instance();
   log.info() << "Initializing camera." << std::endl;
@@ -342,11 +301,15 @@ void initialize_camera(std::shared_ptr<USBCamera> &camera, Config &config) {
       Spinnaker::AcquisitionModeEnums::AcquisitionMode_Continuous);
 }
 
-void initialize_laser(OBISLaser &laser) {
+void initialize_laser(OBISLaser &laser, HAPIMode mode) {
   Logger &log = Logger::instance();
   laser.handshake(OBISLaser::State::Off);
   laser.cdrh(OBISLaser::State::Off);
-  laser.mode(OBISLaser::SourceType::Digital);
+  if (mode == HAPIMode::ALIGN) {
+    laser.mode(OBISLaser::SourceType::ConstantPower);
+  } else {
+    laser.mode(OBISLaser::SourceType::Digital);
+  }
   laser.auto_start(OBISLaser::State::On);
   laser.state(OBISLaser::State::On);
 
@@ -366,5 +329,48 @@ void initialize_laser(OBISLaser &laser) {
       log.error() << "Laser fault: " << laser.fault_str(f) << std::endl;
     }
     throw std::runtime_error("Laser fault");
+  }
+}
+
+void cleanup(Spinnaker::CameraList &clist, Spinnaker::SystemPtr &system,
+             std::shared_ptr<USBCamera> &camera, HAPIMode mode,
+             OBISLaser &laser) {
+  laser.state(OBISLaser::State::Off);
+  Board &board = Board::instance();
+  Logger &log = Logger::instance();
+  log.info() << "Cleaning up..." << std::endl;
+  if (camera != nullptr) {
+    if (camera->is_initialized()) {
+      log.info() << "Resetting camera trigger." << std::endl;
+      try {
+        camera->reset_trigger();
+      } catch (const std::exception &ex) {
+        log.exception(ex) << "Failed to reset camera trigger." << std::endl;
+      }
+      log.info() << "De-initializing camera." << std::endl;
+      try {
+        camera->deinit();
+      } catch (const std::exception &ex) {
+        log.exception(ex) << "Failed to de-initialize camera." << std::endl;
+      }
+    }
+    log.info() << "Releasing camera." << std::endl;
+    camera.reset();
+  }
+  log.info() << "Disarming HAPI-E board." << std::endl;
+  board.disarm();
+  if (use_camera(mode)) {
+    log.info() << "Clearing camera list." << std::endl;
+    try {
+      clist.Clear();
+    } catch (const std::exception &ex) {
+      log.exception(ex) << "Failed to clear camera list." << std::endl;
+    }
+    log.info() << "Releasing Spinnaker system." << std::endl;
+    try {
+      system->ReleaseInstance();
+    } catch (const std::exception &ex) {
+      log.exception(ex) << "Failed to release Spinnaker system." << std::endl;
+    }
   }
 }
