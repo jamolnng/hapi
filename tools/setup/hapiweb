@@ -1,3 +1,3 @@
 #!/bin/bash
-sudo shellinaboxd &
+sudo shellinaboxd -p 4200 --disable-ssl &
 (cd /home/pi/hapi; sudo python -m SimpleHTTPServer 80) &
