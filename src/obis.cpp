@@ -506,22 +506,22 @@ const OBISLaser::SourceType OBISLaser::query(const std::string str) {
   if (line.substr(0, 3).compare("CWP") == 0) {
     return OBISLaser::SourceType::ConstantPower;
   }
-  if (line.substr(0, 4).compare("CWC") == 0) {
+  if (line.substr(0, 3).compare("CWC") == 0) {
     return OBISLaser::SourceType::ConstantCurrent;
   }
-  if (line.substr(0, 4).compare("DIGITAL") == 0) {
+  if (line.substr(0, 7).compare("DIGITAL") == 0) {
     return OBISLaser::SourceType::Digital;
   }
   if (line.substr(0, 6).compare("ANALOG") == 0) {
     return OBISLaser::SourceType::Analog;
   }
-  if (line.substr(0, 6).compare("MIXED") == 0) {
+  if (line.substr(0, 5).compare("MIXED") == 0) {
     return OBISLaser::SourceType::Mixed;
   }
-  if (line.substr(0, 6).compare("DIGSO") == 0) {
+  if (line.substr(0, 5).compare("DIGSO") == 0) {
     return OBISLaser::SourceType::DIGSO;
   }
-  if (line.substr(0, 6).compare("MIXSO") == 0) {
+  if (line.substr(0, 5).compare("MIXSO") == 0) {
     return OBISLaser::SourceType::MIXSO;
   }
   return OBISLaser::SourceType::ConstantPower;
