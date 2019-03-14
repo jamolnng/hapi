@@ -147,7 +147,7 @@ int main(int argc, char *argv[]) {
   }
 
   log.info() << "Initializing laser." << std::endl;
-  std::string device = "/dev/" + exec("ls /dev | grep ttyACM");
+  std::string device = "/dev/" + hapi::exec("ls /dev | grep ttyACM");
   OBISLaser laser(device);
   try {
     initialize_laser(laser);

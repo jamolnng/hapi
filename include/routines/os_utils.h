@@ -1,6 +1,7 @@
 #ifndef HAPI_OS_UTILS_H
 #define HAPI_OS_UTILS_H
 #include <atomic>
+#include <string>
 
 namespace hapi {
 extern volatile std::atomic<bool> running;

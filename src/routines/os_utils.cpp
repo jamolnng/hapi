@@ -1,7 +1,11 @@
 #include "routines/os_utils.h"
 
+#include <array>
 #include <csignal>
+#include <cstdio>
+#include <cstdlib>
 #include <fstream>
+#include <memory>
 
 #include <sys/types.h>
 #include <unistd.h>
