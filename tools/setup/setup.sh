@@ -91,6 +91,7 @@ sudo apt-get install libssl-dev libpam0g-dev zlib1g-dev dh-autoreconf shellinabo
 sudo cp hapiweb /etc/init.d/hapiweb
 sudo chmod 755 /etc/init.d/hapiweb
 sudo update-rc.d hapiweb defaults
+sudo rm /etc/init.d/shellinabox
 
 # configure hapi
 sudo /usr/local/bin/hapi-config
