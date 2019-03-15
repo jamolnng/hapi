@@ -93,6 +93,8 @@ int main(int argc, char *argv[]) {
     mode = HAPIMode::TRIGGER_TEST;
   } else if (mode_str == "align") {
     mode = HAPIMode::ALIGN;
+  } else if (mode_str == "cw") {
+    mode = HAPIMode::CW;
   } else {
     log.critical() << "Unknown mode: " << mode_str
                    << ". Options are trigger, interval, test." << std::endl;
@@ -305,7 +307,7 @@ void initialize_laser(OBISLaser &laser, HAPIMode mode) {
   Logger &log = Logger::instance();
   laser.handshake(OBISLaser::State::Off);
   laser.cdrh(OBISLaser::State::Off);
-  if (mode == HAPIMode::ALIGN) {
+  if (mode == HAPIMode::CW) {
     laser.mode(OBISLaser::SourceType::ConstantPower);
   } else {
     laser.mode(OBISLaser::SourceType::Digital);
@@ -325,8 +327,8 @@ void initialize_laser(OBISLaser &laser, HAPIMode mode) {
 
   FaultCode fault = laser.fault();
   if (fault != 0) {
-    for (auto f : laser.fault_bits(fault)) {
-      log.error() << "Laser fault: " << laser.fault_str(f) << std::endl;
+    for (std::string f : laser.fault(fault)) {
+      log.error() << "Laser fault: " << f << std::endl;
     }
     throw std::runtime_error("Laser fault");
   }
@@ -335,6 +337,7 @@ void initialize_laser(OBISLaser &laser, HAPIMode mode) {
 void cleanup(Spinnaker::CameraList &clist, Spinnaker::SystemPtr &system,
              std::shared_ptr<USBCamera> &camera, HAPIMode mode,
              OBISLaser &laser) {
+  laser.mode(OBISLaser::SourceType::Digital);
   laser.state(OBISLaser::State::Off);
   Board &board = Board::instance();
   Logger &log = Logger::instance();
