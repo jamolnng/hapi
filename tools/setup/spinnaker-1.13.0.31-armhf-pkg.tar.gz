@@ -1,0 +1,901 @@
+
+
+<!DOCTYPE html>
+<html >
+<head>  
+    <script type="text/javascript">
+        function redirect() {
+            var url = window.location.href;
+            var arr = url.split("/");
+            var domain = arr[0] + "//" + arr[2];
+            var result = domain + "/contact-us";
+
+            if (window.location.href.toLowerCase() == result
+                || window.location.href.toLowerCase() == result + "/") {
+                window.location.href = domain + "/corporate/contact-us";
+            }
+        }
+
+        (function () {
+
+            redirect();
+            // Match this timestamp with the release of your code
+            var lastVersioning = Date.UTC(2017, 04, 04, 13, 00, 00);
+
+            var lastCacheDateTime = localStorage.getItem('lastCacheDatetime');
+
+            if (lastCacheDateTime) {
+                if (lastVersioning > lastCacheDateTime) {
+                    var reload = true;
+                }
+            }
+
+            var now = new Date();
+            var now_utc = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds());
+            localStorage.setItem('lastCacheDatetime', now_utc);
+
+            if (reload) {
+             //   localStorage.removeItem('lastCookieNotificationTime');
+                location.reload(true);
+            }
+
+        })();
+    </script>
+    <!-- Start Quantcast Tag -->
+    <script type="text/javascript">
+        var _qevents = _qevents || [];
+
+         (function() {
+           var elem = document.createElement('script');
+           elem.src = (document.location.protocol == "https:" ? "https://secure" : "http://edge") + ".quantserve.com/quant.js";
+           elem.async = true;
+           elem.type = "text/javascript";
+           var scpt = document.getElementsByTagName('script')[0];
+           scpt.parentNode.insertBefore(elem, scpt);
+          })();
+
+        _qevents.push({qacct: "p-kga0yw0QukJw8"});
+    </script>
+    <noscript>
+        <img src="//pixel.quantserve.com/pixel/p-kga0yw0QukJw8.gif?labels=_fp.event.Default" style="display: none;" border="0" height="1" width="1" alt="Quantcast" />
+    </noscript>
+    <!-- End Quantcast Tag -->
+
+    <title>Login</title>
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+    <meta name="description" content="High quality, industrial cameras - USB3 Vision, GigE Vision, FireWire, and USB 2.0" />
+    <meta name="keywords" content="" />
+    <meta name="generator" content="nopCommerce" />
+    <meta name="viewport" content="width=1300">
+    <meta name="Referrer" content="origin">
+    <link rel="alternate" href="https://www.ptgrey.com/?countryid=342" hreflang="ja-jp" />
+    <link rel="alternate" href="https://eu.ptgrey.com/?countryid=316" hreflang="de-de" />
+    <script type="text/javascript" src="/Scripts/jquery-1.10.2.min.js"></script>
+    <!-- begin olark code -->    
+
+    <script type="text/javascript" async>
+    ;(function(o,l,a,r,k,y){if(o.olark)return; r="script";y=l.createElement(r);r=l.getElementsByTagName(r)[0]; y.async=1;y.src="//"+a;r.parentNode.insertBefore(y,r); y=o.olark=function(){k.s.push(arguments);k.t.push(+new Date)}; y.extend=function(i,j){y("extend",i,j)}; y.identify=function(i){y("identify",k.i=i)}; y.configure=function(i,j){y("configure",i,j);k.c[i]=j}; k=y._={s:[],t:[+new Date],c:{},l:a}; })(window,document,"static.olark.com/jsclient/loader.js");
+    /* custom configuration goes here (www.olark.com/documentation) */
+    olark.identify('3687-643-10-2015');
+    if ('2' == '5') {
+             olark.configure('system.group', 'b799d9cb86d9e79dce725c99699ad93d'); /*Routes to English Group*/
+             olark.configure("system.localization", "zh-CN");
+             olark.configure("locale.welcome_title", "FLIR Systems Live Chat");
+             olark.configure("locale.chatting_title", "FLIR Systems Live Chat");
+             olark.configure("locale.unavailable_title", "FLIR Systems Live Chat");
+         }
+         else if ('2' == '3') {
+             olark.configure('system.group', '48c7a12ab22fd20bf4f6c02827494b52'); /*Routes to German Group*/
+             olark.configure("system.localization", "de-DE");             
+             olark.configure("locale.welcome_title", "FLIR Systems Live Chat - de");
+             olark.configure("locale.chatting_title", "FLIR Systems Live Chat  - de");
+             olark.configure("locale.unavailable_title", "FLIR Systems Live Chat  - de");
+         }
+         else if ('2' == '4') {
+             olark.configure('system.group', 'b799d9cb86d9e79dce725c99699ad93d'); /*Routes to English Group*/
+             olark.configure("system.localization", "en-US");
+             olark.configure("locale.welcome_title", "FLIR Systems Live Chat - jp");
+             olark.configure("locale.chatting_title", "FLIR Systems Live Chat  - jp");
+             olark.configure("locale.unavailable_title", "FLIR Systems Live Chat  - jp");
+         }
+         else
+         {
+             olark.configure('system.group', 'b799d9cb86d9e79dce725c99699ad93d'); /*Routes to English Group*/
+             olark.configure("system.localization", "en-US");             
+             olark.configure("locale.welcome_title", "FLIR Systems Live Chat");
+             olark.configure("locale.chatting_title", "FLIR Systems Live Chat");
+             olark.configure("locale.chatting_title", "FLIR Systems Live Chat");
+
+         }
+
+    </script>
+    <!-- end olark code -->
+
+    <!-- Google Tag Manager -->   
+        <script>
+        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window, document, 'script', 'dataLayer', 'GTM-MBHDRFG');
+        </script>
+    <!-- End Google Tag Manager -->
+    
+    
+    
+    
+
+
+    
+    <link href="/Themes/PointGreyBlue/Content/jaguar-supporting-documents.min.css" rel="stylesheet" type="text/css" />
+<link href="/Themes/PointGreyBlue/Content/jaguar-primary-layout.min.css" rel="stylesheet" type="text/css" />
+<link href="/Themes/PointGreyBlue/Content/jaguar-base-user-styles.css" rel="stylesheet" type="text/css" />
+<link href="/Themes/PointGreyBlue/Content/jaguar-camera-selector.css" rel="stylesheet" type="text/css" />
+<link href="/Themes/PointGreyBlue/Content/jaguar-layout.css" rel="stylesheet" type="text/css" />
+<link href="/Themes/PointGreyBlue/Content/jaguar-typography.css" rel="stylesheet" type="text/css" />
+<link href="/Themes/PointGreyBlue/Content/styles.min.css" rel="stylesheet" type="text/css" />
+<link href="/Content/bootstrap-3.2.0/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<link href="/Content/easybox/styles/default/easybox.min.css" rel="stylesheet" type="text/css" />
+<link href="/Content/jquery-ui-themes/smoothness/jquery-ui-1.10.3.custom.min.css" rel="stylesheet" type="text/css" />
+<link href="/Content/kendo/2015.3.1111/kendo.common.min.css" rel="stylesheet" type="text/css" />
+<link href="/Content/kendo/2015.3.1111/kendo.default.min.css" rel="stylesheet" type="text/css" />
+<link href="/Content/kendo/2015.3.1111/kendo.rtl.min.css" rel="stylesheet" type="text/css" />
+<link href="/Content/kendo/2016.1.112/dataviz.css" rel="stylesheet" type="text/css" />
+<link href="/Content/kendo/2016.1.112/kendo.dataviz.min.css" rel="stylesheet" type="text/css" />
+
+    <script src="/bundles/scripts/b9eikire4edbmqmn-zmmq5lcpfexsphrhhayq8kyirm1?v=WO6p46y4NS2G2-w_rtsvY8x4OoB5p28EaIVWSsvIVTk1"></script>
+
+
+    
+    
+    
+    
+    
+<link rel="shortcut icon" href="https://www.ptgrey.com/favicon.ico" />
+    <!--Powered by nopCommerce - http://www.nopCommerce.com-->
+</head>
+<body>
+
+
+
+    
+
+
+<div class="ajax-loading-block-window" style="display: none">
+</div>
+<div id="dialog-notifications-success" title="Notification" style="display:none;">
+</div>
+<div id="dialog-notifications-error" title="Error" style="display:none;">
+</div>
+<div id="bar-notification" class="bar-notification">
+    <span class="close" title="Close">&nbsp;</span>
+</div>
+
+
+
+<div class="master-wrapper-page">
+    <div class="container" style="min-height:20px;">
+        
+        
+
+<div class="header-links" >    
+
+           
+    
+               <ul style="/*position: absolute;top:8px;left:1100px;text-align:right*/">
+                   
+                       <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</li>
+                                       <li><a href="/register" class="ico-register">Register</a></li>
+                    <li><a href="/login?returnUrl=%2Flogin%3FReturnUrl%3D%252fDownloads%252fGetSecureDownloadItem%252f11172" class="ico-login">Log in</a></li>
+
+                   
+                       <div class="language-selector"> 
+        <span style="color:white">Country:</span>&nbsp;                
+<select id="customerCountries" name="customerCountries" style="height: 16px; font-size: 11px; width:175px"><option value="/changecountry/251?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Australia</option>
+<option value="/changecountry/238?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Canada</option>
+<option value="/changecountry/281?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">China</option>
+<option value="/changecountry/2147483647?returnurl=https://eu.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">European Union</option>
+<option value="/changecountry/309?returnurl=https://eu.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">France</option>
+<option value="/changecountry/316?returnurl=https://eu.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Germany</option>
+<option value="/changecountry/342?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Japan</option>
+<option value="/changecountry/347?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">South Korea</option>
+<option value="/changecountry/458?returnurl=https://eu.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">United Kingdom (Great Britain)</option>
+<option selected="selected" value="/changecountry/237?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">United States Of America</option>
+<option disabled="disabled" value="">-------------------------------------------------------------</option>
+<option value="/changecountry/239?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Afghanistan</option>
+<option value="/changecountry/240?returnurl=https://eu.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Albania</option>
+<option value="/changecountry/241?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Algeria</option>
+<option value="/changecountry/242?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">American Samoa</option>
+<option value="/changecountry/243?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Andorra</option>
+<option value="/changecountry/244?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Angola</option>
+<option value="/changecountry/245?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Anguilla</option>
+<option value="/changecountry/246?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Antarctica</option>
+<option value="/changecountry/247?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Antigua &amp; Barbuda</option>
+<option value="/changecountry/248?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Argentina</option>
+<option value="/changecountry/249?returnurl=https://eu.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Armenia</option>
+<option value="/changecountry/250?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Aruba</option>
+<option value="/changecountry/252?returnurl=https://eu.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Austria</option>
+<option value="/changecountry/253?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Azerbaijan</option>
+<option value="/changecountry/254?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Bahama</option>
+<option value="/changecountry/255?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Bahrain</option>
+<option value="/changecountry/256?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Bangladesh</option>
+<option value="/changecountry/257?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Barbados</option>
+<option value="/changecountry/258?returnurl=https://eu.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Belarus</option>
+<option value="/changecountry/259?returnurl=https://eu.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Belgium</option>
+<option value="/changecountry/260?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Belize</option>
+<option value="/changecountry/261?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Benin</option>
+<option value="/changecountry/262?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Bermuda</option>
+<option value="/changecountry/263?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Bhutan</option>
+<option value="/changecountry/264?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Bolivia</option>
+<option value="/changecountry/265?returnurl=https://eu.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Bosnia and Herzegovina</option>
+<option value="/changecountry/266?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Botswana</option>
+<option value="/changecountry/267?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Bouvet Island</option>
+<option value="/changecountry/268?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Brazil</option>
+<option value="/changecountry/269?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">British Indian Ocean Territory</option>
+<option value="/changecountry/270?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Brunei Darussalam</option>
+<option value="/changecountry/271?returnurl=https://eu.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Bulgaria</option>
+<option value="/changecountry/272?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Burkina Faso</option>
+<option value="/changecountry/273?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Burundi</option>
+<option value="/changecountry/274?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Cambodia</option>
+<option value="/changecountry/275?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Cameroon</option>
+<option value="/changecountry/276?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Cape Verde</option>
+<option value="/changecountry/277?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Cayman Islands</option>
+<option value="/changecountry/278?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Central African Republic</option>
+<option value="/changecountry/279?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Chad</option>
+<option value="/changecountry/280?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Chile</option>
+<option value="/changecountry/282?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Christmas Island</option>
+<option value="/changecountry/283?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Cocos (Keeling) Islands</option>
+<option value="/changecountry/284?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Colombia</option>
+<option value="/changecountry/285?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Comoros</option>
+<option value="/changecountry/286?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Congo</option>
+<option value="/changecountry/287?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Cook Islands</option>
+<option value="/changecountry/288?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Costa Rica</option>
+<option value="/changecountry/289?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">C&#244;te D&#39;ivoire (Ivory Coast)</option>
+<option value="/changecountry/290?returnurl=https://eu.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Croatia</option>
+<option value="/changecountry/291?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Cuba</option>
+<option value="/changecountry/292?returnurl=https://eu.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Cyprus</option>
+<option value="/changecountry/293?returnurl=https://eu.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Czech Republic</option>
+<option value="/changecountry/294?returnurl=https://eu.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Denmark</option>
+<option value="/changecountry/295?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Djibouti</option>
+<option value="/changecountry/296?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Dominica</option>
+<option value="/changecountry/297?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Dominican Republic</option>
+<option value="/changecountry/298?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Ecuador</option>
+<option value="/changecountry/299?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Egypt</option>
+<option value="/changecountry/300?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">El Salvador</option>
+<option value="/changecountry/301?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Equatorial Guinea</option>
+<option value="/changecountry/302?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Eritrea</option>
+<option value="/changecountry/303?returnurl=https://eu.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Estonia</option>
+<option value="/changecountry/304?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Ethiopia</option>
+<option value="/changecountry/305?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Falkland Islands (Malvinas)</option>
+<option value="/changecountry/306?returnurl=https://eu.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Faroe Islands</option>
+<option value="/changecountry/307?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Fiji</option>
+<option value="/changecountry/308?returnurl=https://eu.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Finland</option>
+<option value="/changecountry/310?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">French Guiana</option>
+<option value="/changecountry/311?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">French Polynesia</option>
+<option value="/changecountry/312?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">French Southern Territories</option>
+<option value="/changecountry/313?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Gabon</option>
+<option value="/changecountry/314?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Gambia</option>
+<option value="/changecountry/315?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Georgia</option>
+<option value="/changecountry/317?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Ghana</option>
+<option value="/changecountry/318?returnurl=https://eu.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Gibraltar</option>
+<option value="/changecountry/319?returnurl=https://eu.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Greece</option>
+<option value="/changecountry/320?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Greenland</option>
+<option value="/changecountry/321?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Grenada</option>
+<option value="/changecountry/322?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Guadeloupe</option>
+<option value="/changecountry/323?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Guam</option>
+<option value="/changecountry/324?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Guatemala</option>
+<option value="/changecountry/325?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Guinea</option>
+<option value="/changecountry/326?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Guinea-Bissau</option>
+<option value="/changecountry/327?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Guyana</option>
+<option value="/changecountry/328?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Haiti</option>
+<option value="/changecountry/329?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Heard &amp; McDonald Islands</option>
+<option value="/changecountry/330?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Honduras</option>
+<option value="/changecountry/331?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Hong Kong</option>
+<option value="/changecountry/332?returnurl=https://eu.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Hungary</option>
+<option value="/changecountry/333?returnurl=https://eu.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Iceland</option>
+<option value="/changecountry/334?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">India</option>
+<option value="/changecountry/335?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Indonesia</option>
+<option value="/changecountry/336?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Iraq</option>
+<option value="/changecountry/337?returnurl=https://eu.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Ireland</option>
+<option value="/changecountry/338?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Islamic Republic of Iran</option>
+<option value="/changecountry/339?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Israel</option>
+<option value="/changecountry/340?returnurl=https://eu.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Italy</option>
+<option value="/changecountry/341?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Jamaica</option>
+<option value="/changecountry/343?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Jordan</option>
+<option value="/changecountry/344?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Kazakhstan</option>
+<option value="/changecountry/345?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Kenya</option>
+<option value="/changecountry/346?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Kiribati</option>
+<option value="/changecountry/348?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Korea, Democratic People&#39;s Republic of</option>
+<option value="/changecountry/349?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Kuwait</option>
+<option value="/changecountry/350?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Kyrgyzstan</option>
+<option value="/changecountry/351?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Lao People&#39;s Democratic Republic</option>
+<option value="/changecountry/352?returnurl=https://eu.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Latvia</option>
+<option value="/changecountry/353?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Lebanon</option>
+<option value="/changecountry/354?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Lesotho</option>
+<option value="/changecountry/355?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Liberia</option>
+<option value="/changecountry/356?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Libyan Arab Jamahiriya</option>
+<option value="/changecountry/357?returnurl=https://eu.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Liechtenstein</option>
+<option value="/changecountry/358?returnurl=https://eu.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Lithuania</option>
+<option value="/changecountry/359?returnurl=https://eu.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Luxembourg</option>
+<option value="/changecountry/360?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Macau</option>
+<option value="/changecountry/362?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Madagascar</option>
+<option value="/changecountry/363?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Malawi</option>
+<option value="/changecountry/364?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Malaysia</option>
+<option value="/changecountry/365?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Maldives</option>
+<option value="/changecountry/366?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Mali</option>
+<option value="/changecountry/367?returnurl=https://eu.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Malta</option>
+<option value="/changecountry/368?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Marshall Islands</option>
+<option value="/changecountry/369?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Martinique</option>
+<option value="/changecountry/370?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Mauritania</option>
+<option value="/changecountry/371?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Mauritius</option>
+<option value="/changecountry/372?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Mayotte</option>
+<option value="/changecountry/373?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Mexico</option>
+<option value="/changecountry/374?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Micronesia</option>
+<option value="/changecountry/375?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Moldova, Republic of</option>
+<option value="/changecountry/376?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Monaco</option>
+<option value="/changecountry/377?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Mongolia</option>
+<option value="/changecountry/378?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Montserrat</option>
+<option value="/changecountry/379?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Morocco</option>
+<option value="/changecountry/380?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Mozambique</option>
+<option value="/changecountry/381?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Myanmar</option>
+<option value="/changecountry/382?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Namibia</option>
+<option value="/changecountry/383?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Nauru</option>
+<option value="/changecountry/384?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Nepal</option>
+<option value="/changecountry/385?returnurl=https://eu.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Netherlands</option>
+<option value="/changecountry/386?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Netherlands Antilles</option>
+<option value="/changecountry/387?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">New Caledonia</option>
+<option value="/changecountry/388?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">New Zealand</option>
+<option value="/changecountry/389?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Nicaragua</option>
+<option value="/changecountry/390?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Niger</option>
+<option value="/changecountry/391?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Nigeria</option>
+<option value="/changecountry/392?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Niue</option>
+<option value="/changecountry/393?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Norfolk Island</option>
+<option value="/changecountry/394?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Northern Mariana Islands</option>
+<option value="/changecountry/395?returnurl=https://eu.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Norway</option>
+<option value="/changecountry/396?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Oman</option>
+<option value="/changecountry/397?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Pakistan</option>
+<option value="/changecountry/398?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Palau</option>
+<option value="/changecountry/399?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Panama</option>
+<option value="/changecountry/400?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Papua New Guinea</option>
+<option value="/changecountry/401?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Paraguay</option>
+<option value="/changecountry/402?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Peru</option>
+<option value="/changecountry/403?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Philippines</option>
+<option value="/changecountry/404?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Pitcairn</option>
+<option value="/changecountry/405?returnurl=https://eu.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Poland</option>
+<option value="/changecountry/406?returnurl=https://eu.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Portugal</option>
+<option value="/changecountry/407?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Puerto Rico</option>
+<option value="/changecountry/408?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Qatar</option>
+<option value="/changecountry/361?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Republic of Macedonia</option>
+<option value="/changecountry/409?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Reunion</option>
+<option value="/changecountry/410?returnurl=https://eu.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Romania</option>
+<option value="/changecountry/411?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Russian Federation</option>
+<option value="/changecountry/412?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Rwanda</option>
+<option value="/changecountry/413?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Saint Kitts and Nevis</option>
+<option value="/changecountry/414?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Saint Lucia</option>
+<option value="/changecountry/415?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Saint Vincent and the Grenadines</option>
+<option value="/changecountry/416?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Samoa</option>
+<option value="/changecountry/417?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">San Marino</option>
+<option value="/changecountry/418?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Sao Tome &amp; Principe</option>
+<option value="/changecountry/419?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Saudi Arabia</option>
+<option value="/changecountry/420?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Senegal</option>
+<option value="/changecountry/421?returnurl=https://eu.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Serbia</option>
+<option value="/changecountry/422?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Seychelles</option>
+<option value="/changecountry/423?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Sierra Leone</option>
+<option value="/changecountry/424?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Singapore</option>
+<option value="/changecountry/425?returnurl=https://eu.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Slovakia</option>
+<option value="/changecountry/426?returnurl=https://eu.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Slovenia</option>
+<option value="/changecountry/427?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Solomon Islands</option>
+<option value="/changecountry/428?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Somalia</option>
+<option value="/changecountry/429?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">South Africa</option>
+<option value="/changecountry/430?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">South Georgia &amp; South Sandwich Islands</option>
+<option value="/changecountry/431?returnurl=https://eu.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Spain</option>
+<option value="/changecountry/432?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Sri Lanka</option>
+<option value="/changecountry/433?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">St. Helena</option>
+<option value="/changecountry/434?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">St. Pierre and Miquelon</option>
+<option value="/changecountry/435?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Sudan</option>
+<option value="/changecountry/436?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Suriname</option>
+<option value="/changecountry/437?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Svalbard &amp; Jan Mayen Islands</option>
+<option value="/changecountry/438?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Swaziland</option>
+<option value="/changecountry/439?returnurl=https://eu.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Sweden</option>
+<option value="/changecountry/440?returnurl=https://eu.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Switzerland</option>
+<option value="/changecountry/441?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Syrian Arab Republic</option>
+<option value="/changecountry/442?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Taiwan</option>
+<option value="/changecountry/443?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Tajikistan</option>
+<option value="/changecountry/444?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Tanzania, United Republic of</option>
+<option value="/changecountry/445?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Thailand</option>
+<option value="/changecountry/446?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Togo</option>
+<option value="/changecountry/447?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Tokelau</option>
+<option value="/changecountry/448?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Tonga</option>
+<option value="/changecountry/449?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Trinidad &amp; Tobago</option>
+<option value="/changecountry/450?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Tunisia</option>
+<option value="/changecountry/451?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Turkey</option>
+<option value="/changecountry/452?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Turkmenistan</option>
+<option value="/changecountry/453?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Turks &amp; Caicos Islands</option>
+<option value="/changecountry/454?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Tuvalu</option>
+<option value="/changecountry/455?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Uganda</option>
+<option value="/changecountry/456?returnurl=https://eu.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Ukraine</option>
+<option value="/changecountry/457?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">United Arab Emirates</option>
+<option value="/changecountry/459?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">United States Minor Outlying Islands</option>
+<option value="/changecountry/460?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Uruguay</option>
+<option value="/changecountry/461?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Uzbekistan</option>
+<option value="/changecountry/462?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Vanuatu</option>
+<option value="/changecountry/463?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Vatican City State (Holy See)</option>
+<option value="/changecountry/464?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Venezuela</option>
+<option value="/changecountry/465?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Vietnam</option>
+<option value="/changecountry/466?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Virgin Islands (British)</option>
+<option value="/changecountry/467?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Virgin Islands (U.S.)</option>
+<option value="/changecountry/468?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Wallis &amp; Futuna Islands</option>
+<option value="/changecountry/469?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Western Sahara</option>
+<option value="/changecountry/470?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Yemen</option>
+<option value="/changecountry/471?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Zambia</option>
+<option value="/changecountry/472?returnurl=https://www.ptgrey.com%2flogin%3freturnurl%3d%252fdownloads%252fgetsecuredownloaditem%252f11172">Zimbabwe</option>
+</select><input data-val="true" data-val-number="The field LanguageId must be a number." id="LanguageId" name="LanguageId" type="hidden" value="2" /><input data-val="true" data-val-number="The field CurrentCountryId must be a number." id="CurrentCountryId" name="CurrentCountryId" type="hidden" value="237" />       
+    </div>
+    <script>
+
+        $(document).ready(function () {
+            var setCookie = function () {
+                var selectedCountryId = $('#customerCountries option:selected').val();
+                var expiryDate = new Date();
+                selectedCountryId = selectedCountryId.substring(15, selectedCountryId.indexOf('?'));
+                expiryDate.setTime(expiryDate.getTime() + (30 * 24 * 60 * 60 * 1000)); // cookie expires in 30 days
+
+                if (window.location.href.toLowerCase().indexOf("ptgrey.com") > -1) {
+                    console.log('set country id cookie', window.location.hostname);
+                    // sets cookie with country Id
+                    document.cookie = "countryId = " + selectedCountryId + "; expires = " + expiryDate.toUTCString() + ";domain=" + window.location.hostname + ";path=/";
+                }
+            }
+            setCookie();
+
+            $(window).unload(function () {
+                var reloading = sessionStorage.getItem("reloading");
+                if (reloading) {
+                    sessionStorage.removeItem("reloading");
+                    window.location.reload();
+                }
+            });
+
+            //use jquery .live to solve IE8 event call issue
+            $('#customerCountries').live("change", function () {
+                var selectedCountry = $('#customerCountries option:selected').text();
+                if ($(this).val().indexOf(window.location.host) == -1) {
+                    var queryStr = $('#customerCountries').val();
+                    setLocation(queryStr);
+                }
+                else
+                {
+                    $.ajax({
+                        cache: false,
+                        type: "GET",
+                        url: "/common/updatecountrylanguage",
+                        data: { countryName: selectedCountry },
+                        success: function (data) {                            
+                            sessionStorage.setItem("reloading", "true");
+                            var queryStr = $('#customerCountries').val();
+                            setLocation(queryStr);
+                        
+                            console.log(selectedCountry, $('#CurrentCountryId').val());
+                            if ($('#LanguageId').val() != data || selectedCountry == 'India' || $('#CurrentCountryId').val() == '334') {
+                                var queryStr = $('#customerCountries').val();
+                                setLocation(queryStr);
+                            }
+                            else {
+                                if ('False' == 'True') {
+                                    $('#google_analytic_widget').html('\u003cscript type = \"text/javascript\"\u003evar _paq = _paq || [];_paq.push([\"setDomains\", [\"*.www.ptgrey.com\"]]);_paq.push([\u0027trackPageView\u0027]);_paq.push([\u0027enableLinkTracking\u0027]);(function() {var u = \"//piwik.flirglobal.com/\";_paq.push([\u0027setTrackerUrl\u0027, u + \u0027piwik.php\u0027]);_paq.push([\u0027setSiteId\u0027, 3]);var d = document, g = d.createElement(\u0027script\u0027), s = d.getElementsByTagName(\u0027script\u0027)[0];g.type = \u0027text/javascript\u0027; g.async = true; g.defer = true; g.src = u + \u0027piwik.js\u0027; s.parentNode.insertBefore(g, s);})();\u003c/script\u003e\u003cnoscript\u003e\u003cp\u003e\u003cimg src=\"//piwik.flirglobal.com/piwik.php?idsite=3\" style=\"border:0;\" alt=\"\" /\u003e\u003c/p\u003e\u003c/noscript\u003e');
+                                    $('#google_remarketing_widget').html('');
+                                }
+                                else
+                                {
+                                    if (!$('#google_analytic_widget').html() || $('#google_analytic_widget').html() == '')
+                                    {
+                                        $('#google_analytic_widget').html('\u003c!-- Google code for Analytics tracking --\u003e\r\n\u003cscript\u003e\r\n(function(i,s,o,g,r,a,m){i[\u0027GoogleAnalyticsObject\u0027]=r;i[r]=i[r]||function(){\r\n(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),\r\nm=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)\r\n})(window,document,\u0027script\u0027,\u0027//www.google-analytics.com/analytics.js\u0027,\u0027ga\u0027);\r\nga(\u0027create\u0027, \u0027UA-56143209-1\u0027, \u0027auto\u0027);\r\nga(\u0027send\u0027, \u0027pageview\u0027);\r\n\r\n\u003c/script\u003e\n');
+                                    }
+
+                                    if (!$('#google_remarketing_widget').html() || $('#google_remarketing_widget').html() == '')
+                                    {
+                                        $('#google_remarketing_widget').html('\u003cscript type=\"text/javascript\"\u003e/* \u003c![CDATA[ */var google_conversion_id = 1071888736;var google_custom_params = window.google_tag_params;var google_remarketing_only = true; /* ]]\u003e */\u003c/script\u003e\u003cscript type=\"text/javascript\" src=\"//www.googleadservices.com/pagead/conversion.js\"\u003e\u003c/script\u003e\u003cnoscript\u003e\u003cdiv style=\"display:inline;\"\u003e\u003cimg height=\"1\" width=\"1\" style=\"border-style:none;\" alt=\"\" src=\"//googleads.g.doubleclick.net/pagead/viewthroughconversion/1071888736/?value=0\u0026amp;guid=ON\u0026amp;script=0\" /\u003e\u003c/div\u003e\u003c/noscript\u003e');
+                                    }
+                                }
+                                $.ajax({
+                                    cache: false,
+                                    type: "GET",
+                                    url: "/common/getcountryallowshipping",
+                                    success: function (data) {
+                                        if (!data)
+                                        {
+                                            $("input.add-to-cart-button").css('display', 'none');
+                                            $("a.addtocart-mask-hyperlink").css('display', 'none');
+                                            $("#addtocartbtn").css('display', 'none');
+                                            $('#ShoppingCartLink').css('display', 'none');
+                                            $("#qty-label-gp").css('display', 'none');
+                                        }
+                                        else
+                                        {
+                                            $("input.add-to-cart-button").css('display', 'inline');
+                                            $("a.addtocart-mask-hyperlink").css('display', 'inline');
+                                            $("#addtocartbtn").css('display', 'inline');
+                                            $('#ShoppingCartLink').css('display', 'inline');
+                                            $("#qty-label-gp").css('display', 'inline');
+                                        }
+
+                                        if ('False' == 'True')
+                                        {
+                                            if (data)
+                                                $("#btn_cs_addtocart").css('display', 'inline-block');
+                                            else
+                                                $("#btn_cs_addtocart").css('display', 'none');
+
+                                            
+                                        }
+                                },
+                                    error: function (xhr, ajaxOptions, thrownError) {
+                                        console.log("Failed to get selected country's allow shipping status - 8");
+                                    }
+                            });
+                        }
+
+                    },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            console.log("Failed to update selected country's language.");
+                        }
+                    });
+                }  //end else
+            });
+        });
+
+    </script>
+
+
+
+
+
+
+                   
+               </ul>
+
+   
+
+</div>
+
+        
+    </div>
+    
+    <div class="master-wrapper-content">
+        <script type="text/javascript">
+            AjaxCart.init(false, '.header-links .cart-qty', '.header-links .wishlist-qty', '#flyout-cart');
+        </script>
+        
+
+<div class="jaguar-header">
+    
+    
+    
+   
+    
+    <div >  
+        <div class="jaguar-header-logo">
+            <a href="/" class="logo">
+
+            </a>
+        </div>
+        
+<nav>
+    <ul id="menu">
+        <li><a href="/Cameras" id="menu-item-cameras" style="font-size: 10px">Area Scan</a></li>
+        <li><a href="/360-degree-spherical-camera-systems" id="menu-item-sphericalvision" style="font-size: 10px">360° Spherical</a></li>
+        <li><a href="/stereo-vision-cameras-systems" id="menu-item-stereovision" style="font-size: 11px">3D Stereo</a></li>
+        <li><a href="/Learningcenter" id="menu-item-learningcenter" style="font-size: 10px;">Learning Center</a></li>
+        <li><a href="/Applications" id="menu-item-applications" style="font-size: 10px">Applications</a></li>
+        <li><a href="/Support" id="menu-item-support" style="font-size: 10px">Support</a></li>
+        <li><a href="/Corporate" id="menu-item-corporate" style="font-size: 10px">Corporate</a></li>
+        <li>
+        <div class="search-box">
+            <form action="/site-search">
+    <input type="text" class="search-box-text" id="small-searchterms"
+           value="" name="q" onfocus="if(this.value=='Search Store')this.value=''" onblur="if(this.value=='') {this.value = 'Search Store';}" />
+    <input type="submit" class="button-1 search-box-button" value="Search" />
+
+
+
+    <script type="text/javascript">
+
+        function check_small_search_form() {
+            var search_terms = $("#small-searchterms");
+            if (search_terms.val() == "") {
+                alert('Please enter some search keyword');
+                search_terms.focus();
+                return false;
+            }
+
+            return true;
+        }
+
+    </script>
+
+</form>
+
+    
+
+        </div>  </li> 
+        
+    </ul>
+</nav>
+<div id="jaguar-menu-cameras" class="jaguar-menu-cameras">
+</div>
+<div id="jaguar-menu-sphericalvision" class="jaguar-menu-sphericalvision">
+</div>
+<div id="jaguar-menu-stereovision" class="jaguar-menu-stereovision">
+</div>
+<div id="jaguar-menu-learningcenter" class="jaguar-menu-learningcenter">
+</div>
+<div id="jaguar-menu-applications" class="jaguar-menu-applications">    
+</div>
+<div id="jaguar-menu-support" class="jaguar-menu-support">
+</div>
+<div id="jaguar-menu-corporate" class="jaguar-menu-corporate">
+</div>
+
+
+
+
+
+
+      
+                                
+                    
+
+    </div>
+        
+    </div>
+<div class="jaguar-under-header-grey-bar">
+</div>
+
+
+
+
+
+
+        
+        
+        <div class="ajax-loading-block-window" style="display: none">
+            <div class="loading-image">
+            </div>
+        </div>
+        <div class="master-wrapper-main">
+            
+<div id="jaguar-top-grey-product">
+    Welcome back!  Please sign in.
+</div>
+<div class="center-1">
+    
+    
+<div class="page login-page" style="margin-left:100px;margin-right:100px;padding-top:25px;">
+    
+
+    
+
+    <div class="page-body">
+        <div class="customer-blocks">
+                <div class="new-wrapper register-block">
+                    <div class="title">
+                        <strong>New Customer</strong>
+                    </div>
+                    <div class="text">
+                        Please register to access firmware and software downloads, and shop from either North America, the European Union, or Australia. Thank you!
+                    </div>
+                    <div class="buttons">
+                        <input type="button" class="button-1 register-button" onclick="location.href='/register?returnurl=%2fdownloads%2fgetsecuredownloaditem%2f11172'" value="Register" />
+                    </div>
+                </div>
+            <div class="returning-wrapper fieldset">
+<form action="/login?ReturnUrl=%2fDownloads%2fGetSecureDownloadItem%2f11172" method="post">                    <div class="title">
+                        <strong>Returning Customer</strong>
+                    </div>
+                    <div class="form-fields">
+                            <div class="inputs">
+                                <label for="Email">Email:</label>
+                                <input autofocus="autofocus" class="email" data-val="true" data-val-email="Wrong email" data-val-required="Please enter your email" id="Email" name="Email" type="text" value="" />
+                                <span class="field-validation-valid" data-valmsg-for="Email" data-valmsg-replace="true"></span>
+                            </div>
+                        <div class="inputs">
+                            <label for="Password">Password:</label>
+                            <input class="password" id="Password" name="Password" type="password" />
+                            <span class="field-validation-valid" data-valmsg-for="Password" data-valmsg-replace="true"></span>
+                        </div>
+                        <div class="inputs reversed">
+                            <input data-val="true" data-val-required="&#39;Remember Me&#39; must not be empty." id="RememberMe" name="RememberMe" type="checkbox" value="true" /><input name="RememberMe" type="hidden" value="false" />
+                            <label for="RememberMe">Remember me?</label>
+                            <span class="forgot-password">
+                                <a href="/passwordrecovery">Reset Password</a>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="buttons">
+                        <input class="button-1 login-button" type="submit" value="Log in" />
+                    </div>
+</form>            </div>
+        </div>
+        <div class="external-authentication">
+            
+        </div>
+        
+    </div>
+</div>
+
+    
+</div>
+
+        </div>
+                
+    </div>
+    
+
+
+
+
+
+
+<div class="footer" >
+    <input data-val="true" data-val-number="The field LanguageId must be a number." id="footerLangId" name="LanguageId" type="hidden" value="2" />
+    <div class="container" >
+        <div class="row">
+            <div id="content-jungle-footer" >
+
+            </div>
+           
+        </div>
+
+     
+
+    </div>
+    
+    
+</div>
+<div class="copyright" >
+	<div class="container">
+  		<div class="row">
+    		<div class="col-md-12 md-margin-bottom-40">
+            
+      			<div style="margin: 0px; padding: 10px 0px;text-align: left;"><a href="http://www.flir.com"><img src="/Themes/PointGreyBlue/Content/images/PGR/flirLogo-nav.png" alt="Logo" class="img-responsive not-block" style="max-height:35px;display:inline-block"></a> <span class="copyright-text">Copyright &copy; 2019 FLIR Integrated Imaging Solutions, Inc.. All rights reserved.&nbsp;&nbsp;|&nbsp;&nbsp;
+
+
+
+
+
+<div class="jaguar-footer-links"><a target="_blank" href="http://www.flir.eu/privacy-policy">Privacy policy</a> | <a href="../../../Corporate/conditions-of-use">Terms &amp; Conditions</a> | <a href="../../../Corporate/Impressum-Imprint">Impressum</a> | <a href="../../../Corporate/Shipping-and-Delivery-Times">Shipping</a> | <a href="../../../Corporate/Store-FAQ">Store FAQ</a>| <a href="../../../Corporate/Careers-Benefits">Careers</a> | Website powered by <a href="http://www.nopcommerce.com/">nopCommerce</a></div>
+</span></div>
+			</div><!-- /col-md-12 --> 
+		</div><!--/row--> 
+	</div><!--/container--> 
+</div>
+
+
+
+
+<input id="Setting_SolrServerARec_Value" name="Setting_SolrServerARec.Value" type="hidden" value="NTAS6" />
+<input id="Setting_SolrCoreAbv_Value" name="Setting_SolrCoreAbv.Value" type="hidden" value="PR" />
+
+<script type="text/javascript">
+
+
+    var solrServerARec = $("#Setting_SolrServerARec_Value").val();
+    var solrCoreAbv = $("#Setting_SolrCoreAbv_Value").val();
+
+
+    $(document).ready(function () {
+
+        //$('.optanon-alert-box-close').click(function () {
+        //    $('div.optanon-alert-box-wrapper').hide();
+        //});
+
+        $('.footer-block .title').click(function () {
+            var e = window, a = 'inner';
+            if (!('innerWidth' in window)) {
+                a = 'client';
+                e = document.documentElement || document.body;
+            }
+
+            var result = { width: e[a + 'Width'], height: e[a + 'Height'] };
+
+            if (result.width < 769) {
+                $(this).siblings('.list').slideToggle('slow');
+            }
+        });
+
+        $('.block .title').click(function () {
+            var e = window, a = 'inner';
+            if (!('innerWidth' in window)) {
+                a = 'client';
+                e = document.documentElement || document.body;
+            }
+
+            var result = { width: e[a + 'Width'], height: e[a + 'Height'] };
+
+            if (result.width < 1001) {
+                $(this).siblings('.listbox').slideToggle('slow');
+            }
+        });
+
+        });
+</script>
+
+</div>
+
+<script type="text/javascript" src="/Scripts/jaguar-menu.js"></script>
+
+
+<div id="google_analytic_widget">
+<!-- Google code for Analytics tracking -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-56143209-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    
+    <script src="/bundles/scripts/btbwjvlx5as48ms4z3p1htuvmybo5oooieh4jff1ciy1?v=O2WaNii0R80JyBLQYHwF6Ovus7m8LGCXFU2FKKWBkDk1"></script>
+
+
+
+
+    <script type="text/javascript" src="/Scripts/jaguar-content-jungle.js"></script>
+    <script type="text/javascript" src="/Scripts/jquery.cycle.all.2.74.js"></script>
+    <script type="text/javascript" src="/Themes/PointGreyBlue/Scripts/jaguar-dynamic-background.js"></script>
+
+    
+    
+
+
+
+
+
+    <!-- Google Code for Remarketing Tag -->
+    <!----------------------------------------------------------------------------------------------------->    
+    <div id="google_remarketing_widget">
+            <script type="text/javascript">
+            /* <![CDATA[ */
+            var google_conversion_id = 1071888736;
+            var google_custom_params = window.google_tag_params;
+            var google_remarketing_only = true;
+            /* ]]> */
+            </script>
+            <script type="text/javascript" src="//www.googleadservices.com/pagead/conversion.js">
+            </script>
+            <noscript>
+                <div style="display:inline;">
+                    <img height="1" width="1" style="border-style:none;" alt="" src="//googleads.g.doubleclick.net/pagead/viewthroughconversion/1071888736/?value=0&amp;guid=ON&amp;script=0" />
+                </div>
+            </noscript>
+    </div>
+
+    <div id="google_tag_manager_widget">
+        <!-- Google Tag Manager (noscript) -->
+            <noscript>
+                <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MBHDRFG"
+                        height="0" width="0" style="display:none;visibility:hidden"></iframe>
+            </noscript>
+        <!-- End Google Tag Manager (noscript) -->
+    </div>
+   
+</body>
+</html>
+
+
+
+
