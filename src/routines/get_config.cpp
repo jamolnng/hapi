@@ -5,10 +5,10 @@
 namespace hapi {
 // default configuration parameters
 std::map<std::string, std::string> config_defaults = {
-    {"output", "hapi/"},         {"camera_trigger", "1"}, {"delay", "0b1000"},
-    {"exp", "0b0010"},           {"pulse", "0b11111"},    {"image_type", "png"},
-    {"pmt_threshold", "0x10"},   {"pmt_gain", "0xFF"},    {"interval", "3000"},
-    {"camera_gain", "47.994267"}};
+    {"output", "hapi/"},       {"camera_trigger", "1"}, {"delay", "0b1000"},
+    {"exp", "0b0010"},         {"pulse", "0b01111"},    {"image_type", "tiff"},
+    {"pmt_threshold", "0x85"}, {"pmt_gain", "0xc0"},    {"interval", "3000"},
+    {"camera_gain", "44.0"}};  // old camera gain 47.994267
 
 Config get_config() {
   Logger &log = Logger::instance();
