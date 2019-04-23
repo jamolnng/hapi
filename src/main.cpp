@@ -32,30 +32,31 @@
 
 using namespace hapi;
 
-std::string exec(const char *cmd) {
-  std::array<char, 128> buffer;
-  std::string result;
-  std::shared_ptr<FILE> pipe(popen(cmd, "r"), pclose);
-  if (!pipe) throw std::runtime_error("popen() failed!");
-  while (!feof(pipe.get())) {
-    if (fgets(buffer.data(), 128, pipe.get()) != NULL) result += buffer.data();
-  }
-  return result.substr(0, result.length() - 1);
-}
-
 void initialize_board(Config &config, HAPIMode mode);
+void initialize_camera(std::shared_ptr<USBCamera> &camera, Config &config);
+void initialize_laser(OBISLaser &laser, HAPIMode mode);
 // resets board and frees spinnaker system
 void cleanup(Spinnaker::CameraList &clist, Spinnaker::SystemPtr &system,
              std::shared_ptr<USBCamera> &camera, HAPIMode mode,
              OBISLaser &laser);
-void initialize_camera(std::shared_ptr<USBCamera> &camera, Config &config);
-void initialize_laser(OBISLaser &laser);
 
 int main(int argc, char *argv[]) {
   std::string start_time = str_time();
 
   Logger &log = Logger::instance();
   log.set_stream(std::cout);
+
+  // require sudo permissions to access hardware
+  if (!is_root()) {
+    log.critical() << "Root permissions required to run." << std::endl;
+    log.critical() << "Exiting (-1)..." << std::endl;
+    return -1;
+  }
+
+  if (!initialize_signal_handlers()) {
+    log.critical() << "Exiting (-1)..." << std::endl;
+    return -1;
+  }
 
   ArgumentParser parser("HAPI");
   parser.add_argument("-m", "--mode",
@@ -73,7 +74,9 @@ int main(int argc, char *argv[]) {
     log.exception(ex) << "Failed to parse command line arguments." << std::endl;
     return -1;
   }
-  if (parser.is_help()) return 0;
+  if (parser.is_help()) {
+    return 0;
+  }
 
   std::string mode_str = "trigger";
   if (parser.exists("m")) {
@@ -88,22 +91,19 @@ int main(int argc, char *argv[]) {
     mode = HAPIMode::INTERVAL;
   } else if (mode_str == "test") {
     mode = HAPIMode::TRIGGER_TEST;
-  }
-
-  // require sudo permissions to access hardware
-  if (!is_root()) {
-    log.critical() << "Root permissions required to run." << std::endl;
+  } else if (mode_str == "align") {
+    mode = HAPIMode::ALIGN;
+  } else if (mode_str == "cw") {
+    mode = HAPIMode::CW;
+  } else {
+    log.critical() << "Unknown mode: " << mode_str
+                   << ". Options are trigger, interval, test." << std::endl;
     log.critical() << "Exiting (-1)..." << std::endl;
     return -1;
   }
 
   if (!set_usbfs_mb()) {
     log.critical() << "Failed to set usbfs memory." << std::endl;
-    log.critical() << "Exiting (-1)..." << std::endl;
-    return -1;
-  }
-
-  if (!initialize_signal_handlers()) {
     log.critical() << "Exiting (-1)..." << std::endl;
     return -1;
   }
@@ -132,7 +132,8 @@ int main(int argc, char *argv[]) {
               << std::endl;
         }
       }
-      log.info() << "Calibrating with interval: " << ms << "." << std::endl;
+      log.info() << "Calibrating with interval: " << ms << " milliseconds."
+                 << std::endl;
       auto vals = pmt_calibrate(ms);
       auto gain = vals.first;
       auto threshold = vals.second;
@@ -144,26 +145,26 @@ int main(int argc, char *argv[]) {
       log.info() << std::hex << "Threshold: " << threshold << std::endl;
     } catch (const PMTCalibrationError &ex) {
       log.exception(ex) << "Failed to calibrate the PMT." << std::endl;
-      log.error() << "Exiting (-1)..." << std::endl;
+      log.critical() << "Exiting (-1)..." << std::endl;
       return -1;
     }
   }
 
   log.info() << "Initializing laser." << std::endl;
-  std::string device = "/dev/" + exec("ls /dev | grep ttyACM");
+  std::string device = "/dev/" + hapi::exec("ls /dev | grep ttyACM");
   OBISLaser laser(device);
   try {
-    initialize_laser(laser);
+    initialize_laser(laser, mode);
   } catch (const std::exception &ex) {
     log.exception(ex) << "Failed to initialize the laser." << std::endl;
-    log.error() << "Exiting (-1)..." << std::endl;
+    log.critical() << "Exiting (-1)..." << std::endl;
     return -1;
   }
 
   Spinnaker::SystemPtr system;
   Spinnaker::CameraList clist;
   std::shared_ptr<USBCamera> camera;
-  if (mode != HAPIMode::TRIGGER_TEST) {
+  if (use_camera(mode)) {
     log.info() << "Initializing Spinnaker system." << std::endl;
     system = Spinnaker::System::GetInstance();
     log.info() << "Getting list of cameras." << std::endl;
@@ -200,18 +201,19 @@ int main(int argc, char *argv[]) {
     } catch (const std::exception &ex) {
       log.exception(ex) << std::endl;
       cleanup(clist, system, camera, mode, laser);
+      log.critical() << "Exiting (-1)..." << std::endl;
       return -1;
     }
   }
 
-  std::chrono::milliseconds interval_time =
-      std::chrono::milliseconds(config.get<unsigned int>("interval"));
+  std::chrono::milliseconds interval_time(config.get<unsigned int>("interval"));
 
   try {
     acquisition_loop(camera, laser, out_dir, image_type, interval_time, mode);
   } catch (const std::exception &ex) {
     log.exception(ex) << std::endl;
     cleanup(clist, system, camera, mode, laser);
+    log.critical() << "Exiting (-1)..." << std::endl;
     return -1;
   }
 
@@ -246,9 +248,96 @@ void initialize_board(Config &config, HAPIMode mode) {
   board.reset();
 }
 
+void initialize_camera(std::shared_ptr<USBCamera> &camera, Config &config) {
+  Logger &log = Logger::instance();
+  log.info() << "Initializing camera." << std::endl;
+  camera->init();
+  // wait until camera is initialized
+  while (!camera->is_initialized()) {
+    std::this_thread::yield();
+  }
+
+  log.info() << "Disabling auto exposure." << std::endl;
+  camera->set_auto_exposure(Spinnaker::ExposureAutoEnums::ExposureAuto_Off);
+
+  log.info() << "Setting exposure mode to timed." << std::endl;
+  camera->set_exposure_mode(Spinnaker::ExposureModeEnums::ExposureMode_Timed);
+
+  log.info() << "Setting camera exposure time to 20,000 microseconds."
+             << std::endl;
+  camera->set_exposure(20000);
+
+  log.info() << "Disabling auto gain." << std::endl;
+  camera->set_auto_gain(Spinnaker::GainAutoEnums::GainAuto_Off);
+
+  float gain = config.get<float>("camera_gain");  // 1.0 <= gain <= 47.994267
+  if (gain < 1.0f || gain > 47.994267f) {
+    throw std::out_of_range("Gain must be between 1.0 and 47.994267");
+  }
+
+  log.info() << "Setting gain to " << gain << " dB." << std::endl;
+  camera->set_gain(gain);
+
+  log.info() << "Camera info:" << std::endl;
+  try {
+    for (auto i : camera->get_device_info()) {
+      log.info() << "    " << i.first << ": " << i.second << std::endl;
+    }
+  } catch (const std::exception &ex) {
+    log.exception(ex) << "Failed to print device info." << std::endl;
+  }
+
+  // configure trigger
+  log.info() << "Configuring trigger." << std::endl;
+  USBCamera::TriggerType trigger_type = USBCamera::TriggerType::SOFTWARE;
+  if (config["camera_trigger"] == "1") {
+    trigger_type = USBCamera::TriggerType::HARDWARE;
+    log.info() << "Camera using hardware trigger." << std::endl;
+  } else {
+    log.info() << "Camera using software trigger." << std::endl;
+  }
+  camera->configure_trigger(trigger_type);
+
+  log.info() << "Setting acquisition mode to continuous." << std::endl;
+  camera->set_acquisition_mode(
+      Spinnaker::AcquisitionModeEnums::AcquisitionMode_Continuous);
+}
+
+void initialize_laser(OBISLaser &laser, HAPIMode mode) {
+  Logger &log = Logger::instance();
+  laser.handshake(OBISLaser::State::Off);
+  laser.cdrh(OBISLaser::State::Off);
+  if (mode == HAPIMode::CW) {
+    laser.mode(OBISLaser::SourceType::ConstantPower);
+  } else {
+    laser.mode(OBISLaser::SourceType::Digital);
+  }
+  laser.auto_start(OBISLaser::State::On);
+  laser.state(OBISLaser::State::On);
+
+  log.info() << "Laser info:" << std::endl;
+  log.info() << "    IDN: " << laser.sys_info()._idn;
+  log.info() << "    Model: " << laser.sys_info()._model;
+  log.info() << "    Serial Number: " << laser.sys_info()._snumber;
+  log.info() << "    Firmware: " << laser.sys_info()._firmware;
+  log.info() << "    Wavelength: " << laser.sys_info()._wavelength << std::endl;
+  log.info() << "    Laser cycles: " << laser.cycles() << std::endl;
+  log.info() << "    Laser hours: " << laser.hours() << std::endl;
+  log.info() << "    Laser diode hours: " << laser.diode_hours() << std::endl;
+
+  FaultCode fault = laser.fault();
+  if (fault != 0) {
+    for (std::string f : laser.fault(fault)) {
+      log.error() << "Laser fault: " << f << std::endl;
+    }
+    throw std::runtime_error("Laser fault");
+  }
+}
+
 void cleanup(Spinnaker::CameraList &clist, Spinnaker::SystemPtr &system,
              std::shared_ptr<USBCamera> &camera, HAPIMode mode,
              OBISLaser &laser) {
+  laser.mode(OBISLaser::SourceType::Digital);
   laser.state(OBISLaser::State::Off);
   Board &board = Board::instance();
   Logger &log = Logger::instance();
@@ -273,7 +362,7 @@ void cleanup(Spinnaker::CameraList &clist, Spinnaker::SystemPtr &system,
   }
   log.info() << "Disarming HAPI-E board." << std::endl;
   board.disarm();
-  if (mode != HAPIMode::TRIGGER_TEST) {
+  if (use_camera(mode)) {
     log.info() << "Clearing camera list." << std::endl;
     try {
       clist.Clear();
@@ -286,83 +375,5 @@ void cleanup(Spinnaker::CameraList &clist, Spinnaker::SystemPtr &system,
     } catch (const std::exception &ex) {
       log.exception(ex) << "Failed to release Spinnaker system." << std::endl;
     }
-  }
-}
-
-void initialize_camera(std::shared_ptr<USBCamera> &camera, Config &config) {
-  Logger &log = Logger::instance();
-  log.info() << "Initializing camera." << std::endl;
-  camera->init();
-  // wait until camera is initialized
-  while (!camera->is_initialized()) std::this_thread::yield();
-
-  log.info() << "Disabling auto exposure." << std::endl;
-  camera->set_auto_exposure(Spinnaker::ExposureAutoEnums::ExposureAuto_Off);
-
-  log.info() << "Setting exposure mode to timed." << std::endl;
-  camera->set_exposure_mode(Spinnaker::ExposureModeEnums::ExposureMode_Timed);
-
-  log.info() << "Setting camera exposure time to 20,000 microseconds."
-             << std::endl;
-  camera->set_exposure(20000);
-
-  log.info() << "Disabling auto gain." << std::endl;
-  camera->set_auto_gain(Spinnaker::GainAutoEnums::GainAuto_Off);
-
-  float gain = config.get<float>("camera_gain");  // 1.0 <= gain <= 47.994267
-  if (gain < 1.0f || gain > 47.994267f)
-    throw std::out_of_range("Gain must be between 1.0 and 47.994267");
-
-  log.info() << "Setting gain to " << gain << " dB." << std::endl;
-  camera->set_gain(gain);
-
-  log.info() << "Camera info:" << std::endl;
-  try {
-    for (auto i : camera->get_device_info())
-      log.info() << "    " << i.first << ": " << i.second << std::endl;
-  } catch (const std::exception &ex) {
-    log.exception(ex) << "Failed to print device info." << std::endl;
-  }
-
-  // configure trigger
-  log.info() << "Configuring trigger." << std::endl;
-  USBCamera::TriggerType trigger_type = USBCamera::TriggerType::SOFTWARE;
-  if (config["camera_trigger"] == "1") {
-    trigger_type = USBCamera::TriggerType::HARDWARE;
-    log.info() << "Camera using hardware trigger." << std::endl;
-  } else {
-    log.info() << "Camera using software trigger." << std::endl;
-  }
-  camera->configure_trigger(trigger_type);
-
-  log.info() << "Setting acquisition mode to continuous." << std::endl;
-  camera->set_acquisition_mode(
-      Spinnaker::AcquisitionModeEnums::AcquisitionMode_Continuous);
-}
-
-void initialize_laser(OBISLaser &laser) {
-  Logger &log = Logger::instance();
-  laser.handshake(OBISLaser::State::Off);
-  laser.cdrh(OBISLaser::State::Off);
-  laser.mode(OBISLaser::SourceType::Digital);
-  laser.auto_start(OBISLaser::State::On);
-  laser.state(OBISLaser::State::On);
-
-  log.info() << "Laser info:" << std::endl;
-  log.info() << "    IDN: " << laser.sys_info()._idn;
-  log.info() << "    Model: " << laser.sys_info()._model;
-  log.info() << "    Serial Number: " << laser.sys_info()._snumber;
-  log.info() << "    Firmware: " << laser.sys_info()._firmware;
-  log.info() << "    Wavelength: " << laser.sys_info()._wavelength << std::endl;
-  log.info() << "    Laser cycles: " << laser.cycles() << std::endl;
-  log.info() << "    Laser hours: " << laser.hours() << std::endl;
-  log.info() << "    Laser diode hours: " << laser.diode_hours() << std::endl;
-
-  FaultCode fault = laser.fault();
-  if (fault != 0) {
-    for (auto f : laser.fault_bits(fault)) {
-      log.error() << "Laser fault: " << laser.fault_str(f) << std::endl;
-    }
-    throw std::runtime_error("Laser fault");
   }
 }

@@ -485,32 +485,44 @@ const OBISLaser::State OBISLaser::query(const std::string str) {
 template <>
 const OBISLaser::DeviceType OBISLaser::query(const std::string str) {
   std::string line = result(str);
-  if (line.substr(0, 3).compare("DDL") == 0) return OBISLaser::DeviceType::DDL;
-  if (line.substr(0, 4).compare("OPSL") == 0)
+  if (line.substr(0, 3).compare("DDL") == 0) {
+    return OBISLaser::DeviceType::DDL;
+  }
+  if (line.substr(0, 4).compare("OPSL") == 0) {
     return OBISLaser::DeviceType::OPSL;
-  if (line.substr(0, 4).compare("MINI") == 0)
+  }
+  if (line.substr(0, 4).compare("MINI") == 0) {
     return OBISLaser::DeviceType::Mini;
-  if (line.substr(0, 6).compare("MASTER") == 0)
+  }
+  if (line.substr(0, 6).compare("MASTER") == 0) {
     return OBISLaser::DeviceType::Master;
+  }
   return OBISLaser::DeviceType::Other;
 }
 
 template <>
 const OBISLaser::SourceType OBISLaser::query(const std::string str) {
   std::string line = result(str);
-  if (line.substr(0, 3).compare("CWP") == 0)
+  if (line.substr(0, 3).compare("CWP") == 0) {
     return OBISLaser::SourceType::ConstantPower;
-  if (line.substr(0, 4).compare("CWC") == 0)
+  }
+  if (line.substr(0, 3).compare("CWC") == 0) {
     return OBISLaser::SourceType::ConstantCurrent;
-  if (line.substr(0, 4).compare("DIGITAL") == 0)
+  }
+  if (line.substr(0, 7).compare("DIGITAL") == 0) {
     return OBISLaser::SourceType::Digital;
-  if (line.substr(0, 6).compare("ANALOG") == 0)
+  }
+  if (line.substr(0, 6).compare("ANALOG") == 0) {
     return OBISLaser::SourceType::Analog;
-  if (line.substr(0, 6).compare("MIXED") == 0)
+  }
+  if (line.substr(0, 5).compare("MIXED") == 0) {
     return OBISLaser::SourceType::Mixed;
-  if (line.substr(0, 6).compare("DIGSO") == 0)
+  }
+  if (line.substr(0, 5).compare("DIGSO") == 0) {
     return OBISLaser::SourceType::DIGSO;
-  if (line.substr(0, 6).compare("MIXSO") == 0)
+  }
+  if (line.substr(0, 5).compare("MIXSO") == 0) {
     return OBISLaser::SourceType::MIXSO;
+  }
   return OBISLaser::SourceType::ConstantPower;
 }

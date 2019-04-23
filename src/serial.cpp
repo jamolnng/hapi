@@ -99,7 +99,9 @@ std::string SerialInterface::getline(char delim) {
   std::ostringstream ss;
   int ch;
   while ((ch = std::fgetc(_device_f)) != delim) {
-    if (ch != EOF) ss << (char)ch;
+    if (ch != EOF) {
+      ss << (char)ch;
+    }
   }
   ss << delim;
   return ss.str();

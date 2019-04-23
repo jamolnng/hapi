@@ -18,7 +18,7 @@ void acquisition_loop(std::shared_ptr<USBCamera> &camera, OBISLaser &laser,
   Board &board = Board::instance();
   Logger &log = Logger::instance();
 
-  if (mode != HAPIMode::TRIGGER_TEST) {
+  if (use_camera(mode)) {
     // begin acquisition
     log.info() << "Beginning acquisition." << std::endl;
     camera->begin_acquisition();
@@ -34,10 +34,15 @@ void acquisition_loop(std::shared_ptr<USBCamera> &camera, OBISLaser &laser,
       std::chrono::high_resolution_clock::now();
   std::chrono::high_resolution_clock::time_point last_time = current_time;
 
-  // main acquisition loop
-  log.info() << "Entering acquisition loop." << std::endl;
+  log.info() << "Entering main loop." << std::endl;
   while (running) {
-    if (mode == HAPIMode::INTERVAL) {
+    if (mode == HAPIMode::CW) {
+      std::this_thread::yield();
+      continue;
+    }
+    log.info() << "Arming HAPI-E board." << std::endl;
+    board.arm();
+    if (mode == HAPIMode::INTERVAL || mode == HAPIMode::ALIGN) {
       log.info() << "Waiting for interval." << std::endl;
       while (std::chrono::duration_cast<std::chrono::milliseconds>(
                  current_time - last_time)
@@ -49,6 +54,8 @@ void acquisition_loop(std::shared_ptr<USBCamera> &camera, OBISLaser &laser,
           for (auto f : faults) {
             log.error() << "Laser fault: " << laser.fault_str(f) << std::endl;
           }
+          // TODO: be able to handle some types of laser faults (overheating)
+          running = false;
         }
         if (running) {
           std::this_thread::yield();
@@ -56,8 +63,10 @@ void acquisition_loop(std::shared_ptr<USBCamera> &camera, OBISLaser &laser,
           break;
         }
       }
-      log.info() << "Sending trigger." << std::endl;
-      board.trigger();
+      if (running) {
+        log.info() << "Sending trigger." << std::endl;
+        board.trigger();
+      }
     } else {
       log.info() << "Waiting for trigger." << std::endl;
     }
@@ -83,19 +92,19 @@ void acquisition_loop(std::shared_ptr<USBCamera> &camera, OBISLaser &laser,
     log.info() << "Disarming the HAPI-E board." << std::endl;
     board.disarm();
 
-    if (mode != HAPIMode::TRIGGER_TEST) {
+    if (use_camera(mode)) {
       try {
-        acquire_image(camera, out_dir, image_type, image_count, image_time);
+        acquire_image(camera, out_dir, image_type, image_count, image_time,
+                      mode);
         image_count++;
       } catch (const std::exception &ex) {
         log.exception(ex) << "Failed to acquire image." << std::endl;
+        break;
       }
     }
-    log.info() << "Arming HAPI-E board." << std::endl;
-    board.arm();
   }
 
-  if (mode != HAPIMode::TRIGGER_TEST) {
+  if (use_camera(mode)) {
     log.info() << "Ending acquisition." << std::endl;
     camera->end_acquisition();
   }
@@ -103,7 +112,8 @@ void acquisition_loop(std::shared_ptr<USBCamera> &camera, OBISLaser &laser,
 
 void acquire_image(std::shared_ptr<USBCamera> &camera,
                    std::filesystem::path &out_dir, std::string &image_type,
-                   unsigned int image_count, const std::string &image_time) {
+                   unsigned int image_count, const std::string &image_time,
+                   HAPIMode mode) {
   Logger &log = Logger::instance();
   // get the image from the camera
   log.info() << "Acquiring image from camera." << std::endl;
@@ -112,7 +122,7 @@ void acquire_image(std::shared_ptr<USBCamera> &camera,
     log.info() << "Image incomplete with status " << result->GetImageStatus()
                << "." << std::endl;
   } else {
-    if (image_count == 0) {
+    if (mode != HAPIMode::ALIGN && image_count == 0) {
       if (!std::filesystem::exists(out_dir)) {
         log.info() << "First image. Creating output directory." << std::endl;
         // creates out dir and thumbnail dir in one command
@@ -120,30 +130,53 @@ void acquire_image(std::shared_ptr<USBCamera> &camera,
             out_dir / (out_dir.stem().string() + "_thumbs"));
       }
     }
+    if (!std::filesystem::exists("/var/www/hapi/")) {
+      log.info() << "Creating /var/www/hapi/ directory." << std::endl;
+      std::filesystem::create_directories("/var/www/hapi/");
+    }
     // save the image
-    std::filesystem::path fname = out_dir / (image_time + "." + image_type);
     log.info() << "Converting image to mono 8 bit with no color processing."
                << std::endl;
     Spinnaker::ImagePtr converted = result->Convert(
         Spinnaker::PixelFormat_Mono8, Spinnaker::NO_COLOR_PROCESSING);
-    log.info() << "Saving image (" << image_count << ") " << fname << "."
-               << std::endl;
-    converted->Save(fname.string().c_str());
-    std::filesystem::path thumb =
-        out_dir / (out_dir.stem().string() + "_thumbs");
-    thumb /= image_time + "_thumb" + "." + image_type;
-    std::filesystem::path last = out_dir.parent_path() / "last.png";
-    log.info() << "Creating thumbnail image." << std::endl;
-    std::string convert =
-        "sudo convert " + fname.string() + " -resize 600 " + thumb.string();
-    std::string convert_last =
-        "sudo convert " + thumb.string() + " " + last.string();
-    std::string cmd = "(" + convert + " && " + convert_last + ") &";
-    std::system(cmd.c_str());
+    std::filesystem::path fname;
+    std::filesystem::path last = "/var/www/hapi/last.png";
+    if (mode == HAPIMode::ALIGN) {
+      fname = "/var/www/hapi/biglast.tiff";
+      log.info() << "Saving image (" << image_count << ") " << fname << "."
+                 << std::endl;
+      converted->Save(fname.string().c_str());
+      log.info() << "Creating thumbnail image." << std::endl;
+      std::string convert = "sudo convert " + fname.string() +
+                            " -thumbnail 600 " + last.string() + " &";
+      std::system(convert.c_str());
+    } else {
+      fname = out_dir / (image_time + "." + image_type);
+      log.info() << "Saving image (" << image_count << ") " << fname << "."
+                 << std::endl;
+      converted->Save(fname.string().c_str());
+      std::filesystem::path thumb =
+          out_dir / (out_dir.stem().string() + "_thumbs");
+      thumb /= image_time + "_thumb" + "." + image_type;
+      log.info() << "Creating thumbnail image." << std::endl;
+      std::string convert = "sudo convert " + fname.string() +
+                            " -thumbnail 600 " + thumb.string();
+      std::string convert_last =
+          "sudo convert " + thumb.string() + " " + last.string();
+      std::string cmd = "(" + convert + " && " + convert_last + ") &";
+      std::system(cmd.c_str());
+    }
   }
   log.info() << "Releasing image." << std::endl;
   result->Release();
   // wait for image to be freed before we arm
-  while (result->IsInUse()) std::this_thread::yield();
+  while (result->IsInUse()) {
+    std::this_thread::yield();
+  }
+}
+
+bool use_camera(HAPIMode mode) {
+  return mode == HAPIMode::INTERVAL || mode == HAPIMode::TRIGGER ||
+         mode == HAPIMode::ALIGN;
 }
 };  // namespace hapi

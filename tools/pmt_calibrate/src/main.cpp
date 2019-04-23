@@ -68,9 +68,9 @@ int main(int argc, char* argv[]) {
     log.info() << "Updating gain and threshold." << std::endl;
     config["pmt_gain"] = std::to_string(gain);
     config["pmt_threshold"] = std::to_string(threshold);
-    log.info() << "Saving new configuration to /opt/hapi/hapi.conf"
+    log.info() << "Saving new configuration to /etc/hapi/hapi.conf"
                << std::endl;
-    config.save("/opt/hapi/hapi.conf");
+    config.save("/etc/hapi/hapi.conf");
   }
   return 0;
 }

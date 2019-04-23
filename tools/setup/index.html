@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+
+<head>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <meta charset="UTF-8">
+  <title>HAPI Portal</title>
+  <style>
+    .row {
+      display: flex;
+      flex-flow: row;
+      height: 100%;
+    }
+
+    .column {
+      flex: 50%;
+      border: 1px solid black;
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+    }
+
+    img {
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    iframe {
+      width: 100%;
+      height: 99%;
+      margin: 0;
+      border: none;
+    }
+
+    div {
+      margin: 0;
+    }
+  </style>
+
+  <script type="text/javascript">
+    window.onload = function () {
+      var image = document.getElementById("img");
+
+      function updateImage() {
+        image.src = "last.png?" + new Date().getTime();
+      }
+
+      setInterval(updateImage, 1000);
+    }</script>
+</head>
+
+<body>
+  <div class="row">
+    <div class="column">
+      <img id="img" src="last.png">
+    </div>
+    <div class="column">
+      <iframe src="http://1.1.1.1:4200/"></iframe>
+    </div>
+  </div>
+</body>

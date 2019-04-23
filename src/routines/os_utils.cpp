@@ -1,7 +1,11 @@
 #include "routines/os_utils.h"
 
+#include <array>
 #include <csignal>
+#include <cstdio>
+#include <cstdlib>
 #include <fstream>
+#include <memory>
 
 #include <sys/types.h>
 #include <unistd.h>
@@ -28,7 +32,7 @@ bool set_usbfs_mb() {
                    std::ios::binary);
   unsigned int mb = 0;
   if (in) {
-    in >> mb;
+    in >> mb >> std::ws;
     in.close();
   }
   return mb == 1000;
@@ -53,5 +57,16 @@ bool initialize_signal_handlers() {
          set_sh(SIGQUIT) &&
 #endif
          set_sh(SIGABRT);
+}
+
+std::string exec(const char *cmd) {
+  std::array<char, 128> buffer;
+  std::string result;
+  std::shared_ptr<FILE> pipe(popen(cmd, "r"), pclose);
+  if (!pipe) throw std::runtime_error("popen() failed!");
+  while (!feof(pipe.get())) {
+    if (fgets(buffer.data(), 128, pipe.get()) != NULL) result += buffer.data();
+  }
+  return result.substr(0, result.length() - 1);
 }
 };  // namespace hapi

@@ -5,30 +5,31 @@
 namespace hapi {
 // default configuration parameters
 std::map<std::string, std::string> config_defaults = {
-    {"output", "."},           {"camera_trigger", "1"},
-    {"delay", "0b1000"},       {"exp", "0b0010"},
-    {"pulse", "0b11111"},      {"image_type", "png"},
-    {"pmt_threshold", "0x10"}, {"pmt_gain", "0xFF"},
-    {"interval", "3000"},      {"camera_gain", "47.994267"}};
+    {"output", "hapi/"},       {"camera_trigger", "1"}, {"delay", "0b1000"},
+    {"exp", "0b0010"},         {"pulse", "0b01111"},    {"image_type", "tiff"},
+    {"pmt_threshold", "0x85"}, {"pmt_gain", "0xc0"},    {"interval", "3000"},
+    {"camera_gain", "44.0"}};  // old camera gain 47.994267
 
 Config get_config() {
   Logger &log = Logger::instance();
   // load config
   Config config(config_defaults);
-  std::filesystem::path config_path = "/opt/hapi/hapi.conf";
+  std::filesystem::path config_path = "/etc/hapi/hapi.conf";
   log.info() << "Loading config from " << config_path << "." << std::endl;
   try {
-    if (std::filesystem::exists(config_path))
+    if (std::filesystem::exists(config_path)) {
       config.load(config_path);
-    else
+    } else {
       log.warning() << "Config file not found. Using defaults." << std::endl;
+    }
   } catch (const std::exception &ex) {
     log.exception(ex) << "Failed to load config. Using defaults." << std::endl;
     config = Config(config_defaults);
   }
   log.info() << "Config:" << std::endl;
-  for (auto const &item : config.items())
+  for (auto const &item : config.items()) {
     log.info() << "    " << item.first << ": " << item.second << std::endl;
+  }
   return config;
 }
 

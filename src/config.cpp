@@ -16,12 +16,16 @@ void Config::load(std::filesystem::path p) {
   if (in) {
     std::string line;
     while (std::getline(in, line)) {
-      if (line[0] == '#') continue;
+      if (line[0] == '#') {
+        continue;
+      }
       std::istringstream is_line(line);
       std::string key;
       if (std::getline(is_line, key, '=')) {
         std::string value;
-        if (std::getline(is_line, value)) _items[key] = value;
+        if (std::getline(is_line, value)) {
+          _items[key] = value;
+        }
       }
     }
     in.close();
