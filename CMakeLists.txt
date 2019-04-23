@@ -35,7 +35,8 @@ file(GLOB_RECURSE HAPI_CONFIG_HEADERS "tools/config/include/*.h")
 get_include_dirs("${HAPI_CONFIG_HEADERS}" HAPI_CONFIG_INCLUDE_DIRS)
 
 add_executable(hapi-config ${HAPI_CONFIG_SOURCES})
-target_include_directories(hapi-config PUBLIC ${HAPI_CONFIG_INCLUDE_DIRS})
+target_include_directories(hapi-config PUBLIC ${HAPI_CONFIG_INCLUDE_DIRS} "include/")
+target_sources(hapi-config PUBLIC "src/config.cpp" "src/routines/get_config.cpp" "src/routines/str_utils.cpp" "src/logger.cpp")
 target_link_libraries(hapi-config stdc++fs)
 
 file(GLOB_RECURSE HAPI_PMT_CALIBRATE_SOURCES "tools/pmt_calibrate/src/*.cpp")
