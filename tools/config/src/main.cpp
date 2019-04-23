@@ -56,16 +56,8 @@ int main(int argc, char* argv[]) {
     std::cout << "root permissions required to run!" << std::endl;
     return -1;
   }
-  bool ask_all = argc > 1 && std::string(argv[1]) == "all";
-  if (ask_all)
-    std::cout << "WARNING: this mode should only be configured to match the "
-                 "HAPI-E board!"
-              << std::endl
-              << std::endl;
-
   std::ostringstream sout;
-  prompt("output", "output directory (default: /home/pi/hapi)", sout,
-         "/home/pi/hapi");
+  prompt("output", "output directory (default: hapi/)", sout, "hapi/");
   prompt("delay", "delay in microseconds: 0-15 (default 8)", sout, "8",
          delay_formatter);
   prompt("exp", "exposure in microseconds: 0-15 (default 2)", sout, "2",
@@ -73,40 +65,20 @@ int main(int argc, char* argv[]) {
   prompt("pulse", "pulse width in nanoseconds: 0-310 (default 310)", sout,
          "310", pulse_formatter);
   prompt("image_type",
-         "Image type: png, ppm, pgm, tiff, jpeg, jpg, bmp (default png)", sout,
-         "png");
-
-  if (ask_all) {
-    prompt("trigger_type",
-           "trigger type: 0 = Software, 1 = Hardware (default 1)", sout, "1");
-    prompt("arm_pin", "arm pin (default: 26)", sout, "26");
-    prompt("done_pin", "done pin (default: 23)", sout, "23");
-    prompt("delay_pin0", "delay pin 0 (default: 7)", sout, "7");
-    prompt("delay_pin1", "delay pin 1 (default: 0)", sout, "0");
-    prompt("delay_pin2", "delay pin 2 (default: 1)", sout, "1");
-    prompt("delay_pin3", "delay pin 3 (default: 2)", sout, "2");
-    prompt("exp_pin0", "exposure pin 0 (default: 13)", sout, "13");
-    prompt("exp_pin1", "exposure pin 1 (default: 6)", sout, "6");
-    prompt("exp_pin2", "exposure pin 2 (default: 14)", sout, "14");
-    prompt("exp_pin3", "exposure pin 3 (default: 10)", sout, "10");
-    prompt("pulse_pin0", "pulse pin 0 (default: 24)", sout, "24");
-    prompt("pulse_pin1", "pulse pin 1 (default: 27)", sout, "27");
-    prompt("pulse_pin2", "pulse pin 2 (default: 25)", sout, "25");
-    prompt("pulse_pin3", "pulse pin 3 (default: 28)", sout, "28");
-    prompt("pulse_pin4", "pulse pin 4 (default: 29)", sout, "29");
-  }
+         "Image type: png, ppm, pgm, tiff, jpeg, jpg, bmp (default tiff)", sout,
+         "tiff");
 
   std::string ostr = sout.str();
 
-  if (!fs::exists("/opt/hapi")) fs::create_directory("/opt/hapi");
+  if (!fs::exists("/etc/hapi")) fs::create_directory("/etc/hapi");
 
-  std::ofstream out("/opt/hapi/hapi.conf", std::ios::binary);
+  std::ofstream out("/etc/hapi/hapi.conf", std::ios::binary);
 
   if (out) {
     out << ostr;
     out.close();
   } else {
-    std::cout << "Unable to write config file to: /opt/hapi/hapi.conf"
+    std::cout << "Unable to write config file to: /etc/hapi/hapi.conf"
               << std::endl;
   }
 

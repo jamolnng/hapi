@@ -14,5 +14,9 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/bin
 . /lib/lsb/init-functions
 # If you need to source some other scripts, do it here
 
+if [ ! -d "/var/www/hapi/" ]; then
+  sudo mkdir -p "/var/www/hapi/"
+fi
+
 sudo /usr/bin/shellinaboxd -p 4200 --disable-ssl -b
-(cd /home/pi/hapi; sudo python -m SimpleHTTPServer 80) &
+(cd /var/www/hapi; sudo python -m SimpleHTTPServer 80) &

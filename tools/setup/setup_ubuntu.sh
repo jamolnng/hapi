@@ -99,6 +99,10 @@ make
 sudo make install
 
 ### web portal ###
+sudo apt-get install python -y
+
+sudo mkdir -p /var/www/hapi/
+sudo cp index.html /var/www/hapi/index.html
 
 # shell in a box
 sudo apt-get install libssl-dev libpam0g-dev zlib1g-dev dh-autoreconf shellinabox -y

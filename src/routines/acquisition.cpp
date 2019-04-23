@@ -130,21 +130,25 @@ void acquire_image(std::shared_ptr<USBCamera> &camera,
             out_dir / (out_dir.stem().string() + "_thumbs"));
       }
     }
+    if (!std::filesystem::exists("/var/www/hapi/")) {
+      log.info() << "Creating /var/www/hapi/ directory." << std::endl;
+      std::filesystem::create_directories("/var/www/hapi/");
+    }
     // save the image
     log.info() << "Converting image to mono 8 bit with no color processing."
                << std::endl;
     Spinnaker::ImagePtr converted = result->Convert(
         Spinnaker::PixelFormat_Mono8, Spinnaker::NO_COLOR_PROCESSING);
     std::filesystem::path fname;
-    std::filesystem::path last = out_dir.parent_path() / "last.png";
+    std::filesystem::path last = "/var/www/hapi/last.png";
     if (mode == HAPIMode::ALIGN) {
-      fname = out_dir.parent_path() / "biglast.tiff";
+      fname = "/var/www/hapi/biglast.tiff";
       log.info() << "Saving image (" << image_count << ") " << fname << "."
                  << std::endl;
       converted->Save(fname.string().c_str());
       log.info() << "Creating thumbnail image." << std::endl;
-      std::string convert = "sudo convert " + fname.string() + " -resize 600 " +
-                            last.string() + " &";
+      std::string convert = "sudo convert " + fname.string() +
+                            " -thumbnail 600 " + last.string() + " &";
       std::system(convert.c_str());
     } else {
       fname = out_dir / (image_time + "." + image_type);
@@ -155,8 +159,8 @@ void acquire_image(std::shared_ptr<USBCamera> &camera,
           out_dir / (out_dir.stem().string() + "_thumbs");
       thumb /= image_time + "_thumb" + "." + image_type;
       log.info() << "Creating thumbnail image." << std::endl;
-      std::string convert =
-          "sudo convert " + fname.string() + " -resize 600 " + thumb.string();
+      std::string convert = "sudo convert " + fname.string() +
+                            " -thumbnail 600 " + thumb.string();
       std::string convert_last =
           "sudo convert " + thumb.string() + " " + last.string();
       std::string cmd = "(" + convert + " && " + convert_last + ") &";
