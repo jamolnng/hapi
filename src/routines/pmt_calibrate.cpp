@@ -66,8 +66,11 @@ std::pair<unsigned int, unsigned int> pmt_calibrate(long long time_limit) {
   int gainhalf = (0xFF + 1) / 4;  // first cut is half of the range
   int offset = 3;                 // extra adjustment to reduce random triggers
   int half = (0xFF + 1) / 4;      // first cut is half of the range
+  bool triggered = false;
+
   // for (gain = 0xFF; gain >= 0; gain--) {
-  while (gainhalf > 1) {
+  while (gainhalf != 0) {
+    triggered = false;
     if (!running) {
       goto exit;
     }
@@ -87,6 +90,7 @@ std::pair<unsigned int, unsigned int> pmt_calibrate(long long time_limit) {
       log.info() << "...no trigger" << std::endl;
     } else  // trigger, lower gain
     {
+      triggered = true;
       gain -= gainhalf;
       log.info() << "...trigger" << std::endl;
     }
@@ -94,12 +98,16 @@ std::pair<unsigned int, unsigned int> pmt_calibrate(long long time_limit) {
     log.info() << "Next adjustment: " << gainhalf << std::endl;
 
   }  // end gain binary search
+  if (triggered) {
+    gain -= 1;
+  }
 
   // binary search for t
   threshold = 0xFF / 2;
 
-  while (half > 1)  // break when we
+  while (half != 0)  // break when we
   {
+    triggered = false;
     log.info() << "Binary search with threshold: " << threshold << std::endl;
 
     if (pass(gain, threshold, ms, board))  // no trigger, increase threshold
@@ -108,6 +116,7 @@ std::pair<unsigned int, unsigned int> pmt_calibrate(long long time_limit) {
       log.info() << "...no trigger" << std::endl;
     } else  // trigger, lower threshold
     {
+      triggered = true;
       threshold -= half;
       log.info() << "...trigger" << std::endl;
     }
@@ -117,6 +126,9 @@ std::pair<unsigned int, unsigned int> pmt_calibrate(long long time_limit) {
       goto exit;
     }
   }  // end binary search
+  if (triggered) {
+    threshold -= 1;
+  }
   return std::make_pair(gain, std::max(threshold - offset, 0));
 
   // for (threshold = 0x00; threshold <= 0xFF; threshold++) {
