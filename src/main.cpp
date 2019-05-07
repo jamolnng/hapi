@@ -118,12 +118,15 @@ int main(int argc, char *argv[]) {
 
   if (!std::filesystem::exists(out_dir)) {
     std::filesystem::create_directories(out_dir);
-    config.save(out_dir.string() + "/hapi.conf");
-    std::ofstream out(out_dir.string() + "/cmdline.txt", std::ios::binary);
+  }
+  config.save(out_dir.string() + "/hapi.conf");
+  std::ofstream out(out_dir.string() + "/cmdline.txt", std::ios::binary);
+  if (out) {
     for (int i = 0; i < argc; i++) {
       out << argv[i] << " ";
     }
     out << std::endl;
+    out.close();
   }
 
   try {
