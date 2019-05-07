@@ -103,3 +103,7 @@ void USBCamera::set_auto_gain(Spinnaker::GainAutoEnums a) {
 }
 
 void USBCamera::set_gain(double gain) { _ptr->Gain.SetValue(gain); }
+
+void USBCamera::set_pixel_format(Spinnaker::PixelFormatEnums fmt) {
+  _ptr->PixelFormat.SetValue(fmt);
+}

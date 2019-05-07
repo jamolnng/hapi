@@ -49,6 +49,8 @@ class USBCamera {
   void set_auto_gain(Spinnaker::GainAutoEnums a);
   // set gain
   void set_gain(double gain);
+  // set image format
+  void set_pixel_format(Spinnaker::PixelFormatEnums fmt);
 
  private:
   // Spinnaker camera pointer

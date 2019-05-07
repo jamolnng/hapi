@@ -288,6 +288,9 @@ void initialize_camera(std::shared_ptr<USBCamera> &camera, Config &config) {
   log.info() << "Setting gain to " << gain << " dB." << std::endl;
   camera->set_gain(gain);
 
+  log.info() << "Setting pixel format to Mono12." << std::endl;
+  camera->set_pixel_format(Spinnaker::PixelFormatEnums::PixelFormat_Mono12);
+
   log.info() << "Camera info:" << std::endl;
   try {
     for (auto i : camera->get_device_info()) {

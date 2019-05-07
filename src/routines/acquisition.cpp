@@ -138,15 +138,15 @@ void acquire_image(std::shared_ptr<USBCamera> &camera,
     // save the image
     log.info() << "Converting image to mono 8 bit with no color processing."
                << std::endl;
-    Spinnaker::ImagePtr converted = result->Convert(
-        Spinnaker::PixelFormat_Mono8, Spinnaker::NO_COLOR_PROCESSING);
+    // Spinnaker::ImagePtr converted = result->Convert(
+    //    Spinnaker::PixelFormat_Mono8, Spinnaker::NO_COLOR_PROCESSING);
     std::filesystem::path fname;
     std::filesystem::path last = "/var/www/hapi/last.png";
     if (mode == HAPIMode::ALIGN) {
       fname = "/var/www/hapi/biglast.tiff";
       log.info() << "Saving image (" << image_count << ") " << fname << "."
                  << std::endl;
-      converted->Save(fname.string().c_str());
+      result->Save(fname.string().c_str());
       log.info() << "Creating thumbnail image." << std::endl;
       std::string convert = "sudo convert " + fname.string() +
                             " -thumbnail 600 " + last.string() + " &";
@@ -155,7 +155,7 @@ void acquire_image(std::shared_ptr<USBCamera> &camera,
       fname = out_dir / (image_time + "." + image_type);
       log.info() << "Saving image (" << image_count << ") " << fname << "."
                  << std::endl;
-      converted->Save(fname.string().c_str());
+      result->Save(fname.string().c_str());
       std::filesystem::path thumb =
           out_dir / (out_dir.stem().string() + "_thumbs");
       thumb /= image_time + "_thumb" + "." + image_type;
