@@ -32,10 +32,14 @@
 
 using namespace hapi;
 
+// Initializes HAPI hardware board. Should only be cealled once.
 void initialize_board(Config &config, HAPIMode mode);
+// Initializes the camera with the correct settings. Should only be called once.
 void initialize_camera(std::shared_ptr<USBCamera> &camera, Config &config);
+// Initializes 532nm laser. Should only be called once.
 void initialize_laser(OBISLaser &laser, HAPIMode mode);
-// resets board and frees spinnaker system
+// Releases all resources in the proper order. Program should exit immediately
+// after this is called.
 void cleanup(Spinnaker::CameraList &clist, Spinnaker::SystemPtr &system,
              std::shared_ptr<USBCamera> &camera, HAPIMode mode,
              OBISLaser &laser);
@@ -232,6 +236,7 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
+// Initializes HAPI hardware board. Should only be cealled once.
 void initialize_board(Config &config, HAPIMode mode) {
   Logger &log = Logger::instance();
   // initialize the board
@@ -258,6 +263,7 @@ void initialize_board(Config &config, HAPIMode mode) {
   board.reset();
 }
 
+// Initializes the camera with the correct settings. Should only be called once.
 void initialize_camera(std::shared_ptr<USBCamera> &camera, Config &config) {
   Logger &log = Logger::instance();
   log.info() << "Initializing camera." << std::endl;
@@ -316,6 +322,7 @@ void initialize_camera(std::shared_ptr<USBCamera> &camera, Config &config) {
       Spinnaker::AcquisitionModeEnums::AcquisitionMode_Continuous);
 }
 
+// Initializes 532nm laser. Should only be called once.
 void initialize_laser(OBISLaser &laser, HAPIMode mode) {
   Logger &log = Logger::instance();
   laser.handshake(OBISLaser::State::Off);
@@ -347,6 +354,8 @@ void initialize_laser(OBISLaser &laser, HAPIMode mode) {
   }
 }
 
+// Releases all resources in the proper order. Program should exit immediately
+// after this is called.
 void cleanup(Spinnaker::CameraList &clist, Spinnaker::SystemPtr &system,
              std::shared_ptr<USBCamera> &camera, HAPIMode mode,
              OBISLaser &laser) {

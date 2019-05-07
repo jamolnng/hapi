@@ -14,16 +14,13 @@ namespace hapi {
 // os_utils.cpp
 extern volatile std::atomic<bool> running;
 
-/**
- * pass
- *
- * Checks if with the given gain and threshold the board has not been triggered
- * in a time interval
- *
- * gain: the gain value to check
- * threshold: the trigger threshold
- * time_limit: the time limit to check within
- */
+// Returns true if with the given gain and threshold the board has not been
+// triggered in a time interval
+//
+// gain: the gain value to check
+// threshold: the trigger threshold
+// time_limit: the time limit to check within in milliseconds
+//
 inline bool pass(const unsigned int gain, const unsigned int threshold,
                  const std::chrono::milliseconds& time_limit, Board& board) {
   Logger& log = Logger::instance();
@@ -52,6 +49,10 @@ inline bool pass(const unsigned int gain, const unsigned int threshold,
   return true;
 }
 
+// Returns a pair of integers of the PMT calibration parameters. The first
+// integer is the gain, the second is the threshold.
+//
+// time_limit: milliseconds to check if the triggered in that time frame.
 std::pair<unsigned int, unsigned int> pmt_calibrate(long long time_limit) {
   auto ms = std::chrono::milliseconds(time_limit);
   Board& board = Board::instance();

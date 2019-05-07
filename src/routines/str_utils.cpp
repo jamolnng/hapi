@@ -17,6 +17,7 @@ std::string str_time() {
   }
 }
 
+// Transforms a std::string to all lowercase.
 void lower(std::string &in) {
   std::transform(in.begin(), in.end(), in.begin(), ::tolower);
 }

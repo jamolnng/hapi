@@ -12,6 +12,8 @@
 namespace hapi {
 extern volatile std::atomic<bool> running;
 
+// This loops while the program is running to acquire images from the camera
+// when a particle is detected.
 void acquisition_loop(std::shared_ptr<USBCamera> &camera, OBISLaser &laser,
                       std::filesystem::path &out_dir, std::string &image_type,
                       std::chrono::milliseconds interval_time, HAPIMode mode) {
@@ -110,6 +112,7 @@ void acquisition_loop(std::shared_ptr<USBCamera> &camera, OBISLaser &laser,
   }
 }
 
+// Acquires an image from the camera and saves it.
 void acquire_image(std::shared_ptr<USBCamera> &camera,
                    std::filesystem::path &out_dir, std::string &image_type,
                    unsigned int image_count, const std::string &image_time,
@@ -176,6 +179,7 @@ void acquire_image(std::shared_ptr<USBCamera> &camera,
   }
 }
 
+// Returns true if the specified HAPI mode requires the camera.
 bool use_camera(HAPIMode mode) {
   return mode == HAPIMode::INTERVAL || mode == HAPIMode::TRIGGER ||
          mode == HAPIMode::ALIGN;

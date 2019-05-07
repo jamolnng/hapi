@@ -3,16 +3,11 @@
 #include <stdexcept>
 #include <utility>
 namespace hapi {
-/**
- * pmt_calibrate
- *
- * Finds calibration values for the pmt gain and trigger threshold
- *
- * millis: the limit to check within
- *
- * Returns: a pair of ints, the first the gain value, the second the threshold
- * value
- */
+
+// Returns a pair of integers of the PMT calibration parameters. The first
+// integer is the gain, the second is the threshold.
+//
+// time_limit: milliseconds to check if the triggered in that time frame.
 std::pair<unsigned int, unsigned int> pmt_calibrate(long long millis);
 class PMTCalibrationError : public std::runtime_error {
  public:

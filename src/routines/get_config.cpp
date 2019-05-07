@@ -3,13 +3,14 @@
 #include "routines/str_utils.h"
 
 namespace hapi {
-// default configuration parameters
+// Default configuration parameters
 std::map<std::string, std::string> config_defaults = {
     {"output", "hapi/"},       {"camera_trigger", "1"}, {"delay", "0b1000"},
     {"exp", "0b0010"},         {"pulse", "0b01111"},    {"image_type", "tiff"},
     {"pmt_threshold", "0x85"}, {"pmt_gain", "0xc0"},    {"interval", "3000"},
     {"camera_gain", "44.0"}};  // old camera gain 47.994267
 
+// Loads and returns the config.
 Config get_config() {
   Logger &log = Logger::instance();
   // load config
@@ -33,6 +34,7 @@ Config get_config() {
   return config;
 }
 
+// Returns the image type from the config.
 std::string get_image_type(Config &config) {
   Logger &log = Logger::instance();
   // get the image type from the config. default to png
@@ -59,6 +61,7 @@ std::string get_image_type(Config &config) {
   return image_type;
 }
 
+// Returns the output directory where the data will be saved to.
 std::filesystem::path get_out_dir(std::string &start_time, Config &config) {
   Logger &log = Logger::instance();
   std::filesystem::path out_dir;

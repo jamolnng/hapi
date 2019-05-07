@@ -6,6 +6,7 @@
 namespace hapi {
 // Returns a std::string of the current time in the format YYYY_MM_DD-HH_MM_SS
 std::string str_time();
+// Transforms a std::string to all lowercase.
 void lower(std::string &in);
 };  // namespace hapi
 

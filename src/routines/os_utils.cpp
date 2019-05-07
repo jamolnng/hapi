@@ -17,10 +17,12 @@
 namespace hapi {
 volatile std::atomic<bool> running{true};
 
+// Returns true if the program is running as the root user.
 bool is_root() { return getuid() == 0 && geteuid() == 0; }
 
 void signal_handler(int sig) { running = false; }
 
+// Sets USB filesystem memory to 1000 megabytes
 bool set_usbfs_mb() {
   Logger &log = Logger::instance();
   // set usbfs memory
@@ -38,6 +40,7 @@ bool set_usbfs_mb() {
   return mb == 1000;
 }
 
+// Initializes signal handlers for SIGINT, SIGQUIT, and SIGABRT
 bool initialize_signal_handlers() {
   // set signal handler
   Logger &log = Logger::instance();
@@ -59,6 +62,7 @@ bool initialize_signal_handlers() {
          set_sh(SIGABRT);
 }
 
+// Runs a terminal command and returns the result as a std::string.
 std::string exec(const char *cmd) {
   std::array<char, 128> buffer;
   std::string result;
