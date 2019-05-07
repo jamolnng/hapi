@@ -71,6 +71,7 @@ std::filesystem::path get_out_dir(std::string &start_time, Config &config) {
     out_dir = std::filesystem::current_path();
   }
   out_dir /= start_time;
+  out_dir = std::filesystem::absolute(out_dir);
   log.info() << "Output directory set to " << out_dir << std::endl;
   return out_dir;
 }

@@ -112,6 +112,16 @@ int main(int argc, char *argv[]) {
   std::string image_type = get_image_type(config);
   std::filesystem::path out_dir = get_out_dir(start_time, config);
 
+  if (!std::filesystem::exists(out_dir)) {
+    std::filesystem::create_directories(out_dir);
+    config.save(out_dir.string() + "/hapi.conf");
+    std::ofstream out(out_dir.string() + "/cmdline.txt", std::ios::binary);
+    for (int i = 0; i < argc; i++) {
+      out << argv[i] << " ";
+    }
+    out << std::endl;
+  }
+
   try {
     initialize_board(config, mode);
   } catch (const std::exception &ex) {

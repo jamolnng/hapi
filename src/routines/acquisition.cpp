@@ -123,7 +123,8 @@ void acquire_image(std::shared_ptr<USBCamera> &camera,
                << "." << std::endl;
   } else {
     if (mode != HAPIMode::ALIGN && image_count == 0) {
-      if (!std::filesystem::exists(out_dir)) {
+      if (!std::filesystem::exists(out_dir /
+                                   (out_dir.stem().string() + "_thumbs"))) {
         log.info() << "First image. Creating output directory." << std::endl;
         // creates out dir and thumbnail dir in one command
         std::filesystem::create_directories(
