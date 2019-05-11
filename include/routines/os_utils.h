@@ -15,6 +15,9 @@ bool initialize_signal_handlers();
 bool is_root();
 // Runs a terminal command and returns the result as a std::string.
 std::string exec(const char *cmd);
+
+// Returns the current run number
+unsigned int run_number(bool increment = false);
 };  // namespace hapi
 
 #endif

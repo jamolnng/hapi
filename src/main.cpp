@@ -56,6 +56,15 @@ int main(int argc, char *argv[]) {
     log.critical() << "Exiting (-1)..." << std::endl;
     return -1;
   }
+  int rn;
+  try {
+    rn = run_number(true);
+  } catch (const std::exception &ex) {
+    log.exception(ex) << "Failed to get run number." << std::endl;
+    log.critical() << "Exiting (-1)..." << std::endl;
+    return -1;
+  }
+  log.info() << "Run number: " << rn << std::endl;
 
   if (!initialize_signal_handlers()) {
     log.critical() << "Exiting (-1)..." << std::endl;
@@ -117,7 +126,7 @@ int main(int argc, char *argv[]) {
 
   Config config = get_config();
   std::string image_type = get_image_type(config);
-  std::filesystem::path out_dir = get_out_dir(start_time, config);
+  std::filesystem::path out_dir = get_out_dir(rn, config);
 
   if (!std::filesystem::exists(out_dir)) {
     std::filesystem::create_directories(out_dir);

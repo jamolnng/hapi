@@ -64,7 +64,7 @@ std::string get_image_type(Config &config) {
 }
 
 // Returns the output directory where the data will be saved to.
-std::filesystem::path get_out_dir(std::string &start_time, Config &config) {
+std::filesystem::path get_out_dir(int rn, Config &config) {
   Logger &log = Logger::instance();
   std::filesystem::path out_dir;
   try {
@@ -75,7 +75,7 @@ std::filesystem::path get_out_dir(std::string &start_time, Config &config) {
                       << std::endl;
     out_dir = std::filesystem::current_path();
   }
-  out_dir /= start_time;
+  out_dir /= std::to_string(rn);
   out_dir = std::filesystem::absolute(out_dir);
   log.info() << "Output directory set to " << out_dir << std::endl;
   return out_dir;
