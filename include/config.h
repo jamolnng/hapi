@@ -1,24 +1,13 @@
 #ifndef HAPI_CONFIG_H
 #define HAPI_CONFIG_H
 
-#if _HAS_CXX17
-#include <filesystem>
-#else
-#include <experimental/filesystem>
-namespace std {
-namespace filesystem = std::experimental::filesystem;
-};
-#endif
+#include "filesystem.hpp"
+
+#include <iostream>
 #include <map>
 #include <sstream>
 #include <string>
 #include <type_traits>
-
-#include <iostream>
-
-namespace std {
-namespace filesystem = std::experimental::filesystem;
-}
 
 namespace hapi {
 class Config {

@@ -5,17 +5,9 @@
 #include <memory>
 #include <string>
 
+#include "filesystem.hpp"
 #include "obis.h"
 #include "usb_camera.h"
-
-#if _HAS_CXX17
-#include <filesystem>
-#else
-#include <experimental/filesystem>
-namespace std {
-namespace filesystem = std::experimental::filesystem;
-};
-#endif
 
 namespace hapi {
 enum HAPIMode { TRIGGER, INTERVAL, TRIGGER_TEST, ALIGN, CW };
