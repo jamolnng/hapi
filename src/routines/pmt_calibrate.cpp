@@ -64,7 +64,6 @@ std::pair<unsigned int, unsigned int> pmt_calibrate(long long time_limit) {
   int gain = 0xFF / 2;
   int threshold = 0xFF / 2;
   int gainhalf = (0xFF + 1) / 4;  // first cut is half of the range
-  int offset = 3;                 // extra adjustment to reduce random triggers
   int half = (0xFF + 1) / 4;      // first cut is half of the range
   bool triggered = false;
 
@@ -129,7 +128,7 @@ std::pair<unsigned int, unsigned int> pmt_calibrate(long long time_limit) {
   if (triggered) {
     threshold -= 1;
   }
-  return std::make_pair(gain, std::max(threshold - offset, 0));
+  return std::make_pair(gain, std::max(threshold, 0));
 
   // for (threshold = 0x00; threshold <= 0xFF; threshold++) {
   //  if ((threshold) % 16 == 0) {

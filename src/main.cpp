@@ -33,7 +33,7 @@
 using namespace hapi;
 
 // Initializes HAPI hardware board. Should only be cealled once.
-void initialize_board(Config &config, HAPIMode mode);
+void initialize_board(Config &config, HAPIMode mode, int pmt_threshold);
 // Initializes the camera with the correct settings. Should only be called once.
 void initialize_camera(std::shared_ptr<USBCamera> &camera, Config &config);
 // Initializes 532nm laser. Should only be called once.
@@ -71,6 +71,9 @@ int main(int argc, char *argv[]) {
   parser.add_argument("-c", "--calibrate",
                       "--calibrate [interval ms] Runs the PMT calibration code "
                       "with the given test interval.",
+                      false);
+  parser.add_argument("-o", "--offset",
+                      "--offset [integer] gives the PMT Threshold offset",
                       false);
   try {
     parser.parse(argc, argv);
@@ -129,8 +132,27 @@ int main(int argc, char *argv[]) {
     out.close();
   }
 
+  int pmt_threshold_offset = config.get<int>("pmt_threshold_offset");
+  if (parser.exists("o")) {
+    try {
+      pmt_threshold_offset = parser.get<int>("o");
+    } catch (const std::exception &ex) {
+      log.exception(ex) << "Invalid PMT threshold offset given: "
+                        << parser.get<std::string>("o") << std::endl;
+      log.critical() << "Exiting (-1)..." << std::endl;
+      return -1;
+    }
+  }
+  int pmt_threshold = config.get<int>("pmt_threshold") + pmt_threshold_offset;
+  if (pmt_threshold < 0) {
+    log.warning() << "PMT threshold + offset is less than zero. Setting "
+                     "threshold to zero."
+                  << std::endl;
+    pmt_threshold = 0;
+  }
+
   try {
-    initialize_board(config, mode);
+    initialize_board(config, mode, pmt_threshold);
   } catch (const std::exception &ex) {
     log.exception(ex) << "Failed to initialize the HAPI-E board." << std::endl;
     log.critical() << "Exiting (-1)..." << std::endl;
@@ -152,9 +174,15 @@ int main(int argc, char *argv[]) {
       log.info() << "Calibrating with interval: " << ms << " milliseconds."
                  << std::endl;
       auto vals = pmt_calibrate(ms);
-      auto gain = vals.first;
-      auto threshold = vals.second;
       log.info() << "Calibration success!" << std::endl;
+      auto gain = vals.first;
+      pmt_threshold = ((int)vals.second) + pmt_threshold_offset;
+      if (pmt_threshold < 0) {
+        log.warning() << "PMT threshold + offset is less than zero. Setting "
+                         "threshold to zero."
+                      << std::endl;
+        pmt_threshold = 0;
+      }
       Board &board = Board::instance();
       board.set_pmt_gain(gain);
       board.set_pmt_threshold(threshold);
@@ -240,7 +268,7 @@ int main(int argc, char *argv[]) {
 }
 
 // Initializes HAPI hardware board. Should only be cealled once.
-void initialize_board(Config &config, HAPIMode mode) {
+void initialize_board(Config &config, HAPIMode mode, int pmt_threshold) {
   Logger &log = Logger::instance();
   // initialize the board
   log.info() << "Initializing the HAPI-E board." << std::endl;
@@ -252,7 +280,7 @@ void initialize_board(Config &config, HAPIMode mode) {
 
   log.info() << "Setting PMT gain and threshold." << std::endl;
   board.set_pmt_gain(config.get<unsigned int>("pmt_gain"));
-  board.set_pmt_threshold(config.get<unsigned int>("pmt_threshold"));
+  board.set_pmt_threshold(pmt_threshold);
 
   if (mode == HAPIMode::INTERVAL) {
     board.set_trigger_source(Board::TriggerSource::PI);
