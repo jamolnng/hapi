@@ -10,6 +10,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include "filesystem.hpp"
 #include "logger.h"
 
 // bool that states whether the program should remain running
@@ -74,27 +75,35 @@ std::string exec(const char *cmd) {
   return result.substr(0, result.length() - 1);
 }
 
+inline void write_run_number(unsigned int run_number) {
+  std::ofstream out("/etc/hapi/run_count", std::ios::binary);
+  if (out) {
+    out << run_number;
+    out.close();
+  } else {
+    throw std::runtime_error(
+        "Failed to open /etc/hapi/run_count to write run number.");
+  }
+}
+
 // Returns the current run number
 unsigned int run_number(bool increment) {
   unsigned int run_number = 0;
-  std::ifstream in("/etc/hapi/run_count", std::ios::binary);
-  if (in) {
-    in >> run_number;
-    in.close();
-  } else {
-    throw std::runtime_error(
-        "Failed to open /etc/hapi/run_count to get run number.");
+  if (std::filesystem::exists("/etc/hapi/run_count")) {
+    std::ifstream in("/etc/hapi/run_count", std::ios::binary);
+    if (in) {
+      in >> run_number;
+      in.close();
+    } else {
+      throw std::runtime_error(
+          "Failed to open /etc/hapi/run_count to get run number.");
+    }
+  } else if (!increment) {
+    write_run_number(run_number);
   }
   if (increment) {
     run_number++;
-    std::ofstream out("/etc/hapi/run_count", std::ios::binary);
-    if (out) {
-      out << run_number;
-      out.close();
-    } else {
-      throw std::runtime_error(
-          "Failed to open /etc/hapi/run_count to increment run number.");
-    }
+    write_run_number(run_number);
   }
   return run_number;
 }
